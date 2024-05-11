@@ -68,7 +68,6 @@ public class BattleController : MonoBehaviour
         OrderManager.Instance.Initialize();
         var order = OrderManager.Instance.GetActionOrder(CommonVariableManager.turns);
 
-
         SetCommnadHeaderState();
     }
 
@@ -78,11 +77,12 @@ public class BattleController : MonoBehaviour
     /// <returns></returns>
     private async Task GetAllyStatuses()
     {
-        PartyMembers.Instance.Initialize();
+        //PartyMembers.Instance.Initialize();
+        List<AllyStatus> allies = PartyMembers.Instance.GetAllies();
 
         for (int i = 0; i < 4; i++) 
         {
-            AllyStatus allyStatus = await CommonController.GetAllyStatus(i + 1);
+            AllyStatus allyStatus = allies[i]; //await CommonController.GetAllyStatus(i + 1);
             allyStatus.spriteObject = faceImages[i];                                    // 画面下部 バストアップ画像
             allyStatus.HPGauge = HPGauges[i];                                           // HPゲージ
             allyStatus.MPGauge = MPGauges[i];                                           // MPゲージ
@@ -106,7 +106,7 @@ public class BattleController : MonoBehaviour
             faceImages[i].GetComponent<Image>().sprite = allyStatus.Class.imagesC[i];
 
             // パーティメンバーのシングルトンに追加
-            PartyMembers.Instance.AddCharacterToParty(allyStatus);   
+            //PartyMembers.Instance.AddCharacterToParty(allyStatus);   
         }
     }
 

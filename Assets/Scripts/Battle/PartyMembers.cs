@@ -61,7 +61,7 @@ public class PartyMembers: MonoBehaviour
     /// </summary>
     /// <param name="original"></param>
     /// <returns></returns>
-    private AllyStatus CopyAllyStatus(AllyStatus original)
+    public AllyStatus CopyAllyStatus(AllyStatus original)
     {
         // オリジナルのAllyStatusをJSONにシリアライズ
         string json = JsonUtility.ToJson(original);

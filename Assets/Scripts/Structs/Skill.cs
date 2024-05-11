@@ -39,7 +39,7 @@ public abstract class Skill : ScriptableObject
     public List<Constants.Attribute> attributes;
     //　習得クラス
     [SerializeField]
-    public BaseClass learnClass;
+    public Class learnClass;
     //　習得レベル
     [SerializeField]
     public int learnLevel;

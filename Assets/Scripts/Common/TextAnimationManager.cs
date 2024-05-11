@@ -95,10 +95,10 @@ public class TextAnimationManager : MonoBehaviour
     /// <returns></returns>
     public async UniTask ShowHealTextAnimation(CharacterStatus target, List<string> damageStrings, Color color)
     {
-        GameObject gameObject = GameObject.Find("BattleSceneCanvas");  
-        if (gameObject != null)
+        GameObject canvasObject = GameObject.Find("BattleSceneCanvas");  
+        if (canvasObject != null)
         {
-            Canvas canvas = GameObject.Find("BattleSceneCanvas").GetComponent<Canvas>();
+            Canvas canvas = canvasObject.GetComponent<Canvas>();
             if (damageStrings.Count > 0 && canvas != null)
             {
                 float delay = 0.1f / damageStrings.Count;
@@ -126,8 +126,11 @@ public class TextAnimationManager : MonoBehaviour
                         }
                         rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x + randomOffsetX, rectTransform.anchoredPosition.y + randomOffsetY);
                     }
-                    await at.GetComponent<TextAnimationManager>().RevealHealTextAnimation(damageStrings[i], color);
-
+                    var ta = at.GetComponent<TextAnimationManager>();
+                    if (ta != null)
+                    {
+                        await ta.RevealHealTextAnimation(damageStrings[i], color);
+                    }
                     await UniTask.Delay(TimeSpan.FromSeconds(0.2f));
                 }
             }
@@ -176,6 +179,7 @@ public class TextAnimationManager : MonoBehaviour
         }
         // フェードアウト
         await FadeOutAllTexts();
+        Destroy(gameObject);
     }
 
     /// <summary>

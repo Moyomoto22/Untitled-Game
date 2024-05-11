@@ -47,7 +47,7 @@ public class ItemMenuController : MonoBehaviour
 
     public GameObject subWindow;
     public GameObject subWindowInstance;
-    public int lastSelectButtonIndex;
+    public int lastSelectButtonIndex = 0;
 
     public EventSystem eventSystem;
     public PlayerInput playerInput;
@@ -55,9 +55,14 @@ public class ItemMenuController : MonoBehaviour
     private bool isClosing;
 
     // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
+        //Initialize();
+    }
 
+    private void OnDisable()
+    {
+        RemoveInputActions();
     }
 
     private void Update()
@@ -68,11 +73,11 @@ public class ItemMenuController : MonoBehaviour
         }
     }
 
-    void Awake()
+    public async UniTask Initialize()
     {
         eventSystem = FindObjectOfType<EventSystem>();
+        eventSystem.enabled = true;
         playerInput = FindObjectOfType<PlayerInput>();
-        //content = GameObject.FindWithTag("ScrollViewContent");
 
         SetInputActions();
 
@@ -82,32 +87,18 @@ public class ItemMenuController : MonoBehaviour
         currentCategoryIndex = 0;
         SetCategoryImage();
 
-        SetItems();
+        ToggleButtonsInteractable(content);
+
+        await SetItems();
         // 一番上のボタンを選択
         SelectButton(0);
+        setButtonFillAmount(0);
+
+        await FadeIn();
+        await UniTask.DelayFrame(1);
     }
 
-    void OnDestroy()
-    {
-        // イベントリスナーを解除
-        if (playerInput != null)
-        {
-            // InputActionAssetを取得
-            var inputActionAsset = playerInput.actions;
-            // "Main"アクションマップを取得
-            var actionMap = inputActionAsset.FindActionMap("Main");
-            // アクションを取得
-            var rs = actionMap.FindAction("RightShoulder");
-            var ls = actionMap.FindAction("LeftShoulder");
-            var cancel = actionMap.FindAction("Cancel");
-            if (rs != null && ls != null && cancel != null)
-            {
-                cancel.performed -= OnPressCancelButton;
-                rs.performed -= OnPressNextButton;
-                ls.performed -= OnPressPreviousButton;
-            }
-        }
-    }
+
 
     private void SetInputActions()
     {
@@ -117,7 +108,7 @@ public class ItemMenuController : MonoBehaviour
             var inputActionAsset = playerInput.actions;
 
             // "Main"アクションマップを取得
-            var actionMap = inputActionAsset.FindActionMap("Main");
+            var actionMap = inputActionAsset.FindActionMap("Menu");
             // アクションを取得
             var rs = actionMap.FindAction("RightShoulder");
             var ls = actionMap.FindAction("LeftShoulder");
@@ -129,12 +120,34 @@ public class ItemMenuController : MonoBehaviour
             }
 
             // イベントリスナーを設定
-            cancel.performed += context => OnPressCancelButton(context);
-            rs.performed += context => OnPressNextButton(context);
-            ls.performed += context => OnPressPreviousButton(context);
+            cancel.performed += OnPressCancelButton;
+            rs.performed += OnPressNextButton;
+            ls.performed += OnPressPreviousButton;
 
             // アクションマップを有効にする
             actionMap.Enable();
+        }
+    }
+
+    void RemoveInputActions()
+    {
+        // イベントリスナーを解除
+        if (playerInput != null)
+        {
+            // InputActionAssetを取得
+            var inputActionAsset = playerInput.actions;
+            // "Main"アクションマップを取得
+            var actionMap = inputActionAsset.FindActionMap("Menu");
+            // アクションを取得
+            var rs = actionMap.FindAction("RightShoulder");
+            var ls = actionMap.FindAction("LeftShoulder");
+            var cancel = actionMap.FindAction("Cancel");
+            if (rs != null && ls != null && cancel != null)
+            {
+                cancel.performed -= OnPressCancelButton;
+                rs.performed -= OnPressNextButton;
+                ls.performed -= OnPressPreviousButton;
+            }
         }
     }
 
@@ -156,18 +169,16 @@ public class ItemMenuController : MonoBehaviour
             {
                 // アイテムメニューのフェードアウト
                 await FadeOutChildren(gameObject, 0.3f);
-                // メインメニューの初期化
-                await mainMenuController.InitializeFromChildren();
+                if (mainMenuController != null)
+                {
+                    // メインメニューの初期化
+                    await mainMenuController.InitializeFromChildren("Item");
+                }
                 // アイテムメニューインスタンスの破棄
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
             isClosing = false;
         }
-    }
-
-    public async UniTask SetMainMenuActive()
-    {
-        await UniTask.DelayFrame(10);
     }
 
     /// <summary>
@@ -181,7 +192,7 @@ public class ItemMenuController : MonoBehaviour
             Debug.Log("RightShoulderButton has pressed.");
             await DestroyButtons();
             // カテゴリ切り替え
-            NextCategory();
+            await NextCategory();
             // 一番上のボタンを選択
             SelectButton(0);
         }
@@ -198,7 +209,7 @@ public class ItemMenuController : MonoBehaviour
             Debug.Log("LeftShoulderButton has pressed.");
             await DestroyButtons();
             // カテゴリ切り替え
-            PreviousCategory();
+            await PreviousCategory();
             // 一番上のボタンを選択
             SelectButton(0);
         }
@@ -207,8 +218,10 @@ public class ItemMenuController : MonoBehaviour
     /// <summary>
     /// アイテムボタンを一覧にセット
     /// </summary>
-    public void SetItems()
+    public async UniTask SetItems()
     {
+        await DestroyButtons();
+
         // フィルタするアイテムカテゴリを取得
         Constants.ItemCategory category = Constants.ItemCategory.Consumable;
 
@@ -285,6 +298,7 @@ public class ItemMenuController : MonoBehaviour
             }
             processedItemIds.Add(item.ID);                                     // このアイテムIDを処理済みとして記録
         }
+        await UniTask.DelayFrame(1);
     }
 
     /// <summary>
@@ -423,7 +437,7 @@ public class ItemMenuController : MonoBehaviour
     }
 
     /// <summary>
-    /// 詳細欄にスキルの詳細を表示する
+    /// 詳細欄にアイテムの詳細を表示する
     /// </summary>
     /// <param name="item"></param>
     private void SetItemDetailInfo(Item item)
@@ -455,23 +469,23 @@ public class ItemMenuController : MonoBehaviour
     /// <summary>
     /// スキルカテゴリ切り替え - 次ページ
     /// </summary>
-    public async void NextCategory()
+    public async UniTask NextCategory()
     {
         currentCategoryIndex = (currentCategoryIndex + 1) % categoryImages.Count;
 
         SetCategoryImage();
-        SetItems();
+        await SetItems();
     }
 
     /// <summary>
     /// スキルカテゴリ切り替え - 前ページ
     /// </summary>
-    public async void PreviousCategory()
+    public async UniTask PreviousCategory()
     {
         currentCategoryIndex = (currentCategoryIndex - 1 + categoryImages.Count) % categoryImages.Count;
 
         SetCategoryImage();
-        SetItems();
+        await SetItems();
     }
 
     /// <summary>
@@ -491,6 +505,21 @@ public class ItemMenuController : MonoBehaviour
         await UniTask.DelayFrame(1);
     }
 
+    public async UniTask FadeIn(float duration = 0.3f)
+    {
+        // ゲームオブジェクトと CanvasGroup の存在を確認
+        if (gameObject != null && gameObject.activeInHierarchy)
+        {
+            CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                // 透明度を1にアニメーション
+                await canvasGroup.DOFade(1, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
+                canvasGroup.interactable = true;
+            }
+        }
+    }
+
     public async UniTask FadeOutChildren(GameObject gameObject, float duration = 0.5f)
     {
         // ゲームオブジェクトと CanvasGroup の存在を確認
@@ -502,11 +531,6 @@ public class ItemMenuController : MonoBehaviour
                 // 透明度を0にアニメーション
                 await canvasGroup.DOFade(0, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
                 canvasGroup.interactable = false;
-            }
-            // アニメーション完了後にゲームオブジェクトを破棄
-            if (gameObject != null)
-            {
-                //Destroy(gameObject);
             }
         }
     }

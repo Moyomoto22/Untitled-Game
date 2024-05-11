@@ -21,7 +21,7 @@ public class AllyStatus : CharacterStatus
     public int CharacterID;
     //　クラス
     [SerializeField]
-    public BaseClass Class;
+    public Class Class;
     //　獲得経験値
     [SerializeField]
     public int earnedExperience;
@@ -206,66 +206,52 @@ public class AllyStatus : CharacterStatus
     /// </summary>
     /// <param name="item"></param>
     /// <param name="index">0：右手 1:左手 2:頭 3:胴 4:装飾品1 5:装飾品2</param>
-    public void Equip(Item item, int index)
+    public void Equip(Equip item, int index, bool isEquipDummy = false)
     {
-        Equip equip = item as Equip;
-
-        if (equip != null)
+        Unequip(index);
+        
+        if (item != null)
         {
-            switch (index)
+            Constants.ItemCategory category = item.itemCategory;
+            
+            switch (category)
             {
-                // 右手
-                case 0:
-                    Weapon weapon = equip as Weapon;
-                    if (weapon != null)
+                case Constants.ItemCategory.Weapon:
+                    var weapon = item as Weapon;
+                    if (index == 0)
                     {
                         rightArm = weapon;
                     }
-                    break;
-                // 左手
-                case 1:
-                    Weapon weapon2 = equip as Weapon;
-                    if (weapon2 != null)
+                    else if (index == 1)
                     {
-                        leftArm = weapon2;
+                        leftArm = weapon;
                     }
                     break;
-                // 頭
-                case 2:
-                    Head Head = equip as Head;
-                    if (Head != null)
+                case Constants.ItemCategory.Head:
+                    var h = item as Head;
+                    head = h;
+                    break;
+                case Constants.ItemCategory.Body:
+                    var b = item as Body;
+                    body = b;
+                    break;
+                case Constants.ItemCategory.Accessary:
+                    var a = item as Accessary;
+                    if (index == 4)
                     {
-                        head = Head;
+                        accessary1 = a;
+                    }
+                    else if (index == 5)
+                    {
+                        accessary2 = a;
                     }
                     break;
-                // 胴
-                case 3:
-                    Body Body = equip as Body;
-                    if (Body != null)
-                    {
-                        body = Body;
-                    }
-                    break;
-                // 装飾品1
-                case 4:
-                    Accessary Accessary1 = equip as Accessary;
-                    if (Accessary1 != null)
-                    {
-                        accessary1 = Accessary1;
-                    }
-                    break;
-                // 装飾品2
-                case 5:
-                    Accessary Accessary2 = equip as Accessary;
-                    if (Accessary2 != null)
-                    {
-                        accessary2 = Accessary2;
-                    }
-                    break;
-                default:
-                    break;
-            }
 
+            }
+            if (!isEquipDummy)
+            {
+                item.equippedAllyID = CharacterID;
+            }
             // ステータス再計算
             CalcStatus();
         }
@@ -276,40 +262,82 @@ public class AllyStatus : CharacterStatus
     /// </summary>
     /// <param name="item"></param>
     /// <param name="index">0：右手 1:左手 2:頭 3:胴 4:装飾品1 5:装飾品2</param>
-    public void Unequip(int index)
+    public void Unequip(int index, bool isEquipDummy = false)
     {
+        Item item = null;
 
         switch (index)
         {
             // 右手
             case 0:
-
-                rightArm = null;
+                if (rightArm != null)
+                {
+                    if (!isEquipDummy)
+                    {
+                        rightArm.equippedAllyID = 0;
+                    }
+                    rightArm = null;
+                }
                 break;
             // 左手
             case 1:
-                leftArm = null;
+                if (leftArm != null)
+                {
+                    if (!isEquipDummy)
+                    {
+                        leftArm.equippedAllyID = 0;
+                    }
+                    leftArm = null;
+                }
                 break;
             // 頭
             case 2:
-                head = null;
+                if (head != null)
+                {
+                    if (!isEquipDummy)
+                    {
+                        head.equippedAllyID = 0;
+                    }
+                    head = null;
+                }
                 break;
             // 胴
             case 3:
-                body = null;
+                if (body != null)
+                {
+                    if (!isEquipDummy)
+                    {
+                        body.equippedAllyID = 0;
+                    }
+                    body = null;
+                }
                 break;
             // 装飾品1
             case 4:
-                accessary1 = null;
+                if (accessary1 != null)
+                {
+                    if (!isEquipDummy)
+                    {
+                        accessary1.equippedAllyID = 0;
+                    }
+                    accessary1 = null;
+                }
                 break;
             // 装飾品2
             case 5:
-                accessary2 = null;
+                if (accessary2 != null)
+                {
+                    if (!isEquipDummy)
+                    {
+                        accessary2.equippedAllyID = 0;
+                    }
+                    accessary2 = null;
+                }
                 break;
             default:
                 break;
         }
-
+        
         // ステータス再計算
         CalcStatus();
 
@@ -433,17 +461,17 @@ public class AllyStatus : CharacterStatus
     public void CalcStatus()
     {
         // 基礎ステータス
-        int level = classLevels[Class.ID - 1] - 1;
+        //int level = classLevels[Class.ID - 1] - 1;
 
-        maxHp = Constants.hpGrow[level];
-        maxMp = Constants.mpGrow[level];
-        str = Constants.prmGrow[level];
-        vit = Constants.prmGrow[level];
-        dex = Constants.prmGrow[level];
-        agi = Constants.prmGrow[level];
-        inte = Constants.prmGrow[level];
-        mnd = Constants.prmGrow[level];
-        maxSp = Constants.spGrow[level];
+        //maxHp = Constants.hpGrow[level];
+        //maxMp = Constants.mpGrow[level];
+        //str = Constants.prmGrow[level];
+        //vit = Constants.prmGrow[level];
+        //dex = Constants.prmGrow[level];
+        //agi = Constants.prmGrow[level];
+        //inte = Constants.prmGrow[level];
+        //mnd = Constants.prmGrow[level];
+        //maxSp = Constants.spGrow[level];
 
         // クラス補正
         maxHp2 = (int)(maxHp * Class.hpRate);
@@ -512,8 +540,8 @@ public class AllyStatus : CharacterStatus
         }
 
         // サブステータス
-        pAttackLeft = pAttackCorectLeft + (leftArm?.pAttack ?? 0);
-        pAttack = pAttackCorect + (rightArm?.pAttack ?? 0) + pAttackLeft + (head?.pAttack ?? 0) + (body?.pAttack ?? 0) + (accessary1?.pAttack ?? 0) + (accessary2?.pAttack ?? 0);
+        //pAttackLeft = pAttackCorectLeft + (leftArm?.pAttack ?? 0);
+        pAttack = pAttackCorect + (rightArm?.pAttack ?? 0) + (leftArm?.pAttack ?? 0) + (head?.pAttack ?? 0) + (body?.pAttack ?? 0) + (accessary1?.pAttack ?? 0) + (accessary2?.pAttack ?? 0);
         mAttack = inte2 + (rightArm?.mAttack ?? 0) + (leftArm?.mAttack ?? 0) + (head?.mAttack ?? 0) + (body?.mAttack ?? 0) + (accessary1?.mAttack ?? 0) + (accessary2?.mAttack ?? 0);
         pDefence = vit2 + (rightArm?.pDefence ?? 0) + (leftArm?.pDefence ?? 0) + (head?.pDefence ?? 0) + (body?.pDefence ?? 0) + (accessary1?.pDefence ?? 0) + (accessary2?.pDefence ?? 0);
         mDefence = mnd2 / 2 + (rightArm?.mDefence ?? 0) + (leftArm?.mDefence ?? 0) + (head?.mDefence ?? 0) + (body?.mDefence ?? 0) + (accessary1?.mDefence ?? 0) + (accessary2?.mDefence ?? 0);
@@ -684,7 +712,7 @@ public class AllyStatus : CharacterStatus
     /// <summary>
     /// クラスチェンジ
     /// </summary>
-    public void ChangeClass(BaseClass newClass)
+    public void ChangeClass(Class newClass)
     {
         // 装備解除
         for (int i = 0; i < 6; i++)
@@ -696,7 +724,7 @@ public class AllyStatus : CharacterStatus
         // クラス変更
         Class = newClass;
         // レベル設定
-        level = classLevels[newClass.ID - 1];
+        //level = classLevels[newClass.ID - 1];
         // 画像設定
         if (CharacterID > 0)
         {
@@ -708,7 +736,7 @@ public class AllyStatus : CharacterStatus
 
     }
 
-    public List<int> ReturnStatusList(int classNo, BaseClass cl)
+    public List<int> ReturnStatusList(int classNo, Class cl)
     {
 
         int level = classLevels[classNo] - 1;

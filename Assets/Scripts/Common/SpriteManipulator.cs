@@ -78,27 +78,32 @@ public class SpriteManipulator : MonoBehaviour
         image.color = new Color(image.color.r, image.color.g, image.color.b, 0);
 
         // 透明度を0から1へ変化させる
-        await image.DOFade(0.5f, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
+        await image.DOFade(1.0f, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
 
-        //float elapsed = 0.0f;
-
-        //while (elapsed < duration)
-        //{
-        //    // 経過時間に基づいて色を補間する
-        //    float t = elapsed / duration;  // 0から1の値
-        //    Color currentColor = Color.Lerp(Color.clear, Color.white, t);
-
-        //    if (spriteRenderer != null)
-        //    {
-        //        spriteRenderer.color = currentColor;
-        //    }
-        //    else if (image != null)
-        //    {
-        //        image.color = currentColor;
-        //    }
-
-        //    await UniTask.Yield(PlayerLoopTiming.Update); // フレームの更新毎に待機
-        //    elapsed += Time.deltaTime;
-        //}
     }
+
+    public async UniTask FadeOut(float duration)
+    {
+        image = gameObject.GetComponent<Image>();
+
+        // Imageコンポーネントが存在することを確認
+        if (image == null)
+        {
+            Debug.LogError("Image component not found!");
+            return;
+        }
+
+        // 初期透明度を0に設定
+        image.color = new Color(image.color.r, image.color.g, image.color.b, 1);
+
+        // 透明度を0から1へ変化させる
+        await image.DOFade(0f, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
+
+    }
+
+    public async UniTask AnimateColor(Color targetColor, float duration = 0.3f)
+    {
+        await image.DOColor(targetColor, duration);
+    }
+
 }

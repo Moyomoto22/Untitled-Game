@@ -1,3 +1,54 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4b6e46990820d509daa6573c7ec636663677892445c6554b3df8cabeb814eace
-size 1292
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96223e0ec52a2ef499d2e766f1d2949b, type: 3}
+  m_Name: "20800_\u30AA\u30FC\u30AF\u30B9\u30BF\u30C3\u30D5"
+  m_EditorClassIdentifier: 
+  ID: 20800
+  itemCategory: 2
+  itemName: "\u30AA\u30FC\u30AF\u30B9\u30BF\u30C3\u30D5"
+  usable: 0
+  sellable: 1
+  description: "\u7269\u7406\u653B\u6483\u529B +10\u3000\u9B54\u6CD5\u653B\u6483\u529B
+    +8"
+  value: 0
+  rarity: 0
+  iconImage: {fileID: 21300000, guid: 4bfcf94d4bb5f214fae57c91bc0a5cab, type: 3}
+  equippedAllyID: 0
+  target: 0
+  isTargetAll: 0
+  effects: 
+  baseValue: 0
+  User: {fileID: 0}
+  Objective: {fileID: 0}
+  pAttack: 10
+  mAttack: 8
+  pDefence: 0
+  mDefence: 0
+  maxHp: 0
+  maxMp: 0
+  str: 0
+  vit: 0
+  dex: 0
+  agi: 0
+  inte: 0
+  mnd: 0
+  equipableClasses:
+  - {fileID: 11400000, guid: 1883cbc5b14817e4eb9b2a7a96d28e67, type: 2}
+  - {fileID: 11400000, guid: b7fd8b002a6450f4bbb493c2f19ab7c6, type: 2}
+  - {fileID: 11400000, guid: eb898587e05f2ea4dac0220a1c43292d, type: 2}
+  - {fileID: 11400000, guid: 9a41a31870aff2b4e94c8c0661267cde, type: 2}
+  weaponCategory: 8
+  attributes: []
+  dependentStatus: 0
+  isTwoHanded: 1
+  times: 1
+  attackEffects: 

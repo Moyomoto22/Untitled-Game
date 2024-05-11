@@ -251,10 +251,10 @@ public class Effect : MonoBehaviour
         {
             var baseAmount = item.baseValue;           // Šî’ê‰ñ•œ—Ê
             damageStrings.Add(baseAmount.ToString());
-            await objective.HealHP(baseAmount);
-
             ItemInventory2.Instance.RemoveItem(item);
-            await ShowHealEffects(objective, healHPTextColor);
+            await UniTask.WhenAll(
+                objective.HealHP(baseAmount),
+                ShowHealEffects(objective, healHPTextColor));
             return true;
         }
         else
@@ -276,9 +276,11 @@ public class Effect : MonoBehaviour
         {
             var baseAmount = item.baseValue;            // Šî’ê‰ñ•œ—Ê
             damageStrings.Add(baseAmount.ToString());
-            await objective.HealMP(baseAmount);
             ItemInventory2.Instance.RemoveItem(item);
-            await ShowHealEffects(objective, healMPTextColor);
+            await UniTask.WhenAll(
+                objective.HealMP(baseAmount),
+                ShowHealEffects(objective, healMPTextColor)
+                );
             return true;
         }
         else

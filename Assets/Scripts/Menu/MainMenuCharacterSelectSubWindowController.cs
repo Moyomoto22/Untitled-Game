@@ -43,6 +43,9 @@ public class MainMenuCharacterSelectSubWindowController : MonoBehaviour
             case 1:
                 await mainMenuController.GoToEquipMenu(index);
                 break;
+            case 3:
+                await mainMenuController.GoToClassMenu(index);
+                break;
             default:
                 return;
         }

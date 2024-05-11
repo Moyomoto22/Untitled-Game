@@ -1,378 +1,470 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class ClassMenuController : MonoBehaviour
 {
+    public GameObject mainMenu;
+    public MainMenuController mainMenuController;
 
-    private int showingCharacterID = 4;
+    private List<string> characterNames = new List<string>() { "アレックス", "ニコ", "タバサ", "アリシア" };
+    public int currentCharacterIndex = 0;
 
-    string path = "Assets/Data/Item/ItemInventory.prefab";
-
-    public GameObject MainScreen;
-    public GameObject ClassScreen;
-
-    public GameObject gradation;
-
-    // キャラクターステータス
-    private AllyStatus allyStatus;
-
-    #region SerializeField
-    // キャラクター画像
-    [SerializeField]
-    private GameObject characterImage;
-    
-    [SerializeField]
-    private GameObject characterName;
-    [SerializeField]
-    private GameObject classAbbreviation;
-    [SerializeField]
-    private GameObject characterLevel;
-    [SerializeField]
-    private GameObject classNames;
-    [SerializeField]
-    private GameObject selectedClassName;
-    [SerializeField]
-    private GameObject selectedClassLevel;
-    [SerializeField]
-    private GameObject exp;
-    [SerializeField]
-    private GameObject nextExp;
-    [SerializeField]
-    private GameObject classDescription;
-    [SerializeField]
-    private GameObject statusRank;
-    [SerializeField]
-    private GameObject weaponIcons;
-    [SerializeField]
-    private GameObject exSkillName;
-    [SerializeField]
-    private GameObject exSkillDescription;
-    [SerializeField]
-    private GameObject nextSkillLevel;
-    [SerializeField]
-    private GameObject nextSkillIcon;
-    [SerializeField]
-    private GameObject nextSkillName;
-    [SerializeField]
-    private GameObject nextSkillLevelTwo;
-    [SerializeField]
-    private GameObject nextSkillIconTwo;
-    [SerializeField]
-    private GameObject nextSkillNameTwo;
-    [SerializeField]
-    private List<GameObject> statuses;
-    [SerializeField]
-    private List<GameObject> statusesTwo;
-
-    [SerializeField]
     public EventSystem eventSystem;
+    public PlayerInput playerInput;
 
-    [SerializeField]
-    private List<BaseClass> classes;
+    private List<Class> classes;
 
-    [SerializeField]
-    private InputAction inputActions;
-    #endregion
+    public Image gradation;
+    public Image nameBackGradation;
+
+    public Image characterImage;
+    public TextMeshProUGUI characterClass;
+    public TextMeshProUGUI characterLevel;
+
+    public TextMeshProUGUI currentCharacterName;
+    public TextMeshProUGUI nextCharacterName;
+    public TextMeshProUGUI previousCharacterName;
+
+    public GameObject classList;
+    private int currentClassIndex = 0;
+    private Class currentClass;
+
+    public TextMeshProUGUI className;
+    public TextMeshProUGUI classLevel;
+    public TextMeshProUGUI currentExp;
+    public TextMeshProUGUI nextExp;
+    public TextMeshProUGUI description;
+    public TextMeshProUGUI hpRank;
+    public TextMeshProUGUI mpRank;
+    public TextMeshProUGUI strRank;
+    public TextMeshProUGUI vitRank;
+    public TextMeshProUGUI dexRank;
+    public TextMeshProUGUI agiRank;
+    public TextMeshProUGUI intRank;
+    public TextMeshProUGUI mndRank;
+
+    public Image sword;
+    public Image blade;
+    public Image dagger;
+    public Image spear;
+    public Image ax;
+    public Image hammer;
+    public Image fist;
+    public Image bow;
+    public Image staff;
+    public Image shield;
+
+    public Image exSkillIcon;
+    public TextMeshProUGUI exSkillName;
+    public TextMeshProUGUI exSkillDescription;
+    public Image nextSkillIcon;
+    public TextMeshProUGUI nextSkillName;
+    public Image nextNextSkillIcon;
+    public TextMeshProUGUI nextNextSkillName;
+    public TextMeshProUGUI nextLevel;
+    public TextMeshProUGUI nextNextLevel;
+
+    public TextMeshProUGUI MH;
+    public TextMeshProUGUI MM;
+    public TextMeshProUGUI ST;
+    public TextMeshProUGUI VI;
+    public TextMeshProUGUI DE;
+    public TextMeshProUGUI AG;
+    public TextMeshProUGUI IT;
+    public TextMeshProUGUI MN;
+    public TextMeshProUGUI MS;
+
+    public TextMeshProUGUI mh;
+    public TextMeshProUGUI mm;
+    public TextMeshProUGUI st;
+    public TextMeshProUGUI vi;
+    public TextMeshProUGUI de;
+    public TextMeshProUGUI ag;
+    public TextMeshProUGUI it;
+    public TextMeshProUGUI mn;
+    public TextMeshProUGUI ms;
 
     private GameObject lastSelectedButton;
     private int lastSelectButtonIndex = 0;
 
-    public GameObject inputActionParent;
 
-    public Sprite buttonImageOff;
-    public Sprite buttonImageOn;
-
-    public GameObject subWindowHPMP;
-
-    private ItemInventory itemInventory;
-
-    private string selectedItemID;
-    private ItemDatabase itemDatabase;
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        //CommonController.LearnAllSkills(allyStatus);
+        
     }
 
-    // Update is called once per frame
-    void Update()
+    private async void OnEnable()
     {
-        // EventSystemの現在選択されているGameObjectを取得
-        GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
-
-        // 選択されたオブジェクトが変更された場合
-        if (selectedButton != lastSelectedButton)
-        {
-            lastSelectedButton = selectedButton;
-            lastSelectButtonIndex = selectedButton.transform.GetSiblingIndex();
-            // 選択されたオブジェクトがButtonであるか確認
-            Button button = selectedButton?.GetComponent<Button>();
-            if (button != null)
-            {
-                // クラス詳細を表示
-                InithializeClassDetail();
-            }
-        }
+        classes = ClassManager.Instance.AllClasses;
+        await Initialize();
     }
 
-    async void OnEnable()
+    private void OnDisable()
     {
-        allyStatus = await CommonController.GetAllyStatus(showingCharacterID);
-
-
-        // スキルメニュー用のアクションマップを有効化
-        CommonController.EnableInputActionMap(inputActionParent, "ClassMenu");
-
-        // 画面初期化
-        await InitializeClassMenu();
-
-        lastSelectButtonIndex = 0;
+        RemoveInputActions();
     }
 
     /// <summary>
     /// クラス画面初期化
     /// </summary>
-    public async Task InitializeClassMenu()
+    public async UniTask Initialize()
     {
-        string color = Constants.gradationBlue;
-        string strColor = Constants.blue;
+        eventSystem = FindObjectOfType<EventSystem>();
+        playerInput = FindObjectOfType<PlayerInput>();
+        var index = GetCharacterClassIndex();
+        currentClassIndex = index;
 
-        switch (showingCharacterID)
-        {
-            case 1:
-                color = Constants.gradationBlue;
-                strColor = Constants.blue;
-                break;
-            case 2:
-                color = Constants.gradationRed;
-                strColor = Constants.red;
-                break;
-            case 3:
-                color = Constants.gradationPurple;
-                strColor = Constants.purple;
-                break;
-            case 4:
-                color = Constants.gradationGreen;
-                strColor = Constants.green;
-                break;
-            default:
-                color = Constants.gradationBlue;
-                break;
-        }
+        SetCharacterInfo();     // キャラクター情報設定
+        UpdateCharacterName();  // 左上キャラクター名初期化
+        InitializeClassList(); // クラス選択欄初期化
+        SetClassDetail(); // クラス詳細初期化
+        CompareStatus();  // ステータス比較表示
 
-        gradation.GetComponent<Image>().color = CommonController.GetColor(color);
-        allyStatus = await CommonController.GetAllyStatus(showingCharacterID);
+        SetInputActions();      // InputAction設定
 
-        characterName.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.characterName;
-        characterLevel.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.level.ToString();
-        classAbbreviation.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.Class.classAbbreviation;
+        setButtonFillAmount(classList, index);
+        SelectButton(classList, index); // 装備部位選択欄を選択
 
-        List<GameObject> icons = CommonController.GetChildrenGameObjects(weaponIcons);
-
-        List<GameObject> Buttons = CommonController.GetChildrenGameObjects(classNames);
-
-        for (int i = 0; i < Buttons.Count; i++)
-        {
-            Transform textTransform = Buttons[i].transform.GetChild(0);
-            Transform equipMarkTransform = Buttons[i].transform.GetChild(1);
-
-            equipMarkTransform.GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(strColor);
-
-            if (textTransform != null && equipMarkTransform != null)
-            {
-                if (allyStatus.Class.ID - 1 != i)
-                {
-                    //Buttons[i].GetComponent<Button>().interactable = true;
-                    textTransform.GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-                    equipMarkTransform.gameObject.SetActive(false);
-                }
-                else
-                {
-                    //Buttons[i].GetComponent<Button>().interactable = false;
-                    textTransform.GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.gray);
-                    equipMarkTransform.gameObject.SetActive(true);
-                }
-            }
-        }
-
-        SelectTargetIndexItem(classNames, allyStatus.Class.ID - 1);
-
-        InithializeClassDetail();
-
-        //await InitializeClassList(allyStatus);
+        await FadeIn();          // 画面フェードイン 
     }
 
-    public void InithializeClassDetail()
+    private int GetCharacterClassIndex()
     {
-        BaseClass selectedClass = classes[lastSelectButtonIndex];
-        int nextLevel = allyStatus.classLevels[lastSelectButtonIndex] + 1;
-        int nextNextLevel = allyStatus.classLevels[lastSelectButtonIndex] + 2;
+        var ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+        var cl = ch.Class;
 
-        characterImage.GetComponent<Image>().sprite = selectedClass.imagesA[showingCharacterID - 1];
+        var index = classes.IndexOf(cl);
 
-        selectedClassName.GetComponentInChildren<TextMeshProUGUI>().text = selectedClass.className;
-        classDescription.GetComponentInChildren<TextMeshProUGUI>().text = selectedClass.description;
-        selectedClassLevel.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.classLevels[lastSelectButtonIndex].ToString();
-        exp.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.classEarnedExps[lastSelectButtonIndex].ToString();
-        nextExp.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.classNextExps[lastSelectButtonIndex].ToString();
-        exSkillName.GetComponentInChildren<TextMeshProUGUI>().text = selectedClass.exSkill.skillName;
-        exSkillDescription.GetComponentInChildren<TextMeshProUGUI>().text = selectedClass.exSkill.description;
+        if (index > 0)
+        {
+            return index;
+        }
+        else
+        {
+            return 0;
+        }
+    }
 
-        nextSkillLevel.GetComponentInChildren<TextMeshProUGUI>().text = "-";
-        nextSkillIcon.GetComponent<Image>().sprite = null;
-        nextSkillName.GetComponentInChildren<TextMeshProUGUI>().text = "-";
-        nextSkillLevelTwo.GetComponentInChildren<TextMeshProUGUI>().text = "-";
-        nextSkillIconTwo.GetComponent<Image>().sprite = null;
-        nextSkillNameTwo.GetComponentInChildren<TextMeshProUGUI>().text = "-";
+    private void SetInputActions()
+    {
+        if (playerInput != null)
+        {
+            // InputActionAssetを取得
+            var inputActionAsset = playerInput.actions;
 
-        if (nextLevel <= 30)
-        {
-            Skill nextSkill = selectedClass.LearnSkills[nextLevel - 1];
+            // "Main"アクションマップを取得
+            var actionMap = inputActionAsset.FindActionMap("Menu");
+            // アクションを取得
+            var rt = actionMap.FindAction("RightTrigger");
+            var lt = actionMap.FindAction("LeftTrigger");
+            var cancel = actionMap.FindAction("Cancel");
 
-            nextSkillLevel.GetComponentInChildren<TextMeshProUGUI>().text = "Lv " + nextLevel.ToString();
-            nextSkillIcon.GetComponent<Image>().sprite = nextSkill.icon;
-            nextSkillName.GetComponentInChildren<TextMeshProUGUI>().text = nextSkill.skillName;
-        }
-        if (nextNextLevel <= 30)
-        {
-            Skill nextSkill = selectedClass.LearnSkills[nextNextLevel - 1];
+            // Always remove listeners first to prevent duplication
+            cancel.performed -= OnPressCancelButton;
+            rt.performed -= OnPressRTButton;
+            lt.performed -= OnPressLTButton;
 
-            nextSkillLevelTwo.GetComponentInChildren<TextMeshProUGUI>().text = "Lv " + nextNextLevel.ToString();
-            nextSkillIconTwo.GetComponent<Image>().sprite = nextSkill.icon;
-            nextSkillNameTwo.GetComponentInChildren<TextMeshProUGUI>().text = nextSkill.skillName;
-        }
+            // イベントリスナーを設定
+            cancel.performed += OnPressCancelButton;
+            rt.performed += OnPressRTButton;
+            lt.performed += OnPressLTButton;
 
-        List<GameObject> ranks = CommonController.GetChildrenGameObjects(statusRank);
+            // アクションマップを有効にする
+            actionMap.Enable();
 
-        for (int i = 0; i < ranks.Count; i++)
-        {
-            ranks[i].GetComponent<TextMeshProUGUI>().text = selectedClass.statusRank[i];
+            Debug.Log("SetInpuActions has done.");
         }
+    }
 
-        List<GameObject> icons = CommonController.GetChildrenGameObjects(weaponIcons);
+    void RemoveInputActions()
+    {
+        // イベントリスナーを解除
+        if (playerInput != null)
+        {
+            // InputActionAssetを取得
+            var inputActionAsset = playerInput.actions;
+            // "Main"アクションマップを取得
+            var actionMap = inputActionAsset.FindActionMap("Menu");
+            // アクションを取得
+            var rt = actionMap.FindAction("RightTrigger");
+            var lt = actionMap.FindAction("LeftTrigger");
+            var cancel = actionMap.FindAction("Cancel");
 
-        foreach (GameObject icon in icons)
-        {
-            icon.GetComponent<Image>().color = CommonController.GetColor(Constants.gray);
+            cancel.performed -= OnPressCancelButton;
+            rt.performed -= OnPressRTButton;
+            lt.performed -= OnPressLTButton;
         }
+    }
 
-        #region 武器アイコン色変更
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Sword)))
+    private void InitializeClassList()
+    {
+        var index = GetCharacterClassIndex();
+        int numberOfChildren = classList.transform.childCount;
+
+        for (int i = 0; i < numberOfChildren - 1; i++)
         {
-            icons[0].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
+            Color color = i == index ? CommonController.GetColor(Constants.darkGray) : Color.white;
+            classList.transform.GetChild(i).GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().color = color;
         }
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Blade)))
-        {
-            icons[1].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
-        }
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Dagger)))
-        {
-            icons[2].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
-        }
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Spear)))
-        {
-            icons[3].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
-        }
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Ax)))
-        {
-            icons[4].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
-        }
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Hammer)))
-        {
-            icons[5].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
-        }
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Fist)))
-        {
-            icons[6].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
-        }
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Bow)))
-        {
-            icons[7].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
-        }
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Staff)))
-        {
-            icons[8].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
-        }
-        if (selectedClass.equippableWeapons.Exists(x => x.Equals(Constants.WeaponCategory.Shield)))
-        {
-            icons[9].GetComponent<Image>().color = CommonController.GetColor(Constants.white);
-        }
+    }
+
+    private void SetCharacterInfo()
+    {
+        var i = currentCharacterIndex;
+        var ch = PartyMembers.Instance.GetAllyByIndex(i);
+        var color = CommonController.GetCharacterColorByIndex(i);
+        var index = GetCharacterClassIndex();
+
+        //await manip.FadeOut(0.1f);
+        characterImage.sprite = classes[currentClassIndex].imagesA[i];
+        //await manip.FadeIn(0.1f);
+        
+        gradation.color = color;
+        nameBackGradation.color = color;
+        characterClass.text = ch.Class.classAbbreviation;
+        characterLevel.text = ch.level.ToString();
+
+        #region ステータス欄
+        MH.text = ch.maxHp2.ToString();
+        MM.text = ch.maxMp2.ToString();
+        ST.text = ch.str2.ToString();
+        VI.text = ch.vit2.ToString();
+        DE.text = ch.dex2.ToString();
+        AG.text = ch.agi2.ToString();
+        IT.text = ch.inte2.ToString();
+        MN.text = ch.mnd2.ToString();
         #endregion
+    }
 
-        InithializeStatusList(selectedClass);
+    /// <summary>
+    /// 装備前後のステータスを比較してステータス欄に表示する
+    /// </summary>
+    /// <param name=""></param>
+    private void CompareStatus()
+    {
+        AllyStatus ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+        AllyStatus dummy = PartyMembers.Instance.CopyAllyStatus(ch);
+        Class cl = ClassManager.Instance.GetClassByIndex(currentClassIndex);
+
+        dummy.ChangeClass(cl);
+
+        var pA = dummy.pAttack - ch.pAttack;
+        var mA = dummy.mAttack - ch.mAttack;
+        var pD = dummy.pDefence - ch.pDefence;
+        var mD = dummy.mDefence - ch.mDefence;
+        var mH = dummy.maxHp2 - ch.maxHp2;
+        var mM = dummy.maxMp2 - ch.maxMp2;
+        var sT = dummy.str2 - ch.str2;
+        var vI = dummy.vit2 - ch.vit2;
+        var dE = dummy.dex2 - ch.dex2;
+        var aG = dummy.agi2 - ch.agi2;
+        var iT = dummy.inte2 - ch.inte2;
+        var mN = dummy.mnd2 - ch.mnd2;
+
+        SetCompareTextStyle(MH, dummy.maxHp2, mh, mH);
+        SetCompareTextStyle(MM, dummy.maxMp2, mm, mM);
+        SetCompareTextStyle(ST, dummy.str2, st, sT);
+        SetCompareTextStyle(VI, dummy.vit2, vi, vI);
+        SetCompareTextStyle(DE, dummy.dex2, de, dE);
+        SetCompareTextStyle(AG, dummy.agi2, ag, aG);
+        SetCompareTextStyle(IT, dummy.inte2, it, iT);
+        SetCompareTextStyle(MN, dummy.mnd2, mn, mN);
+    }
+
+    /// <summary>
+    /// ステータス欄の比較テキストのスタイルを設定する
+    /// </summary>
+    /// <param name="t">比較後テキスト</param>
+    /// <param name="n">比較後数値</param>
+    /// <param name="text">補正値テキスト</param>
+    /// <param name="number">補正値</param>
+    private void SetCompareTextStyle(TextMeshProUGUI t, int n, TextMeshProUGUI text, int number)
+    {
+        t.text = n.ToString();
+        
+        if (number > 0)
+        {
+            t.color = CommonController.GetColor(Constants.blue);
+            text.text = "+ " + number.ToString();
+            text.color = CommonController.GetColor(Constants.blue);        
+        }
+        else if (number == 0)
+        {
+            t.color = Color.white;
+            text.text = "";
+        }
+        else if (number < 0)
+        {
+            t.color = CommonController.GetColor(Constants.red);
+            text.color = CommonController.GetColor(Constants.red);
+            text.text = number.ToString();
+        }
+    }
+
+    private void SetClassDetail()
+    {
+        var ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+        var cl = ClassManager.Instance.GetClassByIndex(currentClassIndex);
+        
+        var lv = ch.classLevels[currentClassIndex];
+        var next = ch.classNextExps[currentClassIndex];
+        var earned = ch.classEarnedExps[currentClassIndex];
+
+        className.text = cl.className;
+        classLevel.text = lv.ToString();
+        currentExp.text = earned.ToString();
+        nextExp.text = next.ToString();
+
+        description.text = cl.description;
+
+        hpRank.text = cl.statusRank[0];
+        mpRank.text = cl.statusRank[1];
+        strRank.text = cl.statusRank[2];
+        vitRank.text = cl.statusRank[3];
+        dexRank.text = cl.statusRank[4];
+        agiRank.text = cl.statusRank[5];
+        intRank.text = cl.statusRank[6];
+        mndRank.text = cl.statusRank[7];
+
+        Color darkGray = CommonController.GetColor(Constants.darkGray);
+
+        sword.color = darkGray;
+        blade.color = darkGray;
+        spear.color = darkGray;
+        ax.color = darkGray;
+        hammer.color = darkGray;
+        fist.color = darkGray;
+        bow.color = darkGray;
+        staff.color = darkGray;
+        shield.color = darkGray;
+
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Sword))
+        {
+            sword.color = Color.white;
+        }
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Blade))
+        {
+            blade.color = Color.white;
+        }
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Dagger))
+        {
+            dagger.color = Color.white;
+        }
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Spear))
+        {
+            spear.color = Color.white;
+        }
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Ax))
+        {
+            ax.color = Color.white;
+        }
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Hammer))
+        {
+            hammer.color = Color.white;
+        }
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Fist))
+        {
+            fist.color = Color.white;
+        }
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Bow))
+        {
+            bow.color = Color.white;
+        }
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Staff))
+        {
+            staff.color = Color.white;
+        }
+        if (cl.equippableWeapons.Contains(Constants.WeaponCategory.Shield))
+        {
+            shield.color = Color.white;
+        }
+
+        exSkillIcon.sprite = cl.exSkill.icon;
+        exSkillName.text = cl.exSkill.skillName;
+        exSkillDescription.text = cl.exSkill.description;
+
+        Skill nextSkill = null;
+        Skill nextNextSkill = null;
+
+        var nextLv = ch.classLevels[currentCharacterIndex] + 1;
+        var nextNextLv = ch.classLevels[currentCharacterIndex] + 2;
+        
+        if (cl.LearnSkills.Count >= nextLv - 1)
+        {
+            nextSkill = cl.LearnSkills[nextLv - 1];
+        }
+        if (cl.LearnSkills.Count >= nextNextLv - 1)
+        {
+            nextNextSkill = cl.LearnSkills[nextNextLv - 1];
+        }
+
+        if (nextSkill != null)
+        {
+            nextLevel.text = nextLv.ToString();
+            nextSkillIcon.enabled = true;
+            nextSkillIcon.sprite = nextSkill.icon;
+            nextSkillName.text = nextSkill.skillName;
+        }
+        else
+        {
+            nextLevel.text = nextLv.ToString();
+            nextSkillIcon.enabled = false;
+            nextSkillName.text = "-";
+        }
+        if (nextNextSkill != null)
+        {
+            nextNextLevel.text = nextNextLv.ToString();
+            nextNextSkillIcon.enabled = true;
+            nextNextSkillIcon.sprite = nextNextSkill.icon;
+            nextNextSkillName.text = nextNextSkill.skillName;
+        }
+        else
+        {
+            nextNextLevel.text = "-";
+            nextNextSkillIcon.enabled = false;
+            nextNextSkillName.text = "-";
+        }
 
     }
 
-    public void InithializeStatusList(BaseClass selectedClass)
+    public void OnSelectClassButtons(int index)
     {
-        List<int> statusOne = new List<int> { allyStatus.maxHp2, allyStatus.maxMp2, allyStatus.str2, allyStatus.vit2, allyStatus.dex2, allyStatus.agi2, allyStatus.inte2, allyStatus.mnd2,
-                                           allyStatus.pAttack, allyStatus.mAttack, allyStatus.pDefence, allyStatus.mDefence, allyStatus.pCrit, allyStatus.mCrit, allyStatus.pAvo, allyStatus.mAvo, allyStatus.maxSp };
+        currentClassIndex = index;
 
-        string str = "0";
-
-        List<int> statusTwo = allyStatus.ReturnStatusList(lastSelectButtonIndex, selectedClass);
-
-        List<int> statusThree = new List<int>();
-
-        for (int i = 0; i < 17; i++)
-        {
-            string color = Constants.white;
-            int correction = statusTwo[i] - statusOne[i];
-
-            statuses[i].GetComponentInChildren<TextMeshProUGUI>().text = statusTwo[i].ToString();
-            if (selectedClass != allyStatus.Class)
-            {
-                if (correction > 0)
-                {
-                    color = Constants.blue;
-                    str = "+" + correction.ToString();
-                }
-                else if (correction < 0)
-                {
-                    color = Constants.red;
-                    str = correction.ToString();
-                }
-                else
-                {
-                    str = "+" + correction.ToString();
-                }
-            }
-            else
-            {
-                str = "+0";
-            }
-
-            statusesTwo[i].GetComponentInChildren<TextMeshProUGUI>().text = str;
-            statuses[i].GetComponentInChildren<TextMeshProUGUI>().color = CommonController.GetColor(color);
-            statusesTwo[i].GetComponentInChildren<TextMeshProUGUI>().color = CommonController.GetColor(color);
-
-        }
-
+        SetClassDetail();    
+        
+        SetCharacterInfo();
+        CompareStatus();
     }
 
     /// <summary>
     /// クラスボタン押下時
     /// </summary>
     /// <param name="skill"></param>
-    public async void OnPressClassButton(BaseClass selectedClass)
+    public async void OnPressClassButton(int index)
     {
-        // カーソル位置を記憶するため、選択中の行のインデックスを保存
-        //Transform transform = EventSystem.current.currentSelectedGameObject.transform;
-        //lastSelectButtonIndex = transform.parent.transform.GetSiblingIndex();
+        Class cl = ClassManager.Instance.GetClassByIndex(index);
+        int currentCharacterClassIndex = GetCharacterClassIndex();
+        if (index != currentCharacterClassIndex)
+        {
+            AllyStatus ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+            ch.ChangeClass(cl);
 
-        allyStatus.ChangeClass(selectedClass);
-
-        await InitializeClassMenu();
+            await Initialize();
+        }
+        else
+        {
+            return;
+        }
     }
 
     /// <summary>
@@ -380,16 +472,13 @@ public class ClassMenuController : MonoBehaviour
     /// </summary>
     public async void OnPressCancelButton(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && gameObject.activeSelf == true)
         {
-            if (CommonVariableManager.ShowingMenuState == Constants.MenuState.Class)
-            {
-                // メイン画面に戻る
-                ClassScreen.SetActive(false);
-
-                CommonVariableManager.ShowingMenuState = Constants.MenuState.Main;
-                MainScreen.SetActive(true);
-            }
+            // クラスメニューのフェードアウト
+            await FadeOutChildren(gameObject, 0.3f);
+            // クラスメニューインスタンスの破棄
+            gameObject.SetActive(false);
+            await mainMenuController.InitializeFromChildren("Class");
         }
     }
 
@@ -397,19 +486,16 @@ public class ClassMenuController : MonoBehaviour
     /// R2(ZR・RT)ボタン押下 キャラクター切り替え
     /// </summary>
     /// <param name="context"></param>
-    public async void OnPressRightTriggerButton(InputAction.CallbackContext context)
+    public async void OnPressRTButton(InputAction.CallbackContext context)
     {
-        if (CommonVariableManager.ShowingMenuState == Constants.MenuState.Class)
+        if (context.performed)
         {
-            if (context.performed)
-            {
-                showingCharacterID = showingCharacterID + 1;
-                if (showingCharacterID > 4)
-                {
-                    showingCharacterID = 1;
-                }
-                await InitializeClassMenu();
-            }
+            Debug.Log("RTButton pressed.");
+            
+            currentCharacterIndex = (currentCharacterIndex + 1) % characterNames.Count;
+            UpdateCharacterName();
+
+            await ChangeCharacter();
         }
     }
 
@@ -417,75 +503,118 @@ public class ClassMenuController : MonoBehaviour
     /// L2(ZL・LT)ボタン押下 キャラクター切り替え
     /// </summary>
     /// <param name="context"></param>
-    public async void OnPressLeftTriggerButton(InputAction.CallbackContext context)
+    public async void OnPressLTButton(InputAction.CallbackContext context)
     {
-        if (CommonVariableManager.ShowingMenuState == Constants.MenuState.Class)
+        if (context.performed)
         {
-            if (context.performed)
-            {
-                showingCharacterID = showingCharacterID - 1;
-                if (showingCharacterID < 1)
-                {
-                    showingCharacterID = 4;
-                }
-                await InitializeClassMenu();
-            }
+            Debug.Log("LTButton pressed.");
+
+            currentCharacterIndex = (currentCharacterIndex - 1 + characterNames.Count) % characterNames.Count;
+            UpdateCharacterName();
+
+            await ChangeCharacter();
         }
     }
 
     /// <summary>
-    /// オブジェクト配下の指定の順序のボタンを選択する
+    /// キャラクター切り替え
     /// </summary>
-    public void SelectTargetIndexItem(GameObject target, int index = 0)
+    private void UpdateCharacterName()
     {
-        if (target != null)
+        currentCharacterName.text = characterNames[currentCharacterIndex];
+        nextCharacterName.text = characterNames[(currentCharacterIndex + 1) % characterNames.Count];
+        previousCharacterName.text = characterNames[(currentCharacterIndex - 1 + characterNames.Count) % characterNames.Count];
+
+        //ClearSkillDetailInfo();
+    }
+
+    private async UniTask ChangeCharacter()
+    {
+        SetCharacterInfo();
+        InitializeClassList();
+
+        Color color = CommonController.GetCharacterColorByIndex(currentCharacterIndex);
+
+        var index = GetCharacterClassIndex();
+
+        //// 一番上のボタンを選択
+        SelectButton(classList, index);
+        setButtonFillAmount(classList, index);
+
+        //Init();
+
+        float duration = 0.2f;
+        await UniTask.WhenAll(
+            characterImage.gameObject.GetComponent<SpriteManipulator>().FadeOut(duration),
+            characterImage.gameObject.GetComponent<SpriteManipulator>().FadeIn(duration),
+            gradation.gameObject.GetComponent<SpriteManipulator>().AnimateColor(color, duration * 2),
+            nameBackGradation.gameObject.GetComponent<SpriteManipulator>().AnimateColor(color, duration * 2)
+            );
+    }
+
+    /// <summary>
+    /// ボタンを選択状態にする
+    /// </summary>
+    /// <param name="number"></param>
+    public void SelectButton(GameObject obj, int number = 0)
+    {
+        if (eventSystem != null && obj.transform.childCount > 0)
         {
-            if (index > target.transform.childCount - 1)
-            {
-                index = 0;
-            }
-
-            Transform targetItemTF = target.transform.GetChild(index);
-
-            if (targetItemTF != null)
-            {
-                //Transform firstItemButton = targetItemTF.Find("Button");
-
-                //if (firstItemButton != null)
-                //{
-                GameObject gameObject = targetItemTF.gameObject;
-                Button button = gameObject.GetComponent<Button>();
-                eventSystem.SetSelectedGameObject(gameObject);
-                //}
-                //SetItemInformation(targetItemTF);
-            }
+            var buttonToSelect = obj.transform.GetChild(number).gameObject;
+            eventSystem.SetSelectedGameObject(buttonToSelect);
         }
     }
 
     /// <summary>
-    /// オブジェクト配下の全てのボタンのInteractableを切り替える
+    /// ボタンのFillAmountを操作する
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="toggle"></param>
-    private void ToggleInteractableButtonsInChildren(Transform parent, bool toggle)
+    /// <param name="number">対象ボタンのコマンド内でのインデックス</param>
+    public void setButtonFillAmount(GameObject obj, int number)
     {
-        // 子オブジェクトの数を取得
-        int childCount = parent.childCount;
+        int numberOfChildren = obj.transform.childCount;
 
-        // 子オブジェクトを順番にチェックしてButtonコンポーネントを持つか確認
-        for (int i = 0; i < childCount; i++)
+        // 対象インデックスに該当するボタンのみFillAmountを1にし、それ以外は0にする
+        for (int i = 0; i < numberOfChildren; i++)
         {
-            Transform child = parent.GetChild(i);
+            int fillAmount = i == number ? 1 : 0;
+            Transform child = obj.transform.GetChild(i);
+            Image buttonImage = child.GetComponentInChildren<Image>();
+            buttonImage.fillAmount = fillAmount;
+        }
+    }
 
-            // Buttonコンポーネントを持つ場合、Interactableを変更する
-            Button buttonComponent = child.GetComponent<Button>();
-            if (buttonComponent != null)
+    public async UniTask FadeIn(float duration = 0.3f)
+    {
+        // ゲームオブジェクトと CanvasGroup の存在を確認
+        if (gameObject != null && gameObject.activeInHierarchy)
+        {
+            CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
             {
-                buttonComponent.interactable = toggle;
+                // 透明度を1にアニメーション
+                await canvasGroup.DOFade(1, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
+                canvasGroup.interactable = true;
             }
+        }
+    }
 
-            // 再帰的に子オブジェクトの子オブジェクトを検索する
-            ToggleInteractableButtonsInChildren(child, toggle);
+    public async UniTask FadeOutChildren(GameObject gameObject, float duration = 0.3f)
+    {
+        // ゲームオブジェクトと CanvasGroup の存在を確認
+        if (gameObject != null && gameObject.activeInHierarchy)
+        {
+            CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                // 透明度を0にアニメーション
+                await canvasGroup.DOFade(0, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
+                canvasGroup.interactable = false;
+            }
+            // アニメーション完了後にゲームオブジェクトを破棄
+            if (gameObject != null)
+            {
+                //Destroy(gameObject);
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ public class MagicMiracle : Skill
     public double castTime;
     // 使用可能クラス
     [SerializeField]
-    public List<BaseClass> usableClasses;
+    public List<Class> usableClasses;
 
     public override bool CanUse(CharacterStatus user)
     {

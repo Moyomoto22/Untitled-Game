@@ -31,6 +31,12 @@ public class MainMenuController : MonoBehaviour
     public GameObject equipMenuObject;
     public GameObject equipMenuInstance;
 
+    public GameObject skillMenuObject;
+    public GameObject skillMenuInstance;
+
+    public GameObject classMenuObject;
+    public GameObject classMenuInstance;
+
     public GameObject equip;
     public GameObject skill;
     public GameObject Class;
@@ -91,6 +97,7 @@ public class MainMenuController : MonoBehaviour
 
     async void OnEnable()
     {
+        EnableInputActionMap("Menu", "Main");
     }
 
     private async UniTaskVoid Awake()
@@ -99,22 +106,10 @@ public class MainMenuController : MonoBehaviour
         await Initialize();
     }
 
-    void OnDestroy()
+    void OnDisable()
     {
-        // イベントリスナーを解除
-        if (playerInput != null)
-        {
-            // InputActionAssetを取得
-            var inputActionAsset = playerInput.actions;
-            // "Main"アクションマップを取得
-            var actionMap = inputActionAsset.FindActionMap("Main");
-            // アクションを取得
-            var cancel = actionMap.FindAction("Cancel");
-            if (cancel != null)
-            {
-                cancel.performed -= OnPressCancelButton;
-            }
-        }
+        RemoveInputActions();
+        EnableInputActionMap("Main", "Menu");
     }
 
     /// <summary>
@@ -158,20 +153,33 @@ public class MainMenuController : MonoBehaviour
             var inputActionAsset = playerInput.actions;
 
             // "Main"アクションマップを取得
-            var actionMap = inputActionAsset.FindActionMap("Main");
+            var actionMap = inputActionAsset.FindActionMap("Menu");
             // アクションを取得
             var cancel = actionMap.FindAction("Cancel");
-            if (cancel == null)
-            {
-                Debug.LogError("Actions not found!");
-                return;
-            }
+            var openMenu = actionMap.FindAction("OpenMenu");
 
-            // イベントリスナーを設定
-            cancel.performed += context => OnPressCancelButton(context);
-
+            cancel.performed += OnPressCancelButton;
+            openMenu.performed += OnPressMenuButton;
             // アクションマップを有効にする
             actionMap.Enable();
+        }
+    }
+
+    private void RemoveInputActions()
+    {
+        // イベントリスナーを解除
+        if (playerInput != null)
+        {
+            // InputActionAssetを取得
+            var inputActionAsset = playerInput.actions;
+            // "Main"アクションマップを取得
+            var actionMap = inputActionAsset.FindActionMap("Menu");
+            // アクションを取得
+            var cancel = actionMap.FindAction("Cancel");
+            var openMenu = actionMap.FindAction("OpenMenu");
+
+            cancel.performed -= OnPressCancelButton;
+            openMenu.performed -= OnPressMenuButton;
         }
     }
 
@@ -217,14 +225,14 @@ public class MainMenuController : MonoBehaviour
 
         var unitDuration = duration / buttons.Count;
 
-        foreach(GameObject button in buttons)
+        foreach (GameObject button in buttons)
         {
             RectTransform transform = button.GetComponent<RectTransform>();
             //_ = button.DOAnchorPos(new Vector2(-130f, -90f), 0.5f).SetEase(Ease.OutBack).SetUpdate(true);
             await transform.DOAnchorPos(new Vector2(transform.anchoredPosition.x + 470.0f, transform.anchoredPosition.y), unitDuration).SetEase(Ease.InOutQuad).SetUpdate(true);
             //await UniTask.Delay(10);
         }
-        
+
     }
 
     public async UniTask SlideFrames(float duration)
@@ -245,7 +253,7 @@ public class MainMenuController : MonoBehaviour
     /// キャンセルボタン押下
     /// </summary>
     /// <param name="context"></param>
-    public void OnPressCancelButton(InputAction.CallbackContext context)
+    public async void OnPressCancelButton(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
@@ -255,9 +263,23 @@ public class MainMenuController : MonoBehaviour
             }
             else
             {
+                await CloseMenu();
             }
         }
     }
+
+    /// <summary>
+    /// キャンセルボタン押下
+    /// </summary>
+    /// <param name="context"></param>
+    public async void OnPressMenuButton(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            await CloseMenu();
+        }
+    }
+
 
     /// <summary>
     /// メニュー画面を開く
@@ -274,17 +296,11 @@ public class MainMenuController : MonoBehaviour
     /// <summary>
     /// メニュー画面を閉じる
     /// </summary>
-    public void CloseMenu()
+    public async UniTask CloseMenu()
     {
-        // プレイヤーを動かせるようにする
-        CommonVariableManager.playerCanMove = true;
-        
+        await FadeOutChildren(gameObject);
+        Destroy(gameObject);
         CommonController.ResumeGame();
-        MenuOutline.SetActive(false);
-
-        CommonVariableManager.ShowingMenuState = Constants.MenuState.Main;
-        CloseScreen();
-        ShowScreen(0);
     }
 
     /// <summary>
@@ -293,65 +309,75 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public async void OnPressItemButton()
     {
+        eventSystem.enabled = false;
         await FadeOutChildren(main);
-
+        RemoveInputActions();
         header.text = "アイテム";
-
-        if (itemMenuInstance == null)
-        {
-            itemMenuInstance = Instantiate(itemMenuObject, transform);
-            var itemMenuController = itemMenuInstance.GetComponent<ItemMenuController>();
-            itemMenuController.mainMenu = main;
-            itemMenuController.mainMenuController = this;
-        }
+        itemMenuObject.SetActive(true);
+        var controller = itemMenuObject.GetComponent<ItemMenuController>();
+        await controller.Initialize();
     }
 
     public void OnPressEquipButton()
     {
         DisplayCharacterSelectSubMenu(1);
-
-        
     }
 
     public async UniTask GoToEquipMenu(int characterIndex)
     {
+        eventSystem.enabled = false;
         Destroy(characterSelectSubMenuInstance);
         await FadeOutChildren(main);
-        
+        RemoveInputActions();
         header.text = "装備";
-
-        if (equipMenuInstance == null)
-        {
-            equipMenuInstance = Instantiate(equipMenuObject, transform);
-            var controller = equipMenuInstance.GetComponent<EquipMenuController>();
-            controller.mainMenu = main;
-            controller.mainMenuController = this;
-            controller.currentCharacterID = characterIndex;
-        }
+        var controller = equipMenuObject.GetComponent<EquipMenuController>();
+        controller.currentCharacterIndex = characterIndex;
+        equipMenuObject.SetActive(true);
+        eventSystem.enabled = true;
     }
 
     public void OnPressSkillButton()
     {
-        CommonVariableManager.ShowingMenuState = Constants.MenuState.Skill;
-        selectedButton = skillButton;
+        DisplayCharacterSelectSubMenu(2);
+    }
 
-        CommonController.DisableInputActionMap(inputActionParent, "Player");
+    public async UniTask GoToSkillMenu(int characterIndex)
+    {
+        Destroy(characterSelectSubMenuInstance);
+        await FadeOutChildren(main);
 
-        CloseScreen();
         header.text = "スキル";
-        ShowScreen((int)CommonVariableManager.ShowingMenuState);
+
+        if (equipMenuInstance == null)
+        {
+            equipMenuInstance = Instantiate(equipMenuObject, transform);
+            equipMenuInstance.transform.SetSiblingIndex(3);
+            var controller = equipMenuInstance.GetComponent<EquipMenuController>();
+            controller.mainMenu = main;
+            controller.mainMenuController = this;
+            controller.currentCharacterIndex = characterIndex;
+            await controller.Initialize();
+
+
+        }
     }
 
     public void OnPressClassButton()
     {
-        CommonVariableManager.ShowingMenuState = Constants.MenuState.Class;
-        selectedButton = classButton;
+        DisplayCharacterSelectSubMenu(3);
+    }
 
-        CommonController.DisableInputActionMap(inputActionParent, "Player");
-
-        CloseScreen();
+    public async UniTask GoToClassMenu(int characterIndex)
+    {
+        eventSystem.enabled = false;
+        Destroy(characterSelectSubMenuInstance);
+        await FadeOutChildren(main);
+        RemoveInputActions();
         header.text = "クラス";
-        ShowScreen((int)CommonVariableManager.ShowingMenuState);
+        var controller = classMenuObject.GetComponent<ClassMenuController>();
+        controller.currentCharacterIndex = characterIndex;
+        classMenuObject.SetActive(true);
+        eventSystem.enabled = true;
     }
 
     /// <summary>
@@ -420,7 +446,7 @@ public class MainMenuController : MonoBehaviour
         if (eventSystem != null)
         {
             var button = buttons[number];
-            
+
             eventSystem.SetSelectedGameObject(button.transform.GetChild(0).gameObject);
         }
     }
@@ -497,11 +523,26 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
-    public async UniTask InitializeFromChildren()
+    public void EnableInputActionMap(string enableMapName, string disableMapName)
+    {
+        // 特定の名前のInputActionを探して有効化
+        InputActionMap eMap = playerInput.actions.FindActionMap(enableMapName);
+        InputActionMap dMap = playerInput.actions.FindActionMap(disableMapName);
+
+        if (eMap != null && dMap != null)
+        {
+            eMap.Enable();
+            dMap.Disable();
+        }
+    }
+
+    public async UniTask InitializeFromChildren(string fromMenuName)
     {
         header.text = "メインメニュー";
+        //EnableInputActionMap("Main", fromMenuName);
         // ステータス設定
         SetAllyStatuses();
+        SetInputActions();
         await FadeInChildren(main);
         SelectButton();
     }
@@ -520,15 +561,22 @@ public class MainMenuController : MonoBehaviour
     }
 
     public async UniTask FadeOutChildren(GameObject gameObject, float duration = 0.5f)
-    {  
-        // 親GameObjectの子要素すべてに対してフェードアウトを適用
-        CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
-        if (canvasGroup != null)
+    {
+        // ゲームオブジェクトと CanvasGroup の存在を確認
+        if (gameObject != null && gameObject.activeInHierarchy)
         {
-            // 透明度を0にアニメーション
-            await canvasGroup.DOFade(0, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
-            canvasGroup.interactable = false;
-            //gameObject.SetActive(false);
+            CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                // 透明度を0にアニメーション
+                await canvasGroup.DOFade(0, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
+                canvasGroup.interactable = false;
+            }
+            // アニメーション完了後にゲームオブジェクトを破棄
+            if (gameObject != null)
+            {
+                //Destroy(gameObject);
+            }
         }
     }
 }

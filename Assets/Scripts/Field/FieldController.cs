@@ -22,15 +22,13 @@ public class FieldController : MonoBehaviour
             {
                 CommonController.PauseGame();
                 mainMenuInstance = Instantiate(mainMenuObject);
-                //CommonController.DisableInputActionMap(inputActionParent, "Main");
-                //CommonController.EnableInputActionMap(inputActionParent, "Menu");
             }
-            else
-            {
-                Destroy(mainMenuInstance);
-                mainMenuInstance = null;
-                CommonController.ResumeGame();
-            }
+            //else
+            //{
+            //    Destroy(mainMenuInstance);
+            //    mainMenuInstance = null;
+            //    CommonController.ResumeGame();
+            //}
             //if (!mainMenuObject.activeSelf)
             //{
             //    //CommonController.PauseGame();

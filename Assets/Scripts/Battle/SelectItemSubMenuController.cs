@@ -51,8 +51,16 @@ public class SelectItemSubMenuController : MonoBehaviour
     /// </summary>
     private void SetItems()
     {
-        foreach (Item item in items)
+        HashSet<string> processedItemIds = new HashSet<string>();  // 登録済みアイテムのIDを記録するためのHashSet
+
+        var sortedItems = items.OrderBy(x => x.ID).ToList();
+        foreach (Item item in sortedItems)
         {
+            if (processedItemIds.Contains(item.ID))
+            {
+                continue;  // このアイテムIDがすでに処理されていれば、次のアイテムへスキップ
+            }
+
             GameObject obj = Instantiate(button, content.transform, false);    // 一覧に表示するボタンのベースをインスタンス生成
             var comp = obj.GetComponent<ItemComponent>();                      // ボタンに紐づくスキル情報を格納するコンポーネント
             var newButton = obj.transform.GetChild(0).gameObject;              // ボタン本体
@@ -63,6 +71,7 @@ public class SelectItemSubMenuController : MonoBehaviour
             comp.amount.text = amount.ToString();                              // 所持数
             AddSelectOrDeselectActionToButtons(newButton, item);               // 選択・選択解除時アクション設定
             AddOnClickActionToItemButton(newButton, item);                     // 押下時アクション設定
+            processedItemIds.Add(item.ID);                                     // このアイテムIDを処理済みとして記録
         }
         // 一覧の一番上を選択
         SelectButton(0);

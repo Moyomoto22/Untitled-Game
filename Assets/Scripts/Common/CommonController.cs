@@ -138,6 +138,7 @@ public class CommonController : MonoBehaviour
         if (map != null)
         {
             map.Enable();
+            Debug.Log(mapName + " is enabled.");
         }
         else
         {
@@ -156,6 +157,7 @@ public class CommonController : MonoBehaviour
         if (map != null)
         {
             map.Disable();
+            Debug.Log(mapName + " is disabled.");
         }
         else
         {
@@ -237,7 +239,7 @@ public class CommonController : MonoBehaviour
         bool isEquippable = false;
         bool isNitouryu = false;
 
-        BaseClass Class = status.Class;
+        Class Class = status.Class;
         Equip equip = item as Equip;
 
         if (equip != null && Class != null)
@@ -655,5 +657,31 @@ public class CommonController : MonoBehaviour
                 ally.LearnSkill(skill);
             }
         }
+    }
+
+    public static Color GetCharacterColorByIndex(int index)
+    {
+        string colorCode = Constants.gradationBlue;
+
+        switch (index)
+        {
+            case 0:
+                colorCode = Constants.gradationBlue;
+                break;
+            case 1:
+                colorCode = Constants.gradationRed;
+                break;
+            case 2:
+                colorCode = Constants.gradationPurple;
+                break;
+            case 3:
+                colorCode = Constants.gradationGreen;
+                break;
+            default:
+                colorCode = Constants.gradationBlue;
+                break;
+        }
+
+        return GetColor(colorCode);
     }
 }

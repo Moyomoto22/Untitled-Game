@@ -50,6 +50,9 @@ public class Constants : MonoBehaviour
 
     #endregion
 
+    // 必要経験値曲線
+    public static int[] requiredExp = new int[maxLevel] { 40, 80, 160, 320, 640, 1280, 2560, 5120, 10240, 20480 };
+
     // クリティカル発生時ダメージ倍率
     public const double criticalDamageRatio = 1.5;
 

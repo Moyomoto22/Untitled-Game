@@ -1,3 +1,61 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8711638779766298d0c7edca266e524e265ca207cc23033a0faa26cc10054d34
-size 2441
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c40db997b61f0440b9b86d3675d1c75, type: 3}
+  m_Name: SpellSword
+  m_EditorClassIdentifier: 
+  ID: 8
+  className: "\u30B9\u30DA\u30EB\u30BD\u30FC\u30C9"
+  classAbbreviation: SPS
+  imagesA:
+  - {fileID: 21300000, guid: 16d73165e5becfb4c88cacccc5e2318e, type: 3}
+  - {fileID: 21300000, guid: b1cc569a922d5a045b83a49dd1fdd5d0, type: 3}
+  - {fileID: 21300000, guid: 68c926e17563a3f48b1475258b5d0d2c, type: 3}
+  - {fileID: 21300000, guid: 1f61ebe4d3d183543813826a00d569bb, type: 3}
+  imagesB:
+  - {fileID: 21300000, guid: f4f82e3612ca20a4bb6554d3ea9850ae, type: 3}
+  - {fileID: 21300000, guid: 48cde1e3bbd68fe44a49ab5531f9214c, type: 3}
+  - {fileID: 21300000, guid: 27e26db8668a10e47a86ea33943eedfd, type: 3}
+  - {fileID: 21300000, guid: e1ce8a5519f0dbd4a9ca76dcdf2d7959, type: 3}
+  imagesC:
+  - {fileID: 21300000, guid: e8bfd2d84052b8b4280485a878a23fa3, type: 3}
+  - {fileID: 21300000, guid: 6ebadb4c8fa9aaf40970a91276d332db, type: 3}
+  - {fileID: 21300000, guid: 5c927239b6eb0c24f9a19ea4398907b1, type: 3}
+  - {fileID: 21300000, guid: 063dc856b1dd79446a0bb1c9e45e9798, type: 3}
+  imagesD:
+  - {fileID: 21300000, guid: 3d4114f5557ec544d902e1d61e47c4b3, type: 3}
+  - {fileID: 21300000, guid: 72634f836f82fd149aec1ace9d1bc114, type: 3}
+  - {fileID: 21300000, guid: d7abb89fc8a8e904e85960e206991b76, type: 3}
+  - {fileID: 21300000, guid: 72634f836f82fd149aec1ace9d1bc114, type: 3}
+  hpRate: 0.95
+  mpRate: 1.25
+  strRate: 1
+  vitRate: 0.9
+  dexRate: 0.85
+  agiRate: 0.75
+  intRate: 1.25
+  mndRate: 1.1
+  statusRank:
+  - C
+  - B
+  - C
+  - C
+  - C
+  - D
+  - B
+  - C
+  equippableWeapons: 00000000010000000200000009000000
+  description: "\u7269\u7406\u653B\u6483\u529B\u3068\u9B54\u6CD5\u653B\u6483\u529B\u306E\u30D0\u30E9\u30F3\u30B9\u304C\u3088\u3044\u4ED6\u3001\r\n\u88DC\u52A9\u9B54\u6CD5\u306E\u6271\u3044\u306B\u9577\u3051\u308B"
+  exSkill: {fileID: 11400000, guid: 6182216bcd39299438927cca6ae3a83b, type: 2}
+  LearnSkills:
+  - {fileID: 11400000, guid: db22a439c706c714c87073840e8b2799, type: 2}
+  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}
+  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}

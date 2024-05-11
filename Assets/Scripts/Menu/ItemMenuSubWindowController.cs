@@ -28,6 +28,7 @@ public class ItemMenuSubWindowController : MonoBehaviour
     private void OnDestroy()
     {
         itemMenuController.SelectButton(itemMenuController.lastSelectButtonIndex);
+        itemMenuController.setButtonFillAmount(itemMenuController.lastSelectButtonIndex);
         itemMenuController.ToggleButtonsInteractable(true);
     }
 
@@ -91,12 +92,12 @@ public class ItemMenuSubWindowController : MonoBehaviour
                 if (result)
                 {
                     await itemMenuController.DestroyButtons();
-                    itemMenuController.SetItems();
+                    await itemMenuController.SetItems();
                     itemMenuController.ToggleButtonsInteractable(false);
                     // 使用中アイテムが無くなったらインスタンス破棄
                     if (GetItemAmount() <= 0)
                     {
-                        Destroy(gameObject); 
+                        Destroy(gameObject);
                     }
                 }
                 ToggleButtonsInteractable(true);

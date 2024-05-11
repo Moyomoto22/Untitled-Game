@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 [Serializable]
 [CreateAssetMenu(fileName = "Class", menuName = "CreateClass")]
-public class BaseClass : ScriptableObject
+public class Class : ScriptableObject
 {
     //　ID
     [SerializeField]
-    public int ID;
+    public string ID;
     //　クラス名
     [SerializeField]
     public string className;

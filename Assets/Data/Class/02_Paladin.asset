@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c40db997b61f0440b9b86d3675d1c75, type: 3}
+  m_Name: 02_Paladin
+  m_EditorClassIdentifier: 
+  ID: 02
+  className: "\u30D1\u30E9\u30C7\u30A3\u30F3"
+  classAbbreviation: PLD
+  imagesA:
+  - {fileID: 21300000, guid: 0611678f709aee94db6e679c1cdcc60d, type: 3}
+  - {fileID: 21300000, guid: 8fd5231431869474e9218c3494f41834, type: 3}
+  - {fileID: 21300000, guid: 68c926e17563a3f48b1475258b5d0d2c, type: 3}
+  - {fileID: 21300000, guid: 5f67ebd077dd9704fa069dc586561375, type: 3}
+  imagesB:
+  - {fileID: 21300000, guid: 286360615291f7b4aac1a44bf689ff91, type: 3}
+  - {fileID: 21300000, guid: 853b4d48ac556f548b2b57e31ed80e70, type: 3}
+  - {fileID: 21300000, guid: 27e26db8668a10e47a86ea33943eedfd, type: 3}
+  - {fileID: 21300000, guid: e08b95d07f105194fac1ccd41e730e5b, type: 3}
+  imagesC:
+  - {fileID: 21300000, guid: e8bfd2d84052b8b4280485a878a23fa3, type: 3}
+  - {fileID: 21300000, guid: 6ebadb4c8fa9aaf40970a91276d332db, type: 3}
+  - {fileID: 21300000, guid: 5c927239b6eb0c24f9a19ea4398907b1, type: 3}
+  - {fileID: 21300000, guid: 063dc856b1dd79446a0bb1c9e45e9798, type: 3}
+  imagesD:
+  - {fileID: 21300000, guid: 3d4114f5557ec544d902e1d61e47c4b3, type: 3}
+  - {fileID: 21300000, guid: 72634f836f82fd149aec1ace9d1bc114, type: 3}
+  - {fileID: 21300000, guid: d7abb89fc8a8e904e85960e206991b76, type: 3}
+  - {fileID: 21300000, guid: 6b4e4f7cce6ce634785c358f239b6208, type: 3}
+  hpRate: 1.3
+  mpRate: 0.9
+  strRate: 1.1
+  vitRate: 1.4
+  dexRate: 0.5
+  agiRate: 0.55
+  intRate: 0.75
+  mndRate: 1.2
+  statusRank:
+  - B
+  - D
+  - C
+  - A
+  - E
+  - E
+  - D
+  - B
+  equippableWeapons: 0000000001000000030000000500000009000000
+  description: "\u6575\u8996\u3092\u96C6\u3081\u4EF2\u9593\u3092\u5B88\u308B\u3053\u3068\u304C\u5F97\u610F\u306A\u30AF\u30E9\u30B9"
+  exSkill: {fileID: 11400000, guid: ef61080d54ca13d4c9df34a84924c8cb, type: 2}
+  LearnSkills:
+  - {fileID: 11400000, guid: db22a439c706c714c87073840e8b2799, type: 2}
+  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}
+  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}
+  - {fileID: 11400000, guid: 4e0745ca128f2184ab3f4ed2319ebacb, type: 2}
+  - {fileID: 11400000, guid: db22a439c706c714c87073840e8b2799, type: 2}
