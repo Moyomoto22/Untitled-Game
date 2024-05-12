@@ -37,6 +37,9 @@ public class MainMenuController : MonoBehaviour
     public GameObject classMenuObject;
     public GameObject classMenuInstance;
 
+    public GameObject statusMenuObject;
+    public GameObject statusMenuInstance;
+
     public GameObject equip;
     public GameObject skill;
     public GameObject Class;
@@ -380,14 +383,20 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public void OnPressStatusButton()
     {
-        CommonVariableManager.ShowingMenuState = Constants.MenuState.Status;
-        selectedButton = statusButton;
+        DisplayCharacterSelectSubMenu(4);
+    }
 
-        CommonController.DisableInputActionMap(inputActionParent, "Player");
-
-        CloseScreen();
+    public async UniTask GoToStatusMenu(int characterIndex)
+    {
+        eventSystem.enabled = false;
+        Destroy(characterSelectSubMenuInstance);
+        await FadeOutChildren(main);
+        RemoveInputActions();
         header.text = "ステータス";
-        ShowScreen((int)CommonVariableManager.ShowingMenuState);
+        var controller = statusMenuObject.GetComponent<StatusMenuController>();
+        controller.currentCharacterIndex = characterIndex;
+        statusMenuObject.SetActive(true);
+        eventSystem.enabled = true;
     }
 
     /// <summary>
