@@ -86,6 +86,8 @@ public class PartyMembers: MonoBehaviour
         await GetAlliesFromAddressables();
     }
 
+
+
     public AllyStatus GetAllyByIndex(int index)
     {
         if (partyMembers != null)

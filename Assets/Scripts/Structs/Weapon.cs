@@ -23,6 +23,6 @@ public class Weapon : Equip
     [SerializeField]
     public int times = 1;
     // UŒ‚”­“®Œø‰Ê
-    public List<Constants.EffectType> attackEffects;
+    public List<Constants.ActiveEffectType> attackEffects;
 
 }

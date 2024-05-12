@@ -1,860 +1,802 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public class SkillMenuController : MonoBehaviour
 {
+    public GameObject mainMenu;
+    public MainMenuController mainMenuController;
 
-    private int showingCharacterID = 1;
+    private List<string> characterNames = new List<string>() { "アレックス", "ニコ", "タバサ", "アリシア" };
+    public int currentCharacterIndex = 0;
 
-    string path = "Assets/Data/Item/ItemInventory.prefab";
+    public EventSystem eventSystem;
+    public PlayerInput playerInput;
 
-    public GameObject MainScreen;
-    public GameObject SkillScreen;
+    public Image gradation;
+    public Image nameBackGradation;
 
-    public GameObject gradation;
+    public Image characterImage;
+    public TextMeshProUGUI characterClass;
+    public TextMeshProUGUI characterLevel;
+    public GameObject SPGauge;
+    public TextMeshProUGUI currentSP;
+    public TextMeshProUGUI maxSP;
 
-    // キャラクターステータス
-    private AllyStatus allyStatus;
+    public TextMeshProUGUI currentCharacterName;
+    public TextMeshProUGUI nextCharacterName;
+    public TextMeshProUGUI previousCharacterName;
 
-    // キャラクター画像
-    [SerializeField]
-    private GameObject characterImage;
+    public List<TextMeshProUGUI> skillCategories;
+    public int currentSkillCategoryIndex = 0;
+    public GameObject underBar;
+    private List<float> underBarPositions = new List<float>() {-312.0f, -238.0f, -175.0f, -101.0f, 3.0f, 127.0f};
 
-    [SerializeField]
-    private GameObject characterName;
-    [SerializeField]
-    private GameObject classAbbreviation;
-    [SerializeField]
-    private GameObject characterLevel;
-    [SerializeField]
-    private GameObject maxHP;
-    [SerializeField]
-    private GameObject hp;
-    [SerializeField]
-    private GameObject maxMP;
-    [SerializeField]
-    private GameObject mp;
-    [SerializeField]
-    private GameObject maxSP;
-    [SerializeField]
-    private GameObject sp;
+    public GameObject skillButton;
+    private Skill selectedSkill;
 
-    // スキル一覧 フィルタ状態
-    private int filterState;
+    public Image detailIcon;
+    public TextMeshProUGUI detailName;
+    public TextMeshProUGUI detailSPCost;
+    public TextMeshProUGUI detailCategory;
+    public TextMeshProUGUI detailDescription;
 
-    // スキル一覧 フィルタ文字列 親オブジェクト
-    [SerializeField]
-    private List<GameObject> filters;
-    [SerializeField]
-    private GameObject underBar;
+    public TextMeshProUGUI detailMPCost;
+    public TextMeshProUGUI detailTPCost;
+    public TextMeshProUGUI detailRecast;
+    public TextMeshProUGUI detailLearn;
+
+    #region 詳細 - 属性・クラス欄
+    public Image detailAttributeOne;
+    public Image detailAttributeTwo;
+    public Image detailAttributeThree;
+    public Image detailAttributeFour;
+    public Image detailAttributeFive;
+    public Image detailAttributeSix;
+
+    public TextMeshProUGUI war;
+    public TextMeshProUGUI pld;
+    public TextMeshProUGUI mnk;
+    public TextMeshProUGUI thf;
+    public TextMeshProUGUI rng;
+    public TextMeshProUGUI src;
+    public TextMeshProUGUI clc;
+    public TextMeshProUGUI sps;
+    #endregion
 
     // スキル一欄 スクロールビュー内
     public GameObject content;
 
-    public GameObject skillObject;
-
-    [SerializeField]
-    private GameObject skillIcon;
-    [SerializeField]
-    private GameObject skillName;
-    [SerializeField]
-    private GameObject skillCategory;
-    [SerializeField]
-    private GameObject spCost;
-    [SerializeField]
-    private GameObject skillDescription;
-    [SerializeField]
-    private GameObject mpCost;
-    [SerializeField]
-    private GameObject tpCost;
-    [SerializeField]
-    private GameObject recast;
-    [SerializeField]
-    private GameObject learn;
-
-    // 属性アイコン
-    [SerializeField]
-    private GameObject attributes;
-
-    // 使用可能クラス
-    [SerializeField]
-    private GameObject classes;
-
-    public Sprite Slash;
-    public Sprite Thrust;
-    public Sprite Blow;
-    public Sprite Magic;
-    public Sprite Fire;
-    public Sprite Ice;
-    public Sprite Thunder;
-    public Sprite Wind;
-
-
-
-    [SerializeField]
-    public GameObject subWindow;
-
-    [SerializeField]
-    private GameObject WeaponIcons;
-    [SerializeField]
-    private GameObject HeadIcon;
-    [SerializeField]
-    private GameObject BodyIcon;
-    [SerializeField]
-    private GameObject AccessaryIcon;
-
-    [SerializeField]
-    private List<GameObject> InnerOutlines;
-
-    [SerializeField]
-    public EventSystem eventSystem;
-
-    [SerializeField]
-    private InputAction inputActions;
-
-    private GameObject lastSelectedButton;
     private int lastSelectButtonIndex = 0;
-
-    public GameObject inputActionParent;
-
-    public Sprite buttonImageOff;
-    public Sprite buttonImageOn;
-
-    public GameObject subWindowHPMP;
-
-    private ItemInventory itemInventory;
-
-    private string selectedItemID;
-    private ItemDatabase itemDatabase;
 
     // 使用するスキル
     private Skill useSkill;
 
-    public GameObject scrollView;
-    private ScrollViewManager2 scrollViewManager;
+    public GameObject subWindow;
+    public GameObject subWindowInstance;
+
+    private bool isClosing = false;
+
+    public List<string> colors = new List<string>() { "#3C52B7ff", "#B32D40ff", "#5D21A2ff", "#1E8C98ff" };
 
     // Start is called before the first frame update
-    void Start()
-    {
-        scrollViewManager = scrollView.GetComponent<ScrollViewManager2>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // EventSystemの現在選択されているGameObjectを取得
-        GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
-
-        // 選択されたオブジェクトが変更された場合
-        if (selectedButton != lastSelectedButton && !subWindow.activeSelf)
-        {
-            // 選択されたオブジェクトがButtonであるか確認
-            Button button = selectedButton?.GetComponent<Button>();
-            if (button != null)
-            {
-                // 右下にアイテム詳細を表示
-                SetSkillInformation(button.transform.parent);
-            }
-            lastSelectedButton = selectedButton;
-        }
-    }
 
     async void OnEnable()
     {
-        filterState = 0;
+        await Initialize();
+    }
 
-        allyStatus = await CommonController.GetAllyStatus(showingCharacterID);
-
-        // サブウインドウを非表示
-        subWindow.SetActive(false);
-
-        // スキルメニュー用のアクションマップを有効化
-        CommonController.EnableInputActionMap(inputActionParent, "SkillMenu");
-
-        // スキル一欄を選択可に
-        ToggleInteractableButtonsInChildren(content.transform, true);
-        // サブウインドウを選択不可に
-        //ToggleInteractableButtonsInChildren(subWindow.transform, false);
-
-        // 画面初期化
-        await InitializeSkillMenu();
-
-        // 右上武器欄初期化
-        //await InitializeEquipItemList();
-
-        selectedItemID = null;
-        lastSelectButtonIndex = 0;
+    private void OnDisable()
+    {
+        RemoveInputActions();
     }
 
     /// <summary>
     /// スキル画面初期化
     /// </summary>
-    public async Task InitializeSkillMenu()
+    public async UniTask Initialize()
     {
-        if (filters != null)
-        {
+        eventSystem = FindObjectOfType<EventSystem>();
+        playerInput = FindObjectOfType<PlayerInput>();
+        currentSkillCategoryIndex = 0;
+        lastSelectButtonIndex = 0;
 
+        SetCharacterInfo();     // キャラクター情報設定
+        UpdateCharacterName();  // 左上キャラクター名初期化
+        UpdateSkillCategory();  // スキルカテゴリ設定
+        await SetSkillList(); // スキル選択欄設定
+        InitializeSkillDetail(); // クラス詳細初期化
 
-            //showingCharacterID = 2;
+        SetInputActions();      // InputAction設定
 
-            string color = Constants.gradationBlue;
+        setButtonFillAmount(content, 0);
+        SelectButton(content, 0); // 装備部位選択欄を選択
 
-            switch (showingCharacterID)
-            {
-                case 1:
-                    color = Constants.gradationBlue;
-                    break;
-                case 2:
-                    color = Constants.gradationRed;
-                    break;
-                case 3:
-                    color = Constants.gradationPurple;
-                    break;
-                case 4:
-                    color = Constants.gradationGreen;
-                    break;
-                default:
-                    color = Constants.gradationBlue;
-                    break;
-            }
+        var rect = underBar.GetComponent<RectTransform>();
+        rect.anchoredPosition = new Vector2(underBarPositions[0], rect.anchoredPosition.y);
 
-            gradation.GetComponent<Image>().color = CommonController.GetColor(color);
-            allyStatus = await CommonController.GetAllyStatus(showingCharacterID);
-
-            InithializeCharacterStatus();
-
-            await InitializeSkillList(allyStatus);
-        }
+        await FadeIn();          // 画面フェードイン 
     }
 
-    public void InithializeCharacterStatus()
+    public async UniTask Init()
     {
-        characterImage.GetComponent<Image>().sprite = allyStatus.characterImage;
+        selectedSkill = null;
+        await SetSkillList(); // スキル選択欄設定
 
-        characterName.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.characterName;
-        characterLevel.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.level.ToString();
-        classAbbreviation.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.Class.classAbbreviation;
-        maxHP.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.maxHp.ToString();
-        hp.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.hp.ToString();
-        maxMP.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.maxMp.ToString();
-        mp.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.mp.ToString();
-        maxSP.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.maxSp.ToString();
-        sp.GetComponentInChildren<TextMeshProUGUI>().text = allyStatus.sp.ToString();
+        setButtonFillAmount(content, lastSelectButtonIndex);
+        SelectButton(content, lastSelectButtonIndex); // 装備部位選択欄を選択
+    }
+
+    /// <summary>
+    /// キャラクター情報を設定する(画像除く)
+    /// </summary>
+    public void SetCharacterInfo()
+    {
+        var ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+        var color = CommonController.GetCharacterColorByIndex(currentCharacterIndex);
+
+        gradation.color = color;
+        nameBackGradation.color = color;
+
+        characterImage.sprite = ch.Class.imagesA[currentCharacterIndex];
+        characterLevel.text = ch.level.ToString();
+        characterClass.text = ch.Class.classAbbreviation;
+
+        currentSP.text = ch.sp.ToString();
+        maxSP.text = ch.maxSp.ToString();
+
+        ch.SPGauge = SPGauge;
+        GaugeManager gaugeManager = SPGauge.GetComponent<GaugeManager>();
+        gaugeManager.updateGaugeByText();
     }
 
     /// <summary>
     /// スキル一覧初期化
     /// </summary>
-    public async Task InitializeSkillList(bool isSelectTarget = true)
+    public async UniTask SetSkillList(bool isSelectTarget = true)
     {
+        DestroyButtons();
 
-        // スキル一覧のフィルタ設定
-        foreach (GameObject filter in filters)
+        AllyStatus ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+        List<Skill> skills = ch.learnedSkills;
+        List<Skill> filteredSkills = new List<Skill>();
+
+        switch (currentSkillCategoryIndex)
         {
-            filter.GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.gray);
+            case 0:
+                filteredSkills = ch.equipedSkills;
+                break;
+            case 1:
+                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Magic).ToList();
+                break;
+            case 2:
+                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Miracle).ToList();
+                break;
+            case 3:
+                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Arts).ToList();
+                break;
+            case 4:
+                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Active).ToList();
+                break;
+            case 5:
+                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Passive).ToList();
+                break;
         }
-        filters[filterState].GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
 
-        Vector3 pos1 = underBar.transform.position;
-        Vector3 pos2 = new Vector3(filters[filterState].transform.position.x, underBar.transform.position.y, underBar.transform.position.z);
+        List<Skill> orderedSkills = filteredSkills.OrderBy(x => x.ID).ToList();
 
-        underBar.transform.position = Vector3.Lerp(pos1, pos2, 1.0f);
-
-        // スキル一覧内のオブジェクトを削除(0.01秒待機)
-        await DestroyChildren(content, "SkillObject");
-
-        List<Skill> learnedSkills = allyStatus.learnedSkills;
-
-        if (learnedSkills != null)
+        // 習得スキルを一覧にボタンとしてセットしていく
+        foreach (Skill s in orderedSkills)
         {
-            List<Skill> skills;
-            switch (filterState)
+            GameObject obj = Instantiate(skillButton, content.transform, false);    // 一覧に表示するボタンのベースをインスタンス生成
+            var comp = obj.GetComponent<SkillComponent>();                           // ボタンに紐づくスキル情報を格納するコンポーネント
+            if (comp != null)
             {
-                case 0:
-                    skills = learnedSkills.OrderBy(x => x.ID).Where(x => x.isEquipped).ToList();
-                    break;
-                case 1:
-                    skills = learnedSkills.OrderBy(x => x.ID).Where(x => x.skillCategory == Constants.SkillCategory.Magic).ToList();
-                    break;
-                case 2:
-                    skills = learnedSkills.OrderBy(x => x.ID).Where(x => x.skillCategory == Constants.SkillCategory.Miracle).ToList();
-                    break;
-                case 3:
-                    skills = learnedSkills.OrderBy(x => x.ID).Where(x => x.skillCategory == Constants.SkillCategory.Arts).ToList();
-                    break;
-                case 4:
-                    skills = learnedSkills.OrderBy(x => x.ID).Where(x => x.skillCategory == Constants.SkillCategory.Active).ToList();
-                    break;
-                case 5:
-                    skills = learnedSkills.OrderBy(x => x.ID).Where(x => x.skillCategory == Constants.SkillCategory.Passive).ToList();
-                    break;
-                default:
-                    skills = learnedSkills.OrderBy(x => x.ID).Where(x => x.isEquipped).ToList();
-                    break;
+                comp.skill = s;
+                comp.Initialize();
             }
 
-            foreach (var skill in skills)
+            var newButton = obj.transform.GetChild(0).gameObject;              // ボタン本体
+            AddSelectActionToButtons(newButton, s);               // 選択・選択解除時アクション設定
+            // 装備可能・使用可能か判定
+            if (s.CanEquip(ch) || (s.canUseInMenu && s.CanUse(ch)))
             {
-                // 各スキルの情報を格納
-                GameObject temp = Instantiate(skillObject);
-
-                temp.transform.Find("SkillInfo").GetComponent<SkillInfo>().skillInfo = skill;
-                temp.transform.Find("Icon").GetComponent<Image>().sprite = skill.icon;
-
-                if (skill.skillCategory == Constants.SkillCategory.Magic || skill.skillCategory == Constants.SkillCategory.Miracle)
-                {
-                    MagicMiracle magicMiracle = skill as MagicMiracle;
-                    if (magicMiracle != null)
-                    {
-                        temp.transform.Find("SP").GetComponent<TextMeshProUGUI>().text = magicMiracle.MPCost.ToString();
-                    }
-                }
-                else
-                {
-                    temp.transform.Find("SP").GetComponent<TextMeshProUGUI>().text = skill.spCost.ToString();
-                }
-
-                Transform button = temp.transform.Find("Button");
-                GameObject equipMark = button.Find("EquipMark").gameObject;
-                equipMark.SetActive(false);
-
-                button.GetComponentInChildren<TextMeshProUGUI>().text = skill.skillName;
-
-                // 装備中
-                if (skill.isEquipped)
-                {
-                    button.GetComponentInChildren<TextMeshProUGUI>().color = CommonController.GetColor(Constants.red);
-                    button.GetComponent<Button>().onClick.AddListener(() => OnPressSkillButton(skill, button));
-                }
-                else
-                {
-                    // 装備可能かチェック
-                    string msg = allyStatus.CanEquipSkill(skill);
-                    if (msg == "")
-                    {
-                        button.GetComponentInChildren<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-
-                        // 魔法は使用・装備不可
-                        if (skill.skillCategory == Constants.SkillCategory.Magic)
-                        {
-                            button.GetComponentInChildren<TextMeshProUGUI>().color = CommonController.GetColor(Constants.gray);
-                        }
-                        // 奇跡
-                        else if (skill.skillCategory == Constants.SkillCategory.Miracle)
-                        {
-                            // 使用可能かチェック
-                            if (allyStatus.CanUseSKill(skill))
-                            {
-                                button.GetComponent<Button>().onClick.AddListener(() => OnPressSkillButton(skill, button));
-                            }
-                            else
-                            {
-                                button.GetComponentInChildren<TextMeshProUGUI>().color = CommonController.GetColor(Constants.gray);
-                            }
-                        }
-                        else
-                        {
-                            button.GetComponent<Button>().onClick.AddListener(() => OnPressSkillButton(skill, button));
-                        }
-
-                    }
-                    else
-                    {
-                        button.GetComponentInChildren<TextMeshProUGUI>().color = CommonController.GetColor(Constants.gray);
-                        //button.GetComponent<Button>().onClick.AddListener(() => OnPressSkillButton(skill));
-                    }
-
-                }
-                temp.transform.parent = content.transform;
+                // ボタン押下時のアクションを追加
+                AddOnClickActionToSkillButton(newButton, s, ch);
             }
-        }
-
-        if (content.transform.childCount > 0)
-        {
-            SelectTargetIndexItem(content, lastSelectButtonIndex);
-        }
-
-        // 一番上へスクロール
-        //scrollViewManager.ScrollScrollView(1.0f);
-    }
-
-    private void SetSkillInformation(Transform transform)
-    {
-        List<GameObject> icons = CommonController.GetChildrenGameObjects(attributes);
-        List<GameObject> classList = CommonController.GetChildrenGameObjects(classes);
-
-        foreach (var icon in icons)
-        {
-            icon.SetActive(false);
-        }
-
-        foreach (var Class in classList)
-        {
-            Class.GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-        }
-
-        skillIcon.SetActive(false);
-        skillName.SetActive(false);
-        spCost.SetActive(false);
-        skillCategory.SetActive(false);
-        skillDescription.SetActive(false);
-        mpCost.SetActive(false);
-        tpCost.SetActive(false);
-        recast.SetActive(false);
-        learn.SetActive(false);
-
-        if (transform != null)
-        {
-            if (transform.Find("SkillInfo") != null)
+            // 装備中
+            else if (ch.equipedSkills.Contains(s))
             {
-                if (transform.Find("SkillInfo").gameObject.GetComponent<SkillInfo>().skillInfo != null)
-                {
-                    Skill skill = transform.Find("SkillInfo").gameObject.GetComponent<SkillInfo>().skillInfo;
-                    if (skill != null)
-                    {
-                        skillIcon.SetActive(true);
-                        skillName.SetActive(true);
-                        spCost.SetActive(true);
-                        skillCategory.SetActive(true);
-                        skillDescription.SetActive(true);
-                        mpCost.SetActive(true);
-                        tpCost.SetActive(true);
-                        recast.SetActive(true);
-                        learn.SetActive(true);
-
-                        skillIcon.GetComponent<Image>().sprite = skill.icon;
-                        skillName.GetComponent<TextMeshProUGUI>().text = skill.skillName;
-                        spCost.GetComponent<TextMeshProUGUI>().text = "-";
-                        skillCategory.GetComponent<TextMeshProUGUI>().text = CommonController.GetSKillCategoryString(skill.skillCategory);
-                        skillDescription.GetComponent<TextMeshProUGUI>().text = skill.description;
-                        mpCost.GetComponent<TextMeshProUGUI>().text = "-";
-                        tpCost.GetComponent<TextMeshProUGUI>().text = "-";
-                        recast.GetComponent<TextMeshProUGUI>().text = "-";
-                        learn.GetComponent<TextMeshProUGUI>().text = "-";
-
-                        MagicMiracle magicMiracle = skill as MagicMiracle;
-                        Arts arts = skill as Arts;
-                        ActiveSkill active = skill as ActiveSkill;
-                        PassiveSkill passive = skill as PassiveSkill;
-
-                        // 属性
-                        for (int i = 0; i < skill.attributes.Count; i++)
-                        {
-                            Sprite image = Slash;
-                            switch (skill.attributes[i])
-                            {
-                                case Constants.Attribute.Slash:
-                                    image = Slash;
-                                    break;
-                                case Constants.Attribute.Thrust:
-                                    image = Thrust;
-                                    break;
-                                case Constants.Attribute.Blow:
-                                    image = Blow;
-                                    break;
-                                case Constants.Attribute.Magical:
-                                    image = Magic;
-                                    break;
-                                case Constants.Attribute.Fire:
-                                    image = Fire;
-                                    break;
-                                case Constants.Attribute.Ice:
-                                    image = Ice;
-                                    break;
-                                case Constants.Attribute.Thunder:
-                                    image = Thunder;
-                                    break;
-                                case Constants.Attribute.Wind:
-                                    image = Wind;
-                                    break;
-                            }
-                            icons[i].SetActive(true);
-                            icons[i].GetComponent<Image>().sprite = image;
-                        }
-
-                        if (magicMiracle != null)
-                        {
-                            mpCost.GetComponent<TextMeshProUGUI>().text = magicMiracle.MPCost.ToString();
-
-                            //  使用可能クラス(魔法奇跡のみ)
-                            foreach (var Class in classList)
-                            {
-                                Class.GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.gray);
-                            }
-
-                            if (magicMiracle.usableClasses.Exists(x => x.className == "ウォリアー"))
-                            {
-                                classList[0].GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-                            }
-                            if (magicMiracle.usableClasses.Exists(x => x.className == "パラディン"))
-                            {
-                                classList[1].GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-                            }
-                            if (magicMiracle.usableClasses.Exists(x => x.className == "モンク"))
-                            {
-                                classList[2].GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-                            }
-                            if (magicMiracle.usableClasses.Exists(x => x.className == "シーフ"))
-                            {
-                                classList[3].GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-                            }
-                            if (magicMiracle.usableClasses.Exists(x => x.className == "レンジャー"))
-                            {
-                                classList[4].GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-                            }
-                            if (magicMiracle.usableClasses.Exists(x => x.className == "ソーサラー"))
-                            {
-                                classList[5].GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-                            }
-                            if (magicMiracle.usableClasses.Exists(x => x.className == "クレリック"))
-                            {
-                                classList[6].GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-                            }
-                            if (magicMiracle.usableClasses.Exists(x => x.className == "スペルソード"))
-                            {
-                                classList[7].GetComponent<TextMeshProUGUI>().color = CommonController.GetColor(Constants.white);
-                            }
-
-                        }
-                        else if (arts != null)
-                        {
-                            tpCost.GetComponent<TextMeshProUGUI>().text = arts.TPCost.ToString();
-                        }
-                        else if (active != null)
-                        {
-                            spCost.GetComponent<TextMeshProUGUI>().text = active.spCost.ToString();
-                            recast.GetComponent<TextMeshProUGUI>().text = active.recastTurn.ToString();
-                        }
-                        else if (passive != null)
-                        {
-                            spCost.GetComponent<TextMeshProUGUI>().text = passive.spCost.ToString();
-                        }
-
-                        // 習得クラス・レベル
-                        if (skill.learnClass != null)
-                        {
-                            string className = skill.learnClass.className;
-                            string level = skill.learnLevel.ToString();
-
-                            string str = className + " Lv" + level;
-                            learn.GetComponent<TextMeshProUGUI>().text = str;
-                        }
-
-                    }
-                }
+                comp.skillName.color = CommonController.GetColor(colors[currentCharacterIndex]);
             }
-        }
-    }
-
-    /// <summary>
-    /// スキルボタン押下時
-    /// </summary>
-    /// <param name="skill"></param>
-    public void OnPressSkillButton(Skill skill, Transform button)
-    {
-        // カーソル位置を記憶するため、選択中の行のインデックスを保存
-        Transform transform = EventSystem.current.currentSelectedGameObject.transform;
-        lastSelectButtonIndex = transform.parent.transform.GetSiblingIndex();
-
-        scrollViewManager.enabled = false;
-
-        if (skill != null)
-        {
-            // 奇跡以外の場合
-            if (skill.skillCategory != Constants.SkillCategory.Miracle)
-            {
-                // スキル着脱
-                allyStatus.SetSkill(skill, skill.isEquipped);
-                button.GetComponentInChildren<TextMeshProUGUI>().color = CommonController.GetColor(Constants.red);
-
-                InitializeSkillMenu();
-            }
-            // 奇跡の場合
             else
             {
-                useSkill = skill;
-
-                Vector3 pos = transform.position;
-
-                // 一覧の下側のアイテムが選択されたらサブウインドウをカーソルの上側に表示
-                float offset = pos.y < 320 ? 85 : -100;
-
-                // サブウインドウ表示
-                subWindow.transform.position = new Vector3(pos.x + 450, pos.y + offset, pos.z); ;
-
-                // 各キャラクターのHP・MPを表示
-                SetHPAndMPToSubWindow();
-                subWindow.SetActive(true);
-
-                GameObject topButton = subWindow.transform.GetChild
-                    (0).gameObject;
-
-                //ToggleInteractableButtonsInChildren(subWindow.transform, true);
-                eventSystem.SetSelectedGameObject(topButton);
-
-                // スキル一覧のボタンを全て選択不可に
-                ToggleInteractableButtonsInChildren(content.transform, false);
-
-                // フォーカスが残ったように見せる
-                if (lastSelectedButton != null)
-                {
-                    lastSelectedButton.GetComponent<Image>().sprite = buttonImageOn;
-                }
+                // ボタンタイトルをグレーアウト
+                comp.skillName.color = CommonController.GetColor(Constants.darkGray);
             }
         }
-        scrollViewManager.enabled = true;
+        await UniTask.DelayFrame(1);
     }
 
     /// <summary>
-    /// スキル使用
+    /// ボタン選択時の動作を設定
     /// </summary>
-    /// <param name="cID"></param>
-    public async void OnPressUseSkillToCharacter(int cID)
+    /// <param name="button"></param>
+    /// <param name="item"></param>
+    public void AddSelectActionToButtons(GameObject button, Skill s)
     {
-        AllyStatus target = await CommonController.GetAllyStatus(cID);
+        EventTrigger trigger = button.GetComponent<EventTrigger>() ?? button.AddComponent<EventTrigger>();
 
-        if (target != null && useSkill != null)
+        EventTrigger.Entry entry = new EventTrigger.Entry();
+
+        entry.eventID = EventTriggerType.Select; // Selectイベントをリッスン
+        entry.callback.AddListener((data) =>
         {
-            if (useSkill is MagicMiracle)
+            SetSkillDetail(button, s);
+        });
+
+        // エントリをトリガーリストに追加
+        trigger.triggers.Add(entry);
+    }
+
+    /// <summary>
+    /// スキル詳細欄を初期化する
+    /// </summary>
+    private void InitializeSkillDetail()
+    {
+        detailIcon.enabled = false;
+        detailName.text = "";
+        detailSPCost.text = "-";
+        detailCategory.text = "";
+        detailDescription.text = "";
+        detailMPCost.text = "-";
+        detailTPCost.text = "-";
+        detailRecast.text = "-";
+        detailLearn.text = "-";
+        detailAttributeOne.enabled = false;
+        detailAttributeTwo.enabled = false;
+        detailAttributeThree.enabled = false;
+        detailAttributeFour.enabled = false;
+        detailAttributeFive.enabled = false;
+        detailAttributeSix.enabled = false;
+        war.color = CommonController.GetColor(Constants.darkGray);
+        pld.color = CommonController.GetColor(Constants.darkGray);
+        mnk.color = CommonController.GetColor(Constants.darkGray);
+        thf.color = CommonController.GetColor(Constants.darkGray);
+        rng.color = CommonController.GetColor(Constants.darkGray);
+        src.color = CommonController.GetColor(Constants.darkGray);
+        clc.color = CommonController.GetColor(Constants.darkGray);
+        sps.color = CommonController.GetColor(Constants.darkGray);
+    }
+
+    /// <summary>
+    /// スキル詳細欄を設定する
+    /// </summary>
+    /// <param name="skill"></param>
+    private void SetSkillDetail(GameObject button, Skill skill)
+    {
+        selectedSkill = skill;
+        lastSelectButtonIndex = button.transform.parent.transform.GetSiblingIndex();
+
+        detailIcon.enabled = true;
+        detailIcon.sprite = skill.icon;
+        detailName.text = skill.skillName;
+        detailSPCost.text = skill.spCost.ToString();
+        detailCategory.text = CommonController.GetSkillCategoryString(skill.skillCategory);
+        detailDescription.text = skill.description;
+
+        if (skill is MagicMiracle)
+        {
+            var m = skill as MagicMiracle;
+            detailMPCost.text = m.MPCost.ToString();
+        }
+        else
+        {
+            detailMPCost.text = "-";
+        }
+
+        if (skill is Arts)
+        {
+            var a = skill as Arts;
+            detailTPCost.text = a.TPCost.ToString();
+        }
+        else
+        {
+            detailTPCost.text = "-";
+        }
+
+        if (skill is ActiveSkill)
+        {
+            var a = skill as ActiveSkill;
+            detailTPCost.text = a.recastTurn.ToString();
+        }
+        else
+        {
+            detailRecast.text = "-";
+        }
+
+        detailLearn.text = skill.learn;
+
+        #region 属性・クラス
+        if (skill.attributes.Count >= 1)
+        {
+            detailAttributeOne.enabled = true;
+            detailAttributeOne.sprite = skill.attributes[0].icon;
+        }
+        if (skill.attributes.Count >= 2)
+        {
+            detailAttributeTwo.enabled = true;
+            detailAttributeTwo.sprite = skill.attributes[1].icon;
+        }
+        if (skill.attributes.Count >= 3)
+        {
+            detailAttributeThree.enabled = true;
+            detailAttributeThree.sprite = skill.attributes[2].icon;
+        }
+        if (skill.attributes.Count >= 4)
+        {
+            detailAttributeFour.enabled = true;
+            detailAttributeFour.sprite = skill.attributes[3].icon;
+        }
+        if (skill.attributes.Count >= 5)
+        {
+            detailAttributeFive.enabled = true;
+            detailAttributeFive.sprite = skill.attributes[4].icon;
+        }
+        if (skill.attributes.Count >= 6)
+        {
+            detailAttributeSix.enabled = true;
+            detailAttributeSix.sprite = skill.attributes[5].icon;
+        }
+
+        foreach (var C in skill.usableClasses)
+        {
+            if (C.ID == "01")
             {
-                allyStatus.UseSkill(useSkill, target);
-
-                // HP・MP再表示
-                SetHPAndMPToSubWindow();
-                InithializeCharacterStatus();
-
+                war.color = Color.white;
             }
+            if (C.ID == "02")
+            {
+                pld.color = Color.white;
+            }
+            if (C.ID == "03")
+            {
+                mnk.color = Color.white;
+            }
+            if (C.ID == "04")
+            {
+                thf.color = Color.white;
+            }
+            if (C.ID == "05")
+            {
+                rng.color = Color.white;
+            }
+            if (C.ID == "06")
+            {
+                src.color = Color.white;
+            }
+            if (C.ID == "07")
+            {
+                clc.color = Color.white;
+            }
+            if (C.ID == "08")
+            {
+                sps.color = Color.white;
+            }
+
+        }
+        #endregion
+    }
+
+    /// </summary>
+    /// 装備一覧ボタン押下時の動作を設定する
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="item"></param>
+    private void AddOnClickActionToSkillButton(GameObject obj, Skill skill, AllyStatus ch)
+    {
+        var button = obj.GetComponent<Button>();
+        if (button != null)
+        {
+            button.onClick.AddListener( async () => await OnClickActionToSkillButton(skill, ch));
         }
     }
 
+    /// <summary>
+    /// ボタン押下時アクションをボタンに設定
+    /// </summary>
+    /// <param name="skill"></param>
+    private async UniTask OnClickActionToSkillButton(Skill skill, AllyStatus ch)
+    {
+        switch (skill.skillCategory)
+        {
+            case Constants.SkillCategory.Miracle:
+                DisplaySubMenu(skill);
+                break;
+            case Constants.SkillCategory.Active:
+            case Constants.SkillCategory.Passive:
+                ch.EquipSkill(skill);
+                await Init();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /// <summary>
+    /// キャラクター選択サブメニューを表示する
+    /// </summary>
+    /// <param name="item"></param>
+    private void DisplaySubMenu(Skill skill)
+    {
+
+        var selectedButton = EventSystem.current.currentSelectedGameObject;
+        // アイテム選択時
+        Vector3 pos = selectedButton.transform.position;
+
+        // 一覧の下側のアイテムが選択されたらサブウインドウをカーソルの上側に表示
+        float offset = pos.y < 320 ? 85 : -100;
+
+        // カーソル位置を記憶するため、選択中のアイテムのインデックスを保存
+        lastSelectButtonIndex = selectedButton.transform.parent.transform.GetSiblingIndex();
+
+        var position = new Vector3(pos.x + 490, pos.y + offset, pos.z);
+
+        subWindowInstance = Instantiate(subWindow, position, Quaternion.identity, transform.parent);
+        var controller = subWindowInstance.GetComponent<ItemMenuSubWindowController>();
+        if (controller != null)
+        {
+            controller.skill = skill;
+            controller.userIndex = currentCharacterIndex;
+            controller.skillMenuController = this;
+        }
+        ToggleButtonsInteractable(content, false);
+        setButtonFillAmount(content, lastSelectButtonIndex);
+    }
+
+    /// <summary>
+    /// キャラクター切り替え
+    /// </summary>
+    /// <returns></returns>
+    private async UniTask ChangeCharacter()
+    {
+        float duration = 0.2f;
+        
+        await characterImage.gameObject.GetComponent<SpriteManipulator>().FadeOut(duration);
+        SetCharacterInfo();
+
+        Color color = CommonController.GetCharacterColorByIndex(currentCharacterIndex);
+
+        ToggleButtonsInteractable(content, true);
+
+        InitializeSkillDetail();
+
+        lastSelectButtonIndex = 0;
+        await Init();
+
+        
+        await UniTask.WhenAll(       
+            characterImage.gameObject.GetComponent<SpriteManipulator>().FadeIn(duration),
+            gradation.gameObject.GetComponent<SpriteManipulator>().AnimateColor(color, duration * 2),
+            nameBackGradation.gameObject.GetComponent<SpriteManipulator>().AnimateColor(color, duration * 2)
+            );
+    }
+
+    private void UpdateSkillCategory()
+    {
+        //var rect = underBar.GetComponent<RectTransform>();
+
+        for (int i = 0; i < skillCategories.Count; i++)
+        {
+            skillCategories[i].color = CommonController.GetColor(Constants.darkGray);
+        }
+        skillCategories[currentSkillCategoryIndex].color = Color.white;
+        //rect.anchoredPosition = new Vector2(underBarPositions[currentSkillCategoryIndex], rect.anchoredPosition.y);
+    }
+
+    private async UniTask SlideUnderBar(float duration = 0.2f)
+    {
+        var rect = underBar.GetComponent<RectTransform>();
+        var pos = new Vector2(underBarPositions[currentSkillCategoryIndex], rect.anchoredPosition.y);
+        await rect.DOAnchorPos(pos, duration).SetEase(Ease.InOutQuad).SetUpdate(true);
+    }
+
+    ///　--------------------------------------------------------------- ///
+    ///　--------------------------- 汎用処理 --------------------------- ///
+    ///　--------------------------------------------------------------- ///
+
+    private void SetInputActions()
+    {
+        if (playerInput != null)
+        {
+            // InputActionAssetを取得
+            var inputActionAsset = playerInput.actions;
+
+            // "Main"アクションマップを取得
+            var actionMap = inputActionAsset.FindActionMap("Menu");
+            // アクションを取得
+            var rs = actionMap.FindAction("RightShoulder");
+            var ls = actionMap.FindAction("LeftShoulder");
+            var rt = actionMap.FindAction("RightTrigger");
+            var lt = actionMap.FindAction("LeftTrigger");
+            var cancel = actionMap.FindAction("Cancel");
+            var general = actionMap.FindAction("General");
+
+            // イベントリスナーを設定
+            cancel.performed += OnPressCancelButton;
+            general.performed += OnPressGeneralButton;
+            rs.performed += OnPressRSButton;
+            ls.performed += OnPressLSButton;
+            rt.performed += OnPressRTButton;
+            lt.performed += OnPressLTButton;
+
+            // アクションマップを有効にする
+            actionMap.Enable();
+        }
+    }
+
+    void RemoveInputActions()
+    {
+        // イベントリスナーを解除
+        if (playerInput != null)
+        {
+            // InputActionAssetを取得
+            var inputActionAsset = playerInput.actions;
+            // "Main"アクションマップを取得
+            var actionMap = inputActionAsset.FindActionMap("Menu");
+            // アクションを取得
+            var rs = actionMap.FindAction("RightShoulder");
+            var ls = actionMap.FindAction("LeftShoulder");
+            var rt = actionMap.FindAction("RightTrigger");
+            var lt = actionMap.FindAction("LeftTrigger");
+            var cancel = actionMap.FindAction("Cancel");
+            var general = actionMap.FindAction("General");
+
+            cancel.performed -= OnPressCancelButton;
+            general.performed -= OnPressGeneralButton;
+            rs.performed -= OnPressRSButton;
+            ls.performed -= OnPressLSButton;
+            rt.performed -= OnPressRTButton;
+            lt.performed -= OnPressLTButton;
+        }
+    }
 
     /// <summary>
     /// キャンセルボタン押下時処理
     /// </summary>
     public async void OnPressCancelButton(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && !isClosing)
         {
-            if (CommonVariableManager.ShowingMenuState == Constants.MenuState.Skill)
+            isClosing = true;
+            Debug.Log("cancel button is performing.");
+            if (subWindowInstance != null)
             {
-                // サブメニュー非表示の場合 ⇒ メイン画面に戻る
-                if (!subWindow.activeSelf)
-                {
-                    SkillScreen.SetActive(false);
-
-                    CommonVariableManager.ShowingMenuState = Constants.MenuState.Main;
-                    MainScreen.SetActive(true);
-                }
-                // サブメニュー表示中の場合⇒ スキル欄に戻る
-                else
-                {
-                    subWindow.SetActive(false);
-
-                    ToggleInteractableButtonsInChildren(content.transform, true);
-                    //ToggleInteractableButtonsInChildren(.transform, true);
-
-                    await InitializeSkillMenu();
-
-                    // 記憶した行を選択
-                    SelectTargetIndexItem(content, lastSelectButtonIndex);
-                }
+                Destroy(subWindowInstance);
+                await Init();
             }
+            else
+            {
+                // アイテムメニューのフェードアウト
+                await FadeOut(gameObject, 0.3f);
+                if (mainMenuController != null)
+                {
+                    // メインメニューの初期化
+                    await mainMenuController.InitializeFromChildren("Skill");
+                }
+                // アイテムメニューインスタンスの破棄
+                gameObject.SetActive(false);
+            }
+            isClosing = false;
         }
     }
 
     /// <summary>
-    /// R1(R・RB)ボタン押下
+    /// 汎用ボタン押下時 - 装備中スキルをはずす
     /// </summary>
     /// <param name="context"></param>
-    public async void OnPressRightShoulderButton(InputAction.CallbackContext context)
+    public async void OnPressGeneralButton(InputAction.CallbackContext context)
     {
-        if (CommonVariableManager.ShowingMenuState == Constants.MenuState.Skill)
+        if (context.performed && subWindowInstance == null)
         {
-            if (context.performed)
+            if (selectedSkill != null)
             {
-                if (!subWindow.activeSelf)
-                {
-                    filterState = filterState + 1;
-                    if (filterState > 5)
-                    {
-                        filterState = 0;
-                    }
-                    await InitializeSkillList();
-                }
+                var ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+                await ch.UnEquipSkill(selectedSkill);
+
+                await Init();
             }
         }
     }
 
     /// <summary>
-    /// L1(L・LB)ボタン押下
+    /// Rボタン押下時処理 - スキルカテゴリ切り替え - 次ページ
+    /// </summary>
+    public async void OnPressRSButton(InputAction.CallbackContext context)
+    {
+        if (context.performed && subWindowInstance == null)
+        {
+            currentSkillCategoryIndex = (currentSkillCategoryIndex + 1) % skillCategories.Count;
+            UpdateSkillCategory();
+
+            await UniTask.WhenAll(
+                 SlideUnderBar(),
+                SetSkillList());
+
+            ToggleButtonsInteractable(content, true);
+            SelectButton(content, 0);
+        }
+    }
+
+    /// <summary>
+    /// Lボタン押下時処理 - スキルカテゴリ切り替え - 前ページ
+    /// </summary>
+    public async void OnPressLSButton(InputAction.CallbackContext context)
+    {
+        if (context.performed && subWindowInstance == null)
+        {
+            currentSkillCategoryIndex = (currentSkillCategoryIndex - 1 + skillCategories.Count) % skillCategories.Count;
+            UpdateSkillCategory();
+
+            await UniTask.WhenAll(
+                 SlideUnderBar(),
+                SetSkillList());
+
+            ToggleButtonsInteractable(content, true);
+            SelectButton(content, 0);
+        }
+    }
+
+    /// <summary>
+    /// RTボタン押下時処理 - キャラクター切り替え - 次ページ
     /// </summary>
     /// <param name="context"></param>
-    public async void OnPressLeftShoulderButton(InputAction.CallbackContext context)
+    public async void OnPressRTButton(InputAction.CallbackContext context)
     {
-        if (CommonVariableManager.ShowingMenuState == Constants.MenuState.Skill)
+        if (context.performed && subWindowInstance == null)
         {
-            if (context.performed)
-            {
-                if (!subWindow.activeSelf)
-                {
-                    filterState = filterState - 1;
-                    if (filterState < 0)
-                    {
-                        filterState = 5;
-                    }
-                    await InitializeSkillList();
-                }
-            }
+            currentCharacterIndex = (currentCharacterIndex + 1) % characterNames.Count;
+            UpdateCharacterName();
+
+            await ChangeCharacter();
         }
     }
 
     /// <summary>
-    /// R2(ZR・RT)ボタン押下 キャラクター切り替え
+    /// LTボタン押下時処理 - キャラクター切り替え - 前ページ
     /// </summary>
     /// <param name="context"></param>
-    public async void OnPressRightTriggerButton(InputAction.CallbackContext context)
+    public async void OnPressLTButton(InputAction.CallbackContext context)
     {
-        if (CommonVariableManager.ShowingMenuState == Constants.MenuState.Skill)
+        if (context.performed && subWindowInstance == null)
         {
-            if (context.performed)
+            currentCharacterIndex = (currentCharacterIndex - 1 + characterNames.Count) % characterNames.Count;
+            UpdateCharacterName();
+
+            await ChangeCharacter();
+        }
+    }
+
+    /// <summary>
+    /// 左上キャラクター名称更新
+    /// </summary>
+    private void UpdateCharacterName()
+    {
+        currentCharacterName.text = characterNames[currentCharacterIndex];
+        nextCharacterName.text = characterNames[(currentCharacterIndex + 1) % characterNames.Count];
+        previousCharacterName.text = characterNames[(currentCharacterIndex - 1 + characterNames.Count) % characterNames.Count];
+
+        //ClearSkillDetailInfo();
+    }
+
+    /// <summary>
+    /// ボタンのInteractableを切り替える
+    /// </summary>
+    /// <param name="interactable">有効/無効</param>
+    public void ToggleButtonsInteractable(GameObject obj, bool interactable)
+    {
+        for (int i = 0; i < obj.transform.childCount; i++)
+        {
+            Transform child = obj.transform.GetChild(i);
+            Button button = child.GetComponentInChildren<Button>();
+
+            if (button != null)
             {
-                if (!subWindow.activeSelf)
-                {
-                    showingCharacterID = showingCharacterID + 1;
-                    if (showingCharacterID > 4)
-                    {
-                        showingCharacterID = 1;
-                    }
-                    await InitializeSkillMenu();
-                }
+                button.interactable = interactable;
             }
         }
     }
 
     /// <summary>
-    /// L2(ZL・LT)ボタン押下 キャラクター切り替え
+    /// ボタンを選択状態にする
     /// </summary>
-    /// <param name="context"></param>
-    public async void OnPressLeftTriggerButton(InputAction.CallbackContext context)
+    /// <param name="number"></param>
+    public void SelectButton(GameObject obj, int number = 0)
     {
-        if (CommonVariableManager.ShowingMenuState == Constants.MenuState.Skill)
+        if (eventSystem != null && obj.transform.childCount > 0)
         {
-            if (context.performed)
-            {
-                if (!subWindow.activeSelf)
-                {
-                    showingCharacterID = showingCharacterID - 1;
-                    if (showingCharacterID < 1)
-                    {
-                        showingCharacterID = 4;
-                    }
-                    await InitializeSkillMenu();
-                }
-            }
+            var buttonToSelect = obj.transform.GetChild(number).GetChild(0).gameObject;
+            eventSystem.SetSelectedGameObject(buttonToSelect);
         }
     }
 
     /// <summary>
-    /// オブジェクト配下の指定の順序のスキルを選択する
+    /// ボタンのFillAmountを操作する
     /// </summary>
-    public void SelectTargetIndexItem(GameObject target, int index = 0)
+    /// <param name="number">対象ボタンのコマンド内でのインデックス</param>
+    public void setButtonFillAmount(GameObject obj, int number)
     {
-        if (target != null && content.transform.childCount > 0)
+        int numberOfChildren = obj.transform.childCount;
+
+        // 対象インデックスに該当するボタンのみFillAmountを1にし、それ以外は0にする
+        for (int i = 0; i < numberOfChildren; i++)
         {
-            if (index > target.transform.childCount - 1)
-            {
-                index = 0;
-            }
-
-            Transform targetItemTF = target.transform.GetChild(index);
-
-            if (targetItemTF != null)
-            {
-                Transform firstItemButton = targetItemTF.Find("Button");
-
-                if (firstItemButton != null)
-                {
-                    GameObject gameObject = firstItemButton.gameObject;
-                    Button button = gameObject.GetComponent<Button>();
-                    eventSystem.SetSelectedGameObject(gameObject);
-                }
-                //SetItemInformation(targetItemTF);
-            }
+            int fillAmount = i == number ? 1 : 0;
+            Transform child = obj.transform.GetChild(i);
+            Image buttonImage = child.GetComponentInChildren<Image>();
+            buttonImage.fillAmount = fillAmount;
         }
     }
 
     /// <summary>
-    /// オブジェクト配下の全てのボタンのInteractableを切り替える
+    /// 一覧内のボタンをすべて破棄する
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="toggle"></param>
-    private void ToggleInteractableButtonsInChildren(Transform parent, bool toggle)
+    /// <returns></returns>
+    public async UniTask DestroyButtons()
     {
-        // 子オブジェクトの数を取得
-        int childCount = parent.childCount;
-
-        // 子オブジェクトを順番にチェックしてButtonコンポーネントを持つか確認
-        for (int i = 0; i < childCount; i++)
-        {
-            Transform child = parent.GetChild(i);
-
-            // Buttonコンポーネントを持つ場合、Interactableを変更する
-            Button buttonComponent = child.GetComponent<Button>();
-            if (buttonComponent != null)
-            {
-                buttonComponent.interactable = toggle;
-            }
-
-            // 再帰的に子オブジェクトの子オブジェクトを検索する
-            ToggleInteractableButtonsInChildren(child, toggle);
-        }
-    }
-
-    /// <summary>
-    /// スキル一覧内の子オブジェクトを削除(0.01秒待機)
-    /// </summary>
-    private async Task DestroyChildren(GameObject content, string childName)
-    {
+        //var content = GameObject.FindWithTag("ScrollViewContent");
         // アイテム一覧内のオブジェクトを削除
         int childCount = content.transform.childCount;
         for (int i = childCount - 1; i >= 0; i--)
         {
             Transform child = content.transform.GetChild(i);
-            //if (child.name == childName)
-            //{
             Destroy(child.gameObject);
-            //}
         }
-        await Task.Delay(1);
+        await UniTask.DelayFrame(1);
     }
 
-    private async void SetHPAndMPToSubWindow()
+    public async UniTask FadeIn(float duration = 0.3f)
     {
-
-        AllyStatus allyStatus = new AllyStatus();
-
-        int loopCount = 0;
-
-        for (int i = 1; i < 5; i++)
+        // ゲームオブジェクトと CanvasGroup の存在を確認
+        if (gameObject != null && gameObject.activeInHierarchy)
         {
-            allyStatus = await CommonController.GetAllyStatus(i);
-            List<int> texts = new List<int> { allyStatus.maxHp2, allyStatus.hp, allyStatus.maxMp2, allyStatus.mp };
-
-            for (int j = 0; j < 4; j++)
+            CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
             {
-                subWindowHPMP.transform.GetComponentsInChildren<TextMeshProUGUI>()[loopCount].text = texts[j].ToString();
-                loopCount++;
+                // 透明度を1にアニメーション
+                await canvasGroup.DOFade(1, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
+                canvasGroup.interactable = true;
             }
         }
     }
+
+    public async UniTask FadeOut(GameObject gameObject, float duration = 0.3f)
+    {
+        // ゲームオブジェクトと CanvasGroup の存在を確認
+        if (gameObject != null && gameObject.activeInHierarchy)
+        {
+            CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                // 透明度を0にアニメーション
+                await canvasGroup.DOFade(0, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
+                canvasGroup.interactable = false;
+            }
+            // アニメーション完了後にゲームオブジェクトを破棄
+            if (gameObject != null)
+            {
+                //Destroy(gameObject);
+            }
+        }
+    }
+
 
 }

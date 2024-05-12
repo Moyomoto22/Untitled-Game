@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -199,7 +200,8 @@ public class AllyStatus : CharacterStatus
     public int sp;
     //最大SP
     public int maxSp;
-    
+    // 装備中スキル
+    public List<Skill> equipedSkills;
 
     /// <summary>
     /// 指定部位にアイテムを装備
@@ -341,6 +343,67 @@ public class AllyStatus : CharacterStatus
         // ステータス再計算
         CalcStatus();
 
+    }
+
+    /// <summary>
+    /// スキルを装備する
+    /// </summary>
+    /// <param name="skill"></param>
+    public async void EquipSkill(Skill skill)
+    {
+        if (skill.CanEquip(this))
+        {
+            equipedSkills.Add(skill);
+            CalcStatus();
+
+            sp += skill.spCost;
+            if (sp > maxSp)
+            {
+                sp = maxSp;
+            }
+
+            var manager = SPGauge.GetComponent<GaugeManager>();
+            if (manager != null)
+            {
+                await manager.AnimateTextAndGauge(sp, 0.2f);
+            }
+        }
+    }
+
+    /// <summary>
+    /// スキルをはずす
+    /// </summary>
+    /// <param name="skill"></param>
+    public async UniTask UnEquipSkill(Skill skill)
+    {
+        if (equipedSkills.Contains(skill))
+        {
+            equipedSkills.Remove(skill);
+            CalcStatus();
+            sp -= skill.spCost;
+            if (sp < 0)
+            {
+                sp = 0;
+            }
+
+            var manager = SPGauge.GetComponent<GaugeManager>();
+            if (manager != null)
+            {
+                await manager.AnimateTextAndGauge(sp, 0.2f);
+            }
+        }
+    }
+
+    private void ApplyPassiveSkillsEffect()
+    {
+        foreach(Skill skill in equipedSkills)
+        {
+            if (skill is PassiveSkill)
+            {
+                var p = skill as PassiveSkill;
+                p.applyPassiveEffect(this);
+            }
+        }
     }
 
     /// <summary>
@@ -493,7 +556,8 @@ public class AllyStatus : CharacterStatus
         inte2 = inte2 + (rightArm?.inte ?? 0) + (leftArm?.inte ?? 0) + (head?.inte ?? 0) + (body?.inte ?? 0) + (accessary1?.inte ?? 0) + (accessary2?.inte ?? 0);
         mnd2 = mnd2 + (rightArm?.mnd ?? 0) + (leftArm?.mnd ?? 0) + (head?.mnd ?? 0) + (body?.mnd ?? 0) + (accessary1?.mnd ?? 0) + (accessary2?.mnd ?? 0);
 
-        
+        // パッシブスキル
+        ApplyPassiveSkillsEffect();
 
         // 物理攻撃力依存値 武器によってSTR or DEX or INT or MNDを攻撃力に加算
         int pAttackCorect = str2;
@@ -571,7 +635,7 @@ public class AllyStatus : CharacterStatus
     /// スキルを着脱する
     /// </summary>
     /// <param name="skill"></param>
-    public void SetSkill(Skill skill, bool isEquip)
+    public void EquipSkill(Skill skill, bool isEquip)
     {
         if (!skill.isEquipped)
         {
@@ -641,19 +705,6 @@ public class AllyStatus : CharacterStatus
         //    }
         //}
         return "";
-    }
-
-    public virtual void UseSkill(Skill skill, AllyStatus targetStatus)
-    {
-        if (CanUseSKill(skill))
-        {
-            //int returnCode = SkillEffects.EffectManager(skill.effect, this, targetStatus, skill.baseValue, skill.statusRatio, skill.times);
-
-            //if (returnCode == 0)
-            //{
-            //    ConsumeSkillCost(skill);
-            //}
-        }
     }
 
     /// <summary>

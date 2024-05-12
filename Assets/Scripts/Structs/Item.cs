@@ -45,7 +45,7 @@ public class Item : ScriptableObject
     // ‘ÎÛ‚ª‘S‘Ì‚©
     public bool isTargetAll;
     // Œø‰Ê
-    public List<Constants.EffectType> effects;
+    public List<Constants.ActiveEffectType> effects;
     // Œø‰Ê—Ê
     public int baseValue;
     // g—pÒ
@@ -63,7 +63,7 @@ public class Item : ScriptableObject
         bool result = true;
         foreach (var effectType in effects)
         {
-            Effect effect = Effect.Instance;
+            ActiveEffect effect = ActiveEffect.Instance;
             effect.Initialize(null, this);
             result = await effect.CallEffect(effectType, User, Objective);
         }

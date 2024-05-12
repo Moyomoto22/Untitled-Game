@@ -85,6 +85,7 @@ public class MainMenuController : MonoBehaviour
     public PlayerInput playerInput;
 
     int showingCharacterID = 1;
+    int lastSelectButtonIndex = 0;
 
     StatusMenuController statusMenuController;
 
@@ -104,6 +105,7 @@ public class MainMenuController : MonoBehaviour
     {
         DOTween.Init();
         await Initialize();
+        lastSelectButtonIndex = 0;
     }
 
     void OnDisable()
@@ -343,23 +345,15 @@ public class MainMenuController : MonoBehaviour
 
     public async UniTask GoToSkillMenu(int characterIndex)
     {
+        eventSystem.enabled = false;
         Destroy(characterSelectSubMenuInstance);
         await FadeOutChildren(main);
-
+        RemoveInputActions();
         header.text = "ÉXÉLÉã";
-
-        if (equipMenuInstance == null)
-        {
-            equipMenuInstance = Instantiate(equipMenuObject, transform);
-            equipMenuInstance.transform.SetSiblingIndex(3);
-            var controller = equipMenuInstance.GetComponent<EquipMenuController>();
-            controller.mainMenu = main;
-            controller.mainMenuController = this;
-            controller.currentCharacterIndex = characterIndex;
-            await controller.Initialize();
-
-
-        }
+        var controller = skillMenuObject.GetComponent<SkillMenuController>();
+        controller.currentCharacterIndex = characterIndex;
+        skillMenuObject.SetActive(true);
+        eventSystem.enabled = true;
     }
 
     public void OnPressClassButton()
@@ -458,6 +452,7 @@ public class MainMenuController : MonoBehaviour
     public void OnSelectButton(int index)
     {
         var infoMessage = "";
+        lastSelectButtonIndex = index;
 
         switch (index)
         {
@@ -544,7 +539,7 @@ public class MainMenuController : MonoBehaviour
         SetAllyStatuses();
         SetInputActions();
         await FadeInChildren(main);
-        SelectButton();
+        SelectButton(lastSelectButtonIndex);
     }
 
     public async UniTask FadeInChildren(GameObject gameObject, float duration = 0.3f)

@@ -167,7 +167,7 @@ public class Constants : MonoBehaviour
     }
 
     // Œø‰ÊŽí•Ê
-    public enum EffectType
+    public enum ActiveEffectType
     {
         AttackWithWeapon,
         Guard,
@@ -176,6 +176,18 @@ public class Constants : MonoBehaviour
         HealMpByItem,
         PhysicalDamage,
         MagicalDamage        
+    }
+
+    public enum PassiveEffectType
+    {
+        GainMAXHP,
+        GainMAXMP,
+        GainSTR,
+        GainVIT,
+        GainDEX,
+        GainAGI,
+        GainINT,
+        GainMND,
     }
 
     // ƒŒƒAƒŠƒeƒB

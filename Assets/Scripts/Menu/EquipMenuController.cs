@@ -135,6 +135,8 @@ public class EquipMenuController : MonoBehaviour
         var items = ItemInventory2.Instance.items;
         equips = items.OfType<Equip>().ToList();
 
+        currentWeaponCategoryIndex = 0;
+        lastSelectButtonIndex = 0;
         currentPartIndex = 0;
 
         SetCharacterInfo();     // キャラクター情報設定
@@ -149,6 +151,8 @@ public class EquipMenuController : MonoBehaviour
         ToggleButtonsInteractable(content, false);
 
         InitializeEquipDetail(); // 装備詳細初期化
+
+        await SetEquipToList();
 
         SelectButton(equipPartButtonParent, 0); // 装備部位選択欄を選択
         setButtonFillAmount(equipPartButtonParent, 0);

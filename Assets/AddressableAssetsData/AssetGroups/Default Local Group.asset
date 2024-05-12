@@ -1,3 +1,53 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f78937e00f01637c89dfd55b6274afe43cce0a4c2752eb211621438206afeb02
-size 1661
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_Data:
+    m_SerializedData: []
+  m_GUID: d52e04c10ef626a4d83da58fbb80e102
+  m_SerializeEntries:
+  - m_GUID: 1b8fd11cb0f93c74ca47cec07b778836
+    m_Address: Assets/Data/Item/ItemInventory.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d6550bf347809f94f9ae750da0dc6fdb
+    m_Address: Assets/InputActions/InputAction.inputactions
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b434ef5604ef1684380414a0972932a0
+    m_Address: Assets/Scripts/Ally/Alex.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: e75e99e1175979346b27dc9088584087
+    m_Address: Assets/Scripts/Ally/Nico.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 9be58abfd051f3c48b0a5c52c7e70e1a
+    m_Address: Assets/Scripts/Ally/Tabatha.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 693148e0ed3a4134d9ca193f69569882
+    m_Address: Assets/Scripts/Ally/Alicia.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2fe4eb5f9ec51264dbe49e63f2b96c9b
+    m_Address: Assets/Prefabs/MainMenu/03_Skill.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 2d9634da25610de4caecbb5484905dff, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 67d3b2d917d27a045963fe26de68c8ea, type: 2}
+    - {fileID: 11400000, guid: 9cb09a45778799d4cb847abc65cd534f, type: 2}

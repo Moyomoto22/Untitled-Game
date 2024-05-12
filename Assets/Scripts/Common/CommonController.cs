@@ -472,7 +472,7 @@ public class CommonController : MonoBehaviour
         return str;
     }
 
-    public static string GetSKillCategoryString(Constants.SkillCategory category)
+    public static string GetSkillCategoryString(Constants.SkillCategory category)
     {
         string str = "";
 

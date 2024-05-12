@@ -255,6 +255,8 @@ public abstract class CharacterStatus : ScriptableObject
     public GameObject HPGauge;
     public GameObject MPGauge;
     public GameObject TPGauge;
+    public GameObject SPGauge;
+    public GameObject EXPGauge;
 
 
     public CharacterStatus()
@@ -338,12 +340,16 @@ public abstract class CharacterStatus : ScriptableObject
     public async UniTask<bool> UseSkill(Skill skill, CharacterStatus objective)
     {
         bool result = true;
-        if (skill != null && skill.usable)
+        if (skill != null && skill.usable && CanUseSkill(skill))
         {
             // スキルの効果を適用する
             skill.User = this;
             skill.Objective = objective;
-            result = await skill.applyEffect();
+            result = await skill.applyActiveEffect();
+        }
+        else
+        {
+            return false;
         }
         return result;
     }

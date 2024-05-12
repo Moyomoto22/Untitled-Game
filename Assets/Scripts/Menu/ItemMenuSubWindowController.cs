@@ -11,6 +11,7 @@ public class ItemMenuSubWindowController : MonoBehaviour
     private EventSystem eventSystem;
 
     public ItemMenuController itemMenuController;
+    public SkillMenuController skillMenuController;
 
     public List<GameObject> buttons;
 
@@ -18,6 +19,9 @@ public class ItemMenuSubWindowController : MonoBehaviour
     public List<GameObject> MPGauges;
 
     public Item item;
+
+    public int userIndex;
+    public Skill skill;
 
     private void Awake()
     {
@@ -68,7 +72,14 @@ public class ItemMenuSubWindowController : MonoBehaviour
 
     public async void OnPressButton(int index)
     {
-        await ItemToAlly(index);
+        if (item != null)
+        {
+            await ItemToAlly(index);
+        }
+        else if (skill != null)
+        {
+            await SkillToAlly(index);
+        }
     }
 
     /// <summary>
@@ -100,6 +111,31 @@ public class ItemMenuSubWindowController : MonoBehaviour
                         Destroy(gameObject);
                     }
                 }
+                ToggleButtonsInteractable(true);
+                SelectButton(index);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 味方へアイテムを使用する
+    /// </summary>
+    /// <param name="index">使用者のパーティ内インデックス</param>
+    /// <returns></returns>
+    private async UniTask SkillToAlly(int index)
+    {
+        if (skill != null)
+        {
+            // 対象の仲間のインスタンスを取得
+            var user = PartyMembers.Instance.GetAllyByIndex(userIndex);
+            var target = PartyMembers.Instance.GetAllyByIndex(index);
+
+            if (target != null)
+            {
+                ToggleButtonsInteractable(false);
+                // スキルを使用
+                bool result = await user.UseSkill(skill, target);
+
                 ToggleButtonsInteractable(true);
                 SelectButton(index);
             }

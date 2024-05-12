@@ -35,17 +35,11 @@ public abstract class Skill : ScriptableObject
     [SerializeField]
     public int spCost;
     //　属性
-    [SerializeField]
-    public List<Constants.Attribute> attributes;
-    //　習得クラス
-    [SerializeField]
-    public Class learnClass;
-    //　習得レベル
-    [SerializeField]
-    public int learnLevel;
-    //　効果
-    [SerializeField]
-    public List<Constants.EffectType> effects;
+    public List<Attibute> attributes;
+    // 習得方法s
+    public string learn;
+    // アクティブ効果
+    public List<Constants.ActiveEffectType> effects;
     // 基礎値
     public int baseValue;
     // 補正ステータス
@@ -61,8 +55,13 @@ public abstract class Skill : ScriptableObject
     // 対象が全体か
     public bool isTargetAll;
     //　装備中か
-    [SerializeField]
     public bool isEquipped;
+    // 使用可能クラス
+    public List<Class> usableClasses;
+    // メニュー画面で使用できるか
+    public bool canUseInMenu = false;
+    // EXスキルか
+    public bool isExSkill = false;
 
     public CharacterStatus User;
     public CharacterStatus Objective;
@@ -70,16 +69,35 @@ public abstract class Skill : ScriptableObject
     // スキル使用可能判定 基底メソッド
     public abstract bool CanUse(CharacterStatus user);
 
+    // スキル装備可能判定
+    public bool CanEquip(AllyStatus user)
+    {
+        var leftSp = user.maxSp - user.sp;
+        if (!(this is ActiveSkill || this is PassiveSkill))
+        {
+            return false;
+        }
+        if (leftSp <= spCost)
+        {
+            return false;
+        }
+        else if (user.equipedSkills.Contains(this))
+        {
+            return false;
+        }
+        return true;
+    }
+
     /// <summary>
     /// スキルの効果を適用する
     /// </summary>
     /// <returns></returns>
-    public async UniTask<bool> applyEffect()
+    public async UniTask<bool> applyActiveEffect()
     {
         var result = true;
         foreach(var effectType in effects)
         {
-            Effect effect = Effect.Instance;
+            ActiveEffect effect = ActiveEffect.Instance;
             effect.Initialize(this, null);
             result = await effect.CallEffect(effectType, User, Objective);
         }
