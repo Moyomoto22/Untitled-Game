@@ -28,6 +28,7 @@ using UnityEngine.UI;
 [RequireComponent (typeof(Mask))]
 public class FadeUI : MonoBehaviour, IFade
 {
+	public Texture2D maskTexture { get; set; }
 
 	[SerializeField, Range (0, 1)]
 	private float cutoutRange;

@@ -40,6 +40,8 @@ public class Item : ScriptableObject
     // 装備中メンバーID
     [SerializeField]
     public int equippedAllyID;
+    // 装備中部位インデックス 0:右手 1:左手 2:頭 3:胴 4:装飾品1 5:装飾品2
+    public int equippedPart;
     // 対象 0:なし 1:自分 2:味方 3:敵  
     public int target;
     // 対象が全体か

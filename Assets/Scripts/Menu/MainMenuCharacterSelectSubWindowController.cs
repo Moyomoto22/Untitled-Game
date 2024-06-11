@@ -38,7 +38,8 @@ public class MainMenuCharacterSelectSubWindowController : MonoBehaviour
 
     public async void OnPressButton(int index)
     {
-        switch(destinationMenuIndex)
+        SoundManager.Instance.PlaySubmit();
+        switch (destinationMenuIndex)
         {
             case 1:
                 await mainMenuController.GoToEquipMenu(index);

@@ -452,6 +452,8 @@ public class ClassMenuController : MonoBehaviour
     /// <param name="skill"></param>
     public async void OnPressClassButton(int index)
     {
+        SoundManager.Instance.PlaySubmit();
+
         Class cl = ClassManager.Instance.GetClassByIndex(index);
         int currentCharacterClassIndex = GetCharacterClassIndex();
         if (index != currentCharacterClassIndex)
@@ -474,6 +476,8 @@ public class ClassMenuController : MonoBehaviour
     {
         if (context.performed && gameObject.activeSelf == true)
         {
+            SoundManager.Instance.PlayCancel();
+            
             // クラスメニューのフェードアウト
             await FadeOutChildren(gameObject, 0.3f);
             // クラスメニューインスタンスの破棄

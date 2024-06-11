@@ -5,6 +5,18 @@ using UnityEngine;
 // 共通変数マネージャ
 public class CommonVariableManager : MonoBehaviour
 {
+    // 現在のシーン名
+    public static string currentSceneName = "AbandonedFortress1F";
+    public static void SetCurrentSceneName(string sceneName)
+    {
+        currentSceneName = sceneName;
+    }
+
+    public static string GetCurrentSceneName()
+    {
+        return currentSceneName;
+    }
+
     #region プレイヤーの移動可否
     public static bool playerCanMove = true;
 

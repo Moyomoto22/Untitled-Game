@@ -18,9 +18,6 @@ public class MagicMiracle : Skill
     // 詠唱時間
     [SerializeField]
     public double castTime;
-    // 使用可能クラス
-    [SerializeField]
-    public List<Class> usableClasses;
 
     public override bool CanUse(CharacterStatus user)
     {

@@ -262,4 +262,43 @@ public class TextAnimationManager : MonoBehaviour
         // DOTweenのアニメーションをUniTaskとして返す
         return text.DOFade(0, 0.2f).ToUniTask();
     }
+
+    /// <summary>
+    /// レベルアップテキスト表示アニメーション(フェードインさせつつ跳ねさせる)
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask LevelUpAnimation()
+    {
+        textMesh.gameObject.SetActive(true);
+        textMesh.DOFade(0, 0);
+
+        DOTweenTMPAnimator tmproAnimator = new DOTweenTMPAnimator(textMesh);
+
+        for (int i = 0; i < tmproAnimator.textInfo.characterCount; ++i)
+        {
+            Vector3 currCharOffset = tmproAnimator.GetCharOffset(i);
+            tmproAnimator.DOScaleChar(i, 0.4f, 0);
+            DOTween.Sequence()
+                .Append(tmproAnimator.DOOffsetChar(i, currCharOffset + new Vector3(0, 30, 0), 0.2f).SetEase(Ease.OutFlash, 2))
+                .Join(tmproAnimator.DOFadeChar(i, 1, 0.2f))
+                .Join(tmproAnimator.DOScaleChar(i, 1, 0.2f).SetEase(Ease.OutBack))
+                .SetDelay(0.07f * i);
+        }
+    }
+
+    /// <summary>
+    /// テキストを一瞬だけ拡大する
+    /// </summary>
+    /// <param name="scale"></param>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    public async UniTask TextScaleFlash(float scale = 1.5f, float duration = 0.2f)
+    {
+        // 現在のスケールを保存
+        Vector3 originalScale = textMesh.transform.localScale;
+        // スケールを拡大
+        await textMesh.transform.DOScale(originalScale * scale, duration).SetEase(Ease.OutBack).AsyncWaitForCompletion();
+        // 元のスケールに戻す
+        await textMesh.transform.DOScale(originalScale, duration).SetEase(Ease.InBack).AsyncWaitForCompletion();
+    }
 }

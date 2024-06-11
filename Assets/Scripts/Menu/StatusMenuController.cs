@@ -55,10 +55,13 @@ public class StatusMenuController : MonoBehaviour
     public TextMeshProUGUI CL;
     public TextMeshProUGUI MH;
     public TextMeshProUGUI H;
+    public GameObject HPGauge;
     public TextMeshProUGUI MM;
     public TextMeshProUGUI M;
+    public GameObject MPGauge;
     public TextMeshProUGUI MT;
     public TextMeshProUGUI T;
+    public GameObject TPGauge;
     public TextMeshProUGUI PA;
     public TextMeshProUGUI MA;
     public TextMeshProUGUI PD;
@@ -180,8 +183,8 @@ public class StatusMenuController : MonoBehaviour
         characterLevel.text = ch.level.ToString();
         characterClassAb.text = ch.Class.classAbbreviation;
 
-        currentExp.text = ch.earnedExperience.ToString();
-        nextExp.text = ch.nextExperience.ToString();
+        currentExp.text = ch.GetCurrentClassEarnedExp().ToString();
+        nextExp.text = ch.GetCurrentClassNextExp().ToString();
         totalExp.text = ch.totalExperience.ToString();
 
         CL.text = ch.Class.className;
@@ -205,6 +208,8 @@ public class StatusMenuController : MonoBehaviour
         MC.text = ch.mCrit.ToString() + " %";
         PAV.text = ch.pAvo.ToString() + " %";
         MAV.text = ch.mAvo.ToString() + " %";
+
+        UpdateGauges();
 
         leftArm.color = Color.white;
 
@@ -324,6 +329,19 @@ public class StatusMenuController : MonoBehaviour
         //gaugeManager.updateGaugeByText();
     }
 
+    private void UpdateGauges()
+    {
+        var e = EXPGauge.GetComponent<GaugeManager>();
+        var h = HPGauge.GetComponent<GaugeManager>();
+        var m = MPGauge.GetComponent<GaugeManager>();
+        var t = TPGauge.GetComponent<GaugeManager>();
+
+        e.updateGaugeByText();
+        h.updateGaugeByText();
+        m.updateGaugeByText();
+        t.updateGaugeByText();
+    }
+
     /// <summary>
     /// キャラクター切り替え
     /// </summary>
@@ -415,6 +433,8 @@ public class StatusMenuController : MonoBehaviour
     {
         if (context.performed)
         {
+            SoundManager.Instance.PlayCancel();
+
             //if (subWindowInstance != null)
             //{
             //    Destroy(subWindowInstance);
@@ -422,8 +442,8 @@ public class StatusMenuController : MonoBehaviour
             //}
             //else
             //{
-                // アイテムメニューのフェードアウト
-                await FadeOut(gameObject, 0.3f);
+            // アイテムメニューのフェードアウト
+            await FadeOut(gameObject, 0.3f);
                 if (mainMenuController != null)
                 {
                     // メインメニューの初期化
@@ -481,6 +501,8 @@ public class StatusMenuController : MonoBehaviour
     {
         if (context.performed)
         {
+            SoundManager.Instance.PlaySelect(0.5f);
+
             currentCharacterIndex = (currentCharacterIndex + 1) % characterNames.Count;
             UpdateCharacterName();
 
@@ -496,6 +518,8 @@ public class StatusMenuController : MonoBehaviour
     {
         if (context.performed)
         {
+            SoundManager.Instance.PlaySelect(0.5f);
+
             currentCharacterIndex = (currentCharacterIndex - 1 + characterNames.Count) % characterNames.Count;
             UpdateCharacterName();
 

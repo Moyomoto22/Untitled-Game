@@ -9,8 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/Battle.unity
     guid: 2d572eea63821f9488aea7047c8733a6
   - enabled: 1
-    path: Assets/Scripts/Status/SampleScene.unity
+    path: Assets/Scenes/AbandonedFortress1F.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/AbandonedFortressB1.unity
+    guid: a43bd28e8365d8741b8ba48b31a225c9
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 2549247bae510aa4fb1e3311f504c075, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: e3af19adedb7dfa4eb35978384bf4298, type: 2}

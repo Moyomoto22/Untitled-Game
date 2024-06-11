@@ -159,6 +159,8 @@ public class ItemMenuController : MonoBehaviour
     {
         if (context.performed && !isClosing)
         {
+            SoundManager.Instance.PlayCancel();
+
             isClosing = true;
             Debug.Log("cancel button is performing.");
             if (subWindowInstance != null)
@@ -311,6 +313,14 @@ public class ItemMenuController : MonoBehaviour
         {
             var buttonToSelect = content.transform.GetChild(number).GetChild(0).gameObject;
             var buttonTitle = content.transform.GetChild(number).GetChild(2).GetComponent<TextMeshProUGUI>().text;
+
+            // スクリプトから選択状態にする場合、効果音は鳴らさない
+            var controller = buttonToSelect.GetComponent<MainMenuButtonManager>();
+            if (controller != null)
+            {
+                controller.shouldPlaySound = false;
+            }
+
             Debug.Log(buttonTitle);
             eventSystem.SetSelectedGameObject(buttonToSelect);
         }
@@ -336,6 +346,7 @@ public class ItemMenuController : MonoBehaviour
     /// <param name="item"></param>
     private void OnClickActionToItemButton(Item item)
     {
+        SoundManager.Instance.PlaySubmit();
         // 対象が味方かつ単体の時
         if (item.target == 2 && !item.isTargetAll)
         {
@@ -471,6 +482,7 @@ public class ItemMenuController : MonoBehaviour
     /// </summary>
     public async UniTask NextCategory()
     {
+        SoundManager.Instance.PlaySelect(0.5f);
         currentCategoryIndex = (currentCategoryIndex + 1) % categoryImages.Count;
 
         SetCategoryImage();
@@ -482,6 +494,7 @@ public class ItemMenuController : MonoBehaviour
     /// </summary>
     public async UniTask PreviousCategory()
     {
+        SoundManager.Instance.PlaySelect(0.5f);
         currentCategoryIndex = (currentCategoryIndex - 1 + categoryImages.Count) % categoryImages.Count;
 
         SetCategoryImage();

@@ -80,3 +80,9 @@ Assets/Fonts/YasashisaBold SDF_Outline.mat
 Assets/Fonts/YasashisaBold SDF_Outline.mat.meta
 Assets/Fonts/YasashisaBold.ttf
 Assets/Fonts/YasashisaBold.ttf.meta
+
+# Assets
+Assets/Models/*
+Assets/UnityChan/*
+Assets/Fantastic Dungeon Pack/*
+Assets/FANTASTIC - Dungeon Pack/*

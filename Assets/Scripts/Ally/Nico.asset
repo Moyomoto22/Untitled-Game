@@ -15,9 +15,9 @@ MonoBehaviour:
   characterName: "\u30CB\u30B3"
   level: 1
   maxHp: 36
-  hp: 1
+  hp: 54
   maxMp: 20
-  mp: 0
+  mp: 10
   maxTp: 100
   tp: 0
   str: 15
@@ -91,55 +91,7 @@ MonoBehaviour:
   body: {fileID: 0}
   accessary1: {fileID: 0}
   accessary2: {fileID: 0}
-  learnedSkills:
-  - {fileID: 11400000, guid: db22a439c706c714c87073840e8b2799, type: 2}
-  - {fileID: 11400000, guid: 4e0745ca128f2184ab3f4ed2319ebacb, type: 2}
-  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}
-  - {fileID: 11400000, guid: 8bf685123cdb33546be2c705a9c75bac, type: 2}
-  - {fileID: 11400000, guid: acf00bbd8400e7942b9e0f5e919be0a4, type: 2}
-  - {fileID: 11400000, guid: d5730bebb8915f643b17cc45c023ace2, type: 2}
-  - {fileID: 11400000, guid: c9c9f75ccf9285c408a040c13f556292, type: 2}
-  - {fileID: 11400000, guid: 963b6a0bfe4c2a54181bfe97300e4cd8, type: 2}
-  - {fileID: 11400000, guid: 453874f90f721c247ab98dbaaa70cf34, type: 2}
-  - {fileID: 11400000, guid: e7ce14699fdedb14d9d30f2770ca8ce8, type: 2}
-  - {fileID: 11400000, guid: a88b233c9be66f946a45848ea3d93794, type: 2}
-  - {fileID: 11400000, guid: aed6b936a297d33429989573b814c0f9, type: 2}
-  - {fileID: 11400000, guid: 8292cbdbc946a534392acfa0d75cd4e5, type: 2}
-  - {fileID: 11400000, guid: 0c33f1b2f87468240b004b32be7de326, type: 2}
-  - {fileID: 11400000, guid: bfdbef919398130499d61e26b4d69dd9, type: 2}
-  - {fileID: 11400000, guid: 42712ba13b238e44ab7471c59f050778, type: 2}
-  - {fileID: 11400000, guid: 99e94ffffe527dc418667ed05b1ca0f4, type: 2}
-  - {fileID: 11400000, guid: a6afe91273c020240a4751afcbf4a915, type: 2}
-  - {fileID: 11400000, guid: 60849c1754be6ce47855130425fac58a, type: 2}
-  - {fileID: 11400000, guid: 8516740486e052b49b8c36ec452af254, type: 2}
-  - {fileID: 11400000, guid: 165172292a75b264f993c70a31c758e4, type: 2}
-  - {fileID: 11400000, guid: 821592493ea87bb429702c7063e4aa63, type: 2}
-  - {fileID: 11400000, guid: 747f04ac75026f44aa261f8a0b3b338b, type: 2}
-  - {fileID: 11400000, guid: ae664c66d0c1ee147a599872faa5da59, type: 2}
-  - {fileID: 11400000, guid: 1ac0da3d4f9c4494385461a29a96fc98, type: 2}
-  - {fileID: 11400000, guid: 52e0b1f7fd02ac142b293c976815ea21, type: 2}
-  - {fileID: 11400000, guid: 58e32d7238fa43f489d8fb13f2127818, type: 2}
-  - {fileID: 11400000, guid: a984eb17348ff3d4398ad30141795a86, type: 2}
-  - {fileID: 11400000, guid: aa24f781afe0c7a4a9c88afc33ffdda2, type: 2}
-  - {fileID: 11400000, guid: cd44ed237d2180e418ac3769a4793309, type: 2}
-  - {fileID: 11400000, guid: d563b64ef32d014499c45f47e5174cc7, type: 2}
-  - {fileID: 11400000, guid: 21671342da8801c4d9c859a55f80074b, type: 2}
-  - {fileID: 11400000, guid: bfdedc756373a83429d6ec91b546ee73, type: 2}
-  - {fileID: 11400000, guid: 8ad52fdcec15aed4c86ec5ed0fa3ee82, type: 2}
-  - {fileID: 11400000, guid: 14f46571285df7e4daffc7eac7f28974, type: 2}
-  - {fileID: 11400000, guid: 8a91beb144a6433469b8832134f797f0, type: 2}
-  - {fileID: 11400000, guid: 8cc3d9efc6e4c4e4c96741112277f2a2, type: 2}
-  - {fileID: 11400000, guid: f053803d50531f54bbd47f53211e7f42, type: 2}
-  - {fileID: 11400000, guid: bcd1996920bdf634e81e2f259e835e13, type: 2}
-  - {fileID: 11400000, guid: 573dd8a91cc8fd34599fe67009f9a3c6, type: 2}
-  - {fileID: 11400000, guid: 17f59381062d33e45a028f33899adbb8, type: 2}
-  - {fileID: 11400000, guid: 32061c07b9a680240a1f447a5cf7f723, type: 2}
-  - {fileID: 11400000, guid: 240fd788db3a78e4ea522ca58c171c6f, type: 2}
-  - {fileID: 11400000, guid: 00148ce4bec309945a557bb73892a232, type: 2}
-  - {fileID: 11400000, guid: ff06f9cf1b779aa45b457f2c0e21d12b, type: 2}
-  - {fileID: 11400000, guid: 5736254ee60c9664dbed1a760200eeb0, type: 2}
-  - {fileID: 11400000, guid: 93dfd70163ab2f54a84a65c9c0125c12, type: 2}
-  - {fileID: 11400000, guid: 3b8e1067c73b6374c9adced296d6b43f, type: 2}
+  learnedSkills: []
   resistPhysical: 0
   resistMagic: 0
   resistSlash: 0
@@ -167,13 +119,12 @@ MonoBehaviour:
   color: {r: 0.7019608, g: 0.1764706, b: 0.2509804, a: 1}
   CharacterID: 2
   Class: {fileID: 11400000, guid: 1883cbc5b14817e4eb9b2a7a96d28e67, type: 2}
-  earnedExperience: 0
-  nextExperience: 0
   totalExperience: 0
+  totalLevel: 0
   pAttackLeft: 0
   classLevels: 0100000001000000010000000100000001000000010000000100000001000000
   classEarnedExps: 0000000000000000000000000000000000000000000000000000000000000000
-  classNextExps: 0000000000000000000000000000000000000000000000000000000000000000
+  classNextExps: 2800000028000000280000002800000028000000280000002800000028000000
   swordLevel: 0
   bladeLevel: 0
   daggerLevel: 0

@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
     public CinemachineVirtualCamera vCamera;
 
     private Animator anim;
-    public CommonController common;
     Quaternion targetRotation;
 
     public float Speed;
@@ -28,7 +27,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
-        common = GameObject.Find("Scripts").GetComponent<CommonController>();
         vCamera = vCamera.gameObject.GetComponent<CinemachineVirtualCamera>();
         baseEnemySeeing = GameObject.Find("BaseEnemySeeing").GetComponent<SeeingEnemyController>().EnemyPartyStatuses;
         baseEnemyHearing = GameObject.Find("BaseEnemyHearing").GetComponent<HearingEnemyController>().EnemyPartyStatuses;
@@ -37,8 +35,6 @@ public class PlayerController : MonoBehaviour
         // カメラの位置を復元
         //vCamera.GetCinemachineComponent(CinemachineCore.Stage.Aim).GetComponent<CinemachinePOV>().m_VerticalAxis.Value = CommonVariableManager.Getvh()[0];
         //vCamera.GetCinemachineComponent(CinemachineCore.Stage.Aim).GetComponent<CinemachinePOV>().m_HorizontalAxis.Value = CommonVariableManager.Getvh()[1];
-
-
 
         // プレイヤーの位置を復元
         gameObject.transform.position = CommonVariableManager.GetPlayerPosition();
@@ -120,7 +116,7 @@ public class PlayerController : MonoBehaviour
     /// 敵との接触時イベント
     /// </summary>
     /// <param name="collision"></param>
-    private void OnCollisionEnter(Collision collision)
+    private async void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Enemy")
         {
@@ -191,7 +187,7 @@ public class PlayerController : MonoBehaviour
             }
 
             // トランシジョンをフェードインし暗転
-            StartCoroutine(SceneController.Instance.SwitchScene("Battle"));
+            await SceneController.Instance.SwitchFieldAndBattleScene("Battle");
             //StartCoroutine(SceneController.Instance.SwitchScene("Battle"));
         }
     }

@@ -416,6 +416,7 @@ public class SkillMenuController : MonoBehaviour
     /// <param name="skill"></param>
     private async UniTask OnClickActionToSkillButton(Skill skill, AllyStatus ch)
     {
+        SoundManager.Instance.PlaySubmit();
         switch (skill.skillCategory)
         {
             case Constants.SkillCategory.Miracle:
@@ -576,6 +577,8 @@ public class SkillMenuController : MonoBehaviour
     {
         if (context.performed && !isClosing)
         {
+            SoundManager.Instance.PlayCancel();
+
             isClosing = true;
             Debug.Log("cancel button is performing.");
             if (subWindowInstance != null)
@@ -624,6 +627,8 @@ public class SkillMenuController : MonoBehaviour
     {
         if (context.performed && subWindowInstance == null)
         {
+            SoundManager.Instance.PlaySelect(0.5f);
+
             currentSkillCategoryIndex = (currentSkillCategoryIndex + 1) % skillCategories.Count;
             UpdateSkillCategory();
 
@@ -643,6 +648,8 @@ public class SkillMenuController : MonoBehaviour
     {
         if (context.performed && subWindowInstance == null)
         {
+            SoundManager.Instance.PlaySelect(0.5f);
+
             currentSkillCategoryIndex = (currentSkillCategoryIndex - 1 + skillCategories.Count) % skillCategories.Count;
             UpdateSkillCategory();
 
@@ -663,6 +670,8 @@ public class SkillMenuController : MonoBehaviour
     {
         if (context.performed && subWindowInstance == null)
         {
+            SoundManager.Instance.PlaySelect(0.5f);
+
             currentCharacterIndex = (currentCharacterIndex + 1) % characterNames.Count;
             UpdateCharacterName();
 
@@ -678,6 +687,8 @@ public class SkillMenuController : MonoBehaviour
     {
         if (context.performed && subWindowInstance == null)
         {
+            SoundManager.Instance.PlaySelect(0.5f);
+            
             currentCharacterIndex = (currentCharacterIndex - 1 + characterNames.Count) % characterNames.Count;
             UpdateCharacterName();
 
@@ -724,6 +735,14 @@ public class SkillMenuController : MonoBehaviour
         if (eventSystem != null && obj.transform.childCount > 0)
         {
             var buttonToSelect = obj.transform.GetChild(number).GetChild(0).gameObject;
+
+            // スクリプトから選択状態にする場合、効果音は鳴らさない
+            var controller = buttonToSelect.GetComponent<MainMenuButtonManager>();
+            if (controller != null)
+            {
+                controller.shouldPlaySound = false;
+            }
+
             eventSystem.SetSelectedGameObject(buttonToSelect);
         }
     }

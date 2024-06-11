@@ -43,6 +43,14 @@ public class ItemInventory2 : MonoBehaviour
         return items.Remove(item);
     }
 
+    private void RemoveAllItems()
+    {
+        if (items != null)
+        {
+            items.Clear();
+        }
+    }
+
     /// <summary>
     /// アイテムのディープコピーを作成する
     /// </summary>
@@ -59,5 +67,18 @@ public class ItemInventory2 : MonoBehaviour
         JsonUtility.FromJsonOverwrite(json, newInstance);
 
         return newInstance;
+    }
+
+    /// <summary>
+    /// セーブデータからアイテム一覧を取得する
+    /// </summary>
+    public void GetItemsFromSavedData(List<Item> loadedData)
+    {
+        RemoveAllItems();
+
+        foreach (Item item in loadedData)
+        {
+            AddItem(item);
+        }
     }
 }

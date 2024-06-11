@@ -1,3 +1,51 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:662321c6dcee38e5030278478172822cd391e9d3a893e9b4ffc8a372b6a6bd2b
-size 479
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Enemy
+  - MenuOutline
+  - Projectile
+  - MenuScreen
+  - ButtoninSubWIndow
+  - ScrollViewContent
+  - CMFreeLook
+  - VirtualCamera
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Post
+  - Water
+  - UI
+  - CameraBlocker
+  - Player
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0

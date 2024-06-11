@@ -66,7 +66,7 @@ public class OrderManager: MonoBehaviour
         RemoveAllCharacters();
         characters = new List<CharacterSpeed>();
 
-        var allies = PartyMembers.Instance.GetAllies();
+        var allies = PartyMembers.Instance.partyMembers;
         for (int i = 0; i < allies.Count; i++)
         {
             AddCharacter(i, allies[i].agi2);

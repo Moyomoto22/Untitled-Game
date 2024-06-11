@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 3a7750a5c282fb447a5349600934e590
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - enemyStatus: {instanceID: 0}
+  - status: {fileID: 11400000, guid: 66324a2abeb06f34695dbac4e9a897f7, type: 2}
+  - HPGauge: {instanceID: 0}
+  - skillNameWindow: {instanceID: 0}
+  - manipulator: {instanceID: 0}
+  - spriteGlow: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

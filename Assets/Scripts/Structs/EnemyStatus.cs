@@ -11,7 +11,10 @@ public class EnemyStatus : CharacterStatus
     public int exp;
     public int gold;
 
-    public Item earnedItem;
+    public Item dropItemOne;
+    public float dropRateOne;
+    public Item dropItemTwo;
+    public float dropRateTwo;
 
     public EnemyStatus()
     {

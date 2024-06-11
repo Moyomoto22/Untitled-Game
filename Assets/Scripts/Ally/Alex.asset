@@ -15,9 +15,9 @@ MonoBehaviour:
   characterName: "\u30A2\u30EC\u30C3\u30AF\u30B9"
   level: 1
   maxHp: 36
-  hp: 1
+  hp: 23
   maxMp: 20
-  mp: 0
+  mp: 31
   maxTp: 100
   tp: 0
   str: 15
@@ -46,7 +46,7 @@ MonoBehaviour:
   mCnt: 0
   pCut: 0
   mCut: 0
-  isGuarded: 1
+  isGuarded: 0
   isStaned: 0
   isPoisoned: 0
   poisonRemainingTurn: 0
@@ -120,13 +120,12 @@ MonoBehaviour:
   color: {r: 0.23529412, g: 0.32156864, b: 0.7176471, a: 1}
   CharacterID: 1
   Class: {fileID: 11400000, guid: eb898587e05f2ea4dac0220a1c43292d, type: 2}
-  earnedExperience: 0
-  nextExperience: 0
   totalExperience: 0
+  totalLevel: 0
   pAttackLeft: 0
   classLevels: 0100000001000000010000000100000001000000010000000100000001000000
   classEarnedExps: 0000000000000000000000000000000000000000000000000000000000000000
-  classNextExps: 0000000000000000000000000000000000000000000000000000000000000000
+  classNextExps: 2800000028000000280000002800000028000000280000002800000028000000
   swordLevel: 0
   bladeLevel: 0
   daggerLevel: 0
@@ -169,4 +168,4 @@ MonoBehaviour:
   totalExperienceShield: 0
   sp: 0
   maxSp: 10
-  equipedSkill: []
+  equipedSkills: []

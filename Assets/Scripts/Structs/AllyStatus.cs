@@ -23,21 +23,15 @@ public class AllyStatus : CharacterStatus
     //　クラス
     [SerializeField]
     public Class Class;
-    //　獲得経験値
-    [SerializeField]
-    public int earnedExperience;
-    [SerializeField]
-    public int nextExperience;
     //　累計経験値
-    [SerializeField]
     public int totalExperience;
+    public int totalLevel;
 
     // 物理攻撃力(左)
     [SerializeField]
     public int pAttackLeft;
 
     #region クラス別レベル・経験値
-
     public List<int> classLevels;
     public List<int> classEarnedExps;
     public List<int> classNextExps;
@@ -253,6 +247,7 @@ public class AllyStatus : CharacterStatus
             if (!isEquipDummy)
             {
                 item.equippedAllyID = CharacterID;
+                item.equippedPart = index;
             }
             // ステータス再計算
             CalcStatus();
@@ -524,17 +519,17 @@ public class AllyStatus : CharacterStatus
     public void CalcStatus()
     {
         // 基礎ステータス
-        //int level = classLevels[Class.ID - 1] - 1;
+        int index = level - 1;
 
-        //maxHp = Constants.hpGrow[level];
-        //maxMp = Constants.mpGrow[level];
-        //str = Constants.prmGrow[level];
-        //vit = Constants.prmGrow[level];
-        //dex = Constants.prmGrow[level];
-        //agi = Constants.prmGrow[level];
-        //inte = Constants.prmGrow[level];
-        //mnd = Constants.prmGrow[level];
-        //maxSp = Constants.spGrow[level];
+        maxHp = Constants.hpGrow[index];
+        maxMp = Constants.mpGrow[index];
+        str = Constants.prmGrow[index];
+        vit = Constants.prmGrow[index];
+        dex = Constants.prmGrow[index];
+        agi = Constants.prmGrow[index];
+        inte = Constants.prmGrow[index];
+        mnd = Constants.prmGrow[index];
+        maxSp = Constants.spGrow[index];
 
         // クラス補正
         maxHp2 = (int)(maxHp * Class.hpRate);
@@ -618,17 +613,10 @@ public class AllyStatus : CharacterStatus
         {
             mp = maxMp2;
         }
-    }
 
-    /// <summary>
-    /// スキルを習得する
-    /// </summary>
-    /// <param name="skill"></param>
-    public void LearnSkill(Skill skill)
-    {
-        // クローンを作成
-        Skill newSkill = Instantiate(skill);
-        learnedSkills.Add(newSkill);
+        // 必要経験値
+        int classIndex = ClassManager.Instance.AllClasses.IndexOf(Class);
+        classNextExps[classIndex] = CalcurateNextExp();
     }
 
     /// <summary>
@@ -664,83 +652,6 @@ public class AllyStatus : CharacterStatus
     }
 
     /// <summary>
-    /// スキルが装備可能か判定する
-    /// エラーメッセージを返却し、戻り値が空白なら装備可能とする
-    /// </summary>
-    /// <param name="skill"></param>
-    /// <returns></returns>
-    public string CanEquipSkill(Skill skill)
-    {
-        // エラーメッセージ
-        const string overSp = "SPが不足しています";
-
-        int leftSp = maxSp - sp;
-
-        // sp判定
-        if (skill.spCost > leftSp)
-        {
-            return overSp;
-        }
-
-        //if (skill is PassiveSkill)
-        //{
-        //    PassiveSkill passive = skill as PassiveSkill;
-        //    if (passive != null)
-        //    {
-        //        if (passive.spCost > leftSp)
-        //        {
-        //            return overSp;
-        //        }
-        //    }
-        //}
-        //else if (skill is ActiveSkill)
-        //{
-        //    ActiveSkill active = skill as ActiveSkill;
-        //    if (active != null)
-        //    {
-        //        if (active.spCost > leftSp)
-        //        {
-        //            return overSp;
-        //        }
-        //    }
-        //}
-        return "";
-    }
-
-    /// <summary>
-    /// スキルが使用可能か判定する
-    /// </summary>
-    /// <param name="skill"></param>
-    /// <returns></returns>
-    public bool CanUseSKill(Skill skill)
-    {
-        MagicMiracle magicMiracle = skill as MagicMiracle;
-        Arts arts = skill as Arts;
-        ActiveSkill active = skill as ActiveSkill;
-        //PassiveSkill passive = skill as PassiveSkill;
-
-        if (magicMiracle != null)
-        {
-            if (magicMiracle.usableClasses.Exists(x => x.name == Class.name) && magicMiracle.MPCost <= mp)
-            {
-                return true;
-            }
-        }
-        else if (arts != null)
-        {
-            if (arts.TPCost <= tp)
-            {
-                return true;
-            }
-        }
-        else if (active != null)
-        {
-
-        }
-        return false;
-    }
-
-    /// <summary>
     /// スキルコストを消費
     /// </summary>
     private void ConsumeSkillCost(Skill skill)
@@ -765,6 +676,12 @@ public class AllyStatus : CharacterStatus
     /// </summary>
     public void ChangeClass(Class newClass)
     {
+        int index = ClassManager.Instance.AllClasses.IndexOf(newClass);
+        // レベル設定
+        level = classLevels[index];
+        // クラス変更
+        Class = newClass;
+
         // 装備解除
         for (int i = 0; i < 6; i++)
         {
@@ -772,19 +689,123 @@ public class AllyStatus : CharacterStatus
         }
         // スキル全解除
         RemoveAllSkills();
-        // クラス変更
-        Class = newClass;
-        // レベル設定
-        //level = classLevels[newClass.ID - 1];
+        
         // 画像設定
         if (CharacterID > 0)
         {
-            characterImage = newClass.imagesA[CharacterID - 1];
+           // characterImage = newClass.imagesA[CharacterID - 1];
         }
 
         // ステータス再計算
         CalcStatus();
 
+    }
+
+    public async UniTask<int> GetExp(int exp)
+    {
+        int classIndex = ClassManager.Instance.AllClasses.IndexOf(Class);
+        bool doesLevelUp = false;
+
+        // 余剰経験値 = 獲得済経験値 + 獲得経験値 - 必要経験値
+        int surplusExp = classEarnedExps[classIndex] + exp - classNextExps[classIndex];
+        classEarnedExps[classIndex] += exp;
+
+        if (surplusExp >= 0)
+        {
+            doesLevelUp = true;
+            classEarnedExps[classIndex] = classNextExps[classIndex];
+            totalExperience += exp - surplusExp;
+        }
+        else
+        {
+            totalExperience += exp;
+        }
+        
+
+        var manager = EXPGauge.GetComponent<GaugeManager>();
+        if (manager != null)
+        {
+            await manager.AnimateTextAndGauge(classEarnedExps[classIndex], 0.2f);
+        }
+
+        if (doesLevelUp)
+        {
+            LevelUp();
+        }
+
+        return surplusExp;
+    }
+
+    public void LevelUp()
+    {
+        level++;
+
+        int index = ClassManager.Instance.AllClasses.IndexOf(Class);
+        classLevels[index]++;
+
+        // スキル習得
+        if (Class.LearnSkills.Count >= level)
+        {
+            Skill newSkill = Class.LearnSkills[level - 1];
+            LearnSkill(newSkill);
+        }
+
+        // 経験値リセット
+        classEarnedExps[index] = 0;
+
+        // ステータス再計算
+        CalcStatus();
+    }
+
+    /// <summary>
+    /// スキルを習得する
+    /// </summary>
+    /// <param name="skill"></param>
+    public void LearnSkill(Skill skill)
+    {
+        if (skill != null)
+        {
+            // クローンを作成
+            Skill newSkill = Instantiate(skill);
+            if (!learnedSkills.Contains(newSkill))
+            {
+                learnedSkills.Add(newSkill);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 次のレベルまでの必要経験値を計算する
+    /// </summary>
+    public int CalcurateNextExp()
+    {
+        if (Constants.requiredExp.Length >= level - 1)
+        {
+            // 基礎必要経験値
+            var baseRequiredEXP = Constants.requiredExp[level - 1];
+            // 次のレベルに到達済みの他クラスがいくつあるか
+            var count = classLevels.Where(x => x >= level + 1).ToList().Count;
+            // 基礎値 + 基礎値/2 * 到達済み他クラス数 (育成済みクラスが多いほど必要経験値が増える)
+            var newRequiredEXP = baseRequiredEXP + baseRequiredEXP / 2 * count;
+
+            return newRequiredEXP;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public int GetCurrentClassEarnedExp()
+    {
+        int index = ClassManager.Instance.AllClasses.IndexOf(Class);
+        return classEarnedExps[index];
+    }
+
+    public int GetCurrentClassNextExp()
+    {
+        int index = ClassManager.Instance.AllClasses.IndexOf(Class);
+        return classNextExps[index];
     }
 
     public List<int> ReturnStatusList(int classNo, Class cl)

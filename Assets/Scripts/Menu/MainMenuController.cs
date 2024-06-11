@@ -40,6 +40,9 @@ public class MainMenuController : MonoBehaviour
     public GameObject statusMenuObject;
     public GameObject statusMenuInstance;
 
+    public GameObject systemMenuObject;
+    public GameObject systemMenuInstance;
+
     public GameObject equip;
     public GameObject skill;
     public GameObject Class;
@@ -79,6 +82,8 @@ public class MainMenuController : MonoBehaviour
     public GameObject statusButton;
     [SerializeField]
     public GameObject classButton;
+    [SerializeField]
+    public GameObject systemButton;
 
     private GameObject selectedButton;
 
@@ -92,11 +97,14 @@ public class MainMenuController : MonoBehaviour
 
     StatusMenuController statusMenuController;
 
+    public TextMeshProUGUI playTime;
+
     //private VCamManager vcm = new VCamManager();
 
     // Start is called before the first frame update
-    void Start()
+    void Update()
     {
+        playTime.text = PlayTimeManager.Instance.FormatPlayTime();
     }
 
     async void OnEnable()
@@ -162,9 +170,11 @@ public class MainMenuController : MonoBehaviour
             // アクションを取得
             var cancel = actionMap.FindAction("Cancel");
             var openMenu = actionMap.FindAction("OpenMenu");
+            var general = actionMap.FindAction("General");
 
             cancel.performed += OnPressCancelButton;
             openMenu.performed += OnPressMenuButton;
+            general.performed += OnPressGeneralButton;
             // アクションマップを有効にする
             actionMap.Enable();
         }
@@ -182,9 +192,11 @@ public class MainMenuController : MonoBehaviour
             // アクションを取得
             var cancel = actionMap.FindAction("Cancel");
             var openMenu = actionMap.FindAction("OpenMenu");
+            var general = actionMap.FindAction("General");
 
             cancel.performed -= OnPressCancelButton;
             openMenu.performed -= OnPressMenuButton;
+            general.performed -= OnPressGeneralButton;
         }
     }
 
@@ -214,8 +226,8 @@ public class MainMenuController : MonoBehaviour
             mpGaugeManager.maxValueText.text = ally.maxMp2.ToString();            // 最大MPテキスト
             mpGaugeManager.currentValueText.text = ally.mp.ToString();            // 現在MPテキスト
             tpGaugeManager.currentValueText.text = ally.tp.ToString();            // 現在TPテキスト
-            expGaugeManager.maxValueText.text = ally.nextExperience.ToString();            // 最大EXPテキスト
-            expGaugeManager.currentValueText.text = ally.nextExperience.ToString();            // 現在EXPテキスト
+            expGaugeManager.maxValueText.text = ally.GetCurrentClassNextExp().ToString();            // 最大EXPテキスト
+            expGaugeManager.currentValueText.text = ally.GetCurrentClassEarnedExp().ToString();            // 現在EXPテキスト
 
             hpGaugeManager.updateGaugeByText();
             mpGaugeManager.updateGaugeByText();
@@ -262,6 +274,8 @@ public class MainMenuController : MonoBehaviour
     {
         if (context.performed)
         {
+            SoundManager.Instance.PlayCancel();
+
             if (characterSelectSubMenuInstance != null)
             {
                 Destroy(characterSelectSubMenuInstance);
@@ -274,17 +288,29 @@ public class MainMenuController : MonoBehaviour
     }
 
     /// <summary>
-    /// キャンセルボタン押下
+    /// メニューボタン押下
     /// </summary>
     /// <param name="context"></param>
     public async void OnPressMenuButton(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
+            SoundManager.Instance.PlayCancel();
             await CloseMenu();
         }
     }
 
+    /// <summary>
+    /// 汎用ボタン(△)押下
+    /// </summary>
+    /// <param name="context"></param>
+    public void OnPressGeneralButton(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            //SaveManager.Instance.SaveGame();
+        }
+    }
 
     /// <summary>
     /// メニュー画面を開く
@@ -314,6 +340,8 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public async void OnPressItemButton()
     {
+        SoundManager.Instance.PlaySubmit();
+        
         eventSystem.enabled = false;
         await FadeOutChildren(main);
         RemoveInputActions();
@@ -325,6 +353,8 @@ public class MainMenuController : MonoBehaviour
 
     public void OnPressEquipButton()
     {
+        SoundManager.Instance.PlaySubmit();
+
         DisplayCharacterSelectSubMenu(1);
     }
 
@@ -343,6 +373,8 @@ public class MainMenuController : MonoBehaviour
 
     public void OnPressSkillButton()
     {
+        SoundManager.Instance.PlaySubmit();
+
         DisplayCharacterSelectSubMenu(2);
     }
 
@@ -361,6 +393,8 @@ public class MainMenuController : MonoBehaviour
 
     public void OnPressClassButton()
     {
+        SoundManager.Instance.PlaySubmit();
+
         DisplayCharacterSelectSubMenu(3);
     }
 
@@ -383,6 +417,8 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public void OnPressStatusButton()
     {
+        SoundManager.Instance.PlaySubmit();
+
         DisplayCharacterSelectSubMenu(4);
     }
 
@@ -396,6 +432,23 @@ public class MainMenuController : MonoBehaviour
         var controller = statusMenuObject.GetComponent<StatusMenuController>();
         controller.currentCharacterIndex = characterIndex;
         statusMenuObject.SetActive(true);
+        eventSystem.enabled = true;
+    }
+
+    /// <summary>
+    /// メインメニュー システムボタン押下時
+    /// システム画面遷移処理
+    /// </summary>
+    public async void OnPressSystemButton()
+    {
+        SoundManager.Instance.PlaySubmit();
+
+        eventSystem.enabled = false;
+        await FadeOutChildren(main);
+        RemoveInputActions();
+        header.text = "システム";
+        systemMenuObject.SetActive(true);
+        //var controller = systemMenuObject.GetComponent<SystemMenuController>();
         eventSystem.enabled = true;
     }
 
@@ -450,6 +503,13 @@ public class MainMenuController : MonoBehaviour
         {
             var button = buttons[number];
 
+            // スクリプトから選択状態にする場合、効果音は鳴らさない
+            var controller = button.GetComponent<MainMenuButtonManager>();
+            if (controller != null)
+            {
+                controller.shouldPlaySound = false;
+            }
+
             eventSystem.SetSelectedGameObject(button.transform.GetChild(0).gameObject);
         }
     }
@@ -485,6 +545,9 @@ public class MainMenuController : MonoBehaviour
                 break;
             case 6:
                 infoMessage = Messages.OptionButton;
+                break;
+            case 7:
+                infoMessage = Messages.SystemButton;
                 break;
         }
         if (info != null)

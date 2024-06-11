@@ -362,6 +362,14 @@ public class EquipMenuController : MonoBehaviour
         if (eventSystem != null && obj.transform.childCount > 0)
         {
             var buttonToSelect = obj.transform.GetChild(number).GetChild(0).gameObject;
+
+            // スクリプトから選択状態にする場合、効果音は鳴らさない
+            var controller = buttonToSelect.GetComponent<MainMenuButtonManager>();
+            if (controller != null)
+            {
+                controller.shouldPlaySound = false;
+            }
+
             eventSystem.SetSelectedGameObject(buttonToSelect);
         }
     }
@@ -407,6 +415,8 @@ public class EquipMenuController : MonoBehaviour
     /// </summary>
     public void OnPressEquipColumnButton()
     {
+        SoundManager.Instance.PlaySubmit();
+
         if (content.transform.childCount > 0)
         {
             // カーソル位置を記憶するため、選択中の行のインデックスを保存
@@ -619,6 +629,8 @@ public class EquipMenuController : MonoBehaviour
     /// <param name="item"></param>
     private async void OnClickActionToEquipButton(Equip item, AllyStatus ch)
     {
+        SoundManager.Instance.PlaySubmit();
+
         ch.Equip(item, currentPartIndex);
 
         await Init(currentPartIndex);
@@ -877,6 +889,8 @@ public class EquipMenuController : MonoBehaviour
     /// <returns></returns>
     private async UniTask ChangeCharacter()
     {
+        SoundManager.Instance.PlaySelect(0.5f);
+
         SetCharacterInfo();
 
         Color color = CommonController.GetCharacterColorByIndex(currentCharacterIndex);
@@ -925,6 +939,8 @@ public class EquipMenuController : MonoBehaviour
     {
         if (context.performed)
         {
+            SoundManager.Instance.PlayCancel();
+
             // 装備欄選択中の場合 ⇒ メイン画面に戻る
             if (isSelectingPart)
             {
@@ -952,6 +968,7 @@ public class EquipMenuController : MonoBehaviour
         {
             if (isSelectingPart)
             {
+                SoundManager.Instance.PlayCancel();
                 var ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
                 ch.Unequip(currentPartIndex);
 
@@ -967,6 +984,7 @@ public class EquipMenuController : MonoBehaviour
     {
         if (context.performed)
         {
+            SoundManager.Instance.PlaySelect(0.5f);
             if (currentPartIndex <= 1)
             {
                 currentWeaponCategoryIndex = (currentWeaponCategoryIndex + 1) % weaponIcons.Count;
@@ -992,6 +1010,7 @@ public class EquipMenuController : MonoBehaviour
     {
         if (context.performed)
         {
+            SoundManager.Instance.PlaySelect(0.5f);
             if (currentPartIndex <= 1)
             {
                 currentWeaponCategoryIndex = (currentWeaponCategoryIndex - 1 + weaponIcons.Count) % weaponIcons.Count;

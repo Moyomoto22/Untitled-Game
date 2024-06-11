@@ -57,6 +57,29 @@ public class PartyMembers: MonoBehaviour
     }
 
     /// <summary>
+    /// セーブデータからパーティメンバーを取得する
+    /// </summary>
+    public void GetAlliesFromSavedData(List<AllyStatus> loadedData)
+    {
+
+        RemoveAllAllies();
+
+        for (int i = 0; i < 4; i++)
+        {
+            var allyInstance = loadedData[i];
+
+            if (allyInstance != null)
+            {
+                AddCharacterToParty(allyInstance);
+            }
+            else
+            {
+                Debug.LogError("Failed to load ally status");
+            }
+        }
+    }
+
+    /// <summary>
     /// AllyStatusのディープコピーを作成する
     /// </summary>
     /// <param name="original"></param>

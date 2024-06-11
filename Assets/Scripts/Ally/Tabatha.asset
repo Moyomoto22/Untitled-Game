@@ -1,3 +1,170 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ab8c288074b5aa0bb65addb27c406de839b2fc2e2940c3bea1285eedeaff7666
-size 3742
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ab49884c37aeef459065545023ae4bc, type: 3}
+  m_Name: Tabatha
+  m_EditorClassIdentifier: 
+  characterName: "\u30BF\u30D0\u30B5"
+  level: 1
+  maxHp: 36
+  hp: 39
+  maxMp: 20
+  mp: 9
+  maxTp: 100
+  tp: 0
+  str: 15
+  vit: 15
+  dex: 15
+  agi: 15
+  inte: 15
+  mnd: 15
+  maxHp2: 39
+  maxMp2: 9
+  str2: 21
+  vit2: 15
+  dex2: 12
+  agi2: 16
+  inte2: 7
+  mnd2: 6
+  pAttack: 21
+  mAttack: 7
+  pDefence: 15
+  mDefence: 3
+  pCrit: 2
+  mCrit: 2
+  pAvo: 2
+  mAvo: 2
+  pCnt: 2
+  mCnt: 0
+  pCut: 0
+  mCut: 0
+  isGuarded: 0
+  isStaned: 0
+  isPoisoned: 0
+  poisonRemainingTurn: 0
+  isToxiced: 0
+  toxicedRemainingTurn: 0
+  isParalyzed: 0
+  paralyzedRemainingTurn: 0
+  isSleeped: 0
+  sleepedRemainingTurn: 0
+  isSilenced: 0
+  silencedRemainingTurn: 0
+  isDazed: 0
+  dazedRemainingTurn: 0
+  isTempted: 0
+  temptedRemainingTurn: 0
+  isFrosted: 0
+  frostedRemainingTurn: 0
+  knockedOut: 0
+  pAttackEffect: 1
+  pAttackEffectRemainingTurn: 0
+  mAttackEffect: 1
+  mAttackEffectRemainingTurn: 0
+  pDefenceEffect: 1
+  pDefenceEffectRemainingTurn: 0
+  mDefenceEffect: 1
+  mDefenceEffectRemainingTurn: 0
+  agiEffect: 1
+  agiEffectRemainingTurn: 0
+  pCritEffect: 1
+  pCritEffectRemainingTurn: 0
+  mCritEffect: 1
+  mCritEffectRemainingTurn: 0
+  AvoidEffect: 1
+  AvoidEffectRemainingTurn: 0
+  pCutEffect: 1
+  pCutEffectRemainingTurn: 0
+  mCutEffect: 1
+  mCutEffectRemainingTurn: 0
+  rightArm: {fileID: 0}
+  leftArm: {fileID: 0}
+  head: {fileID: 0}
+  body: {fileID: 0}
+  accessary1: {fileID: 0}
+  accessary2: {fileID: 0}
+  learnedSkills: []
+  resistPhysical: 0
+  resistMagic: 0
+  resistSlash: 0
+  resistThrast: 0
+  resistBlow: 0
+  resistFire: 0
+  resistIce: 0
+  resistThunder: 0
+  resistWind: 0
+  resistPoison: 0
+  resistParalyze: 0
+  resistAsleep: 0
+  resistSilence: 0
+  resistDaze: 0
+  resistCharm: 0
+  resistFrostBite: 0
+  positionInScreen: {x: 82, y: -380}
+  spriteObject: {fileID: 0}
+  HPGauge: {fileID: 0}
+  MPGauge: {fileID: 0}
+  TPGauge: {fileID: 0}
+  SPGauge: {fileID: 0}
+  EXPGauge: {fileID: 0}
+  characterImage: {fileID: 21300000, guid: 82426c1ce7382674a87707fdcffe1f09, type: 3}
+  color: {r: 0.3647059, g: 0.12941177, b: 0.63529414, a: 1}
+  CharacterID: 3
+  Class: {fileID: 11400000, guid: f62d1d88ebc46624491c00846047cd3d, type: 2}
+  totalExperience: 0
+  totalLevel: 0
+  pAttackLeft: 0
+  classLevels: 0100000001000000010000000100000001000000010000000100000001000000
+  classEarnedExps: 0000000000000000000000000000000000000000000000000000000000000000
+  classNextExps: 2800000028000000280000002800000028000000280000002800000028000000
+  swordLevel: 0
+  bladeLevel: 0
+  daggerLevel: 0
+  spearLevel: 0
+  axLevel: 0
+  bowLevel: 0
+  fistLevel: 0
+  hammerLevel: 0
+  staffLevel: 0
+  shieldLevel: 0
+  earnedExperienceSword: 0
+  nextExperienceSword: 0
+  totalExperienceSword: 0
+  earnedExperienceBlade: 0
+  nextExperienceBlade: 0
+  totalExperienceBlade: 0
+  earnedExperienceDagger: 0
+  nextExperienceDagger: 0
+  totalExperienceDagger: 0
+  earnedExperienceSpear: 0
+  nextExperienceSpear: 0
+  totalExperienceSpear: 0
+  earnedExperienceAx: 0
+  nextExperienceAx: 0
+  totalExperienceAx: 0
+  earnedExperienceBow: 0
+  nextExperienceBow: 0
+  totalExperienceBow: 0
+  earnedExperienceFist: 0
+  nextExperienceFist: 0
+  totalExperienceFist: 0
+  earnedExperienceHammer: 0
+  nextExperienceHammer: 0
+  totalExperienceHammer: 0
+  earnedExperienceStaff: 0
+  nextExperienceStaff: 0
+  totalExperienceStaff: 0
+  earnedExperienceShield: 0
+  nextExperienceShield: 0
+  totalExperienceShield: 0
+  sp: 0
+  maxSp: 10
+  equipedSkills: []

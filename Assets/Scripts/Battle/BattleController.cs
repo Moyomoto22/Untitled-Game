@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using SpriteGlow;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,6 +21,10 @@ public class BattleController : MonoBehaviour
 
     public EventSystem eventSystem;
     public BattleCommandManager battleCommandManager;
+
+    public GameObject mainCanvas;
+    public GameObject resultCanvas;
+    public BattleResultControler resultController;
 
     public GameObject currentName;
     public GameObject nameBackground;
@@ -44,7 +49,9 @@ public class BattleController : MonoBehaviour
     public GameObject animatedText;
 
     private CancellationTokenSource cancellationTokenSource;
-    
+
+    private static readonly System.Random random = new System.Random();
+
     async void Start()
     {
         // 初期化処理
@@ -80,7 +87,7 @@ public class BattleController : MonoBehaviour
         //PartyMembers.Instance.Initialize();
         List<AllyStatus> allies = PartyMembers.Instance.GetAllies();
 
-        for (int i = 0; i < 4; i++) 
+        for (int i = 0; i < 4; i++)
         {
             AllyStatus allyStatus = allies[i]; //await CommonController.GetAllyStatus(i + 1);
             allyStatus.spriteObject = faceImages[i];                                    // 画面下部 バストアップ画像
@@ -161,7 +168,7 @@ public class BattleController : MonoBehaviour
     public async UniTask StartEnemiesTurn(int index)
     {
         // コマンドウインドウの操作を無効化
-        battleCommandManager.ToggleButtonsInteractable(true);
+        battleCommandManager.ToggleButtonsInteractable(false);
 
         var enemy = EnemyManager.Instance.InstantiatedEnemies[index];
         var behaviour = enemy.GetComponent<EnemyBehaviour>();
@@ -170,38 +177,51 @@ public class BattleController : MonoBehaviour
 
         await behaviour.PerformAction(target);
 
-        ChangeNextTurn();
+        await ChangeNextTurn();
     }
 
     /// <summary>
     /// ターン移行前準備
     /// </summary>
-    public async void ChangeNextTurn()
+    public async UniTask ChangeNextTurn()
     {
         // キャラクターが生存しているかチェック
         CheckCharactersAreAlive();
-        
-        // ターンキャラクターの行動回数をインクリメント
-        var index = TurnCharacter.Instance.CurrentCharacterIndex;
-        OrderManager.Instance.IncrementActionsTaken(index);
 
-        // ターン数をインクリメント
-        CommonVariableManager.turns += 1;
+        var aliveEnemies = EnemyManager.Instance.GetEnemiesInsExceptKnockedOut();
 
-
-        // 行動順取得・ターンキャラクター切り替え
-        OrderManager.Instance.GetActionOrder(CommonVariableManager.turns);
-
-        var turnCharacterIndex = TurnCharacter.Instance.CurrentCharacterIndex;
-
-        if (turnCharacterIndex < 4)
+        // 生存している敵がいれば続行
+        if (aliveEnemies.Count > 0)
         {
-            StartAllysTurn();
+
+            // ターンキャラクターの行動回数をインクリメント
+            var index = TurnCharacter.Instance.CurrentCharacterIndex;
+            OrderManager.Instance.IncrementActionsTaken(index);
+
+            // ターン数をインクリメント
+            CommonVariableManager.turns += 1;
+
+
+            // 行動順取得・ターンキャラクター切り替え
+            OrderManager.Instance.GetActionOrder(CommonVariableManager.turns);
+
+            var turnCharacterIndex = TurnCharacter.Instance.CurrentCharacterIndex;
+
+            if (turnCharacterIndex < 4)
+            {
+                StartAllysTurn();
+            }
+            else
+            {
+                var enemyIndex = turnCharacterIndex - 4;
+                await StartEnemiesTurn(enemyIndex);
+            }
         }
         else
         {
-            var enemyIndex = turnCharacterIndex - 4;
-            await StartEnemiesTurn(enemyIndex);
+            await UniTask.DelayFrame(120);
+            // 終了処理
+            EndBattle();
         }
     }
 
@@ -237,7 +257,7 @@ public class BattleController : MonoBehaviour
     {
         // 味方
         var allies = PartyMembers.Instance.GetAllies();
-        foreach(var ally in allies)
+        foreach (var ally in allies)
         {
             if (ally.hp <= 0 || ally.knockedOut)
             {
@@ -248,7 +268,7 @@ public class BattleController : MonoBehaviour
         // 敵
         var enemies = EnemyManager.Instance.InstantiatedEnemies;
         var count = enemies.Count;
-        for(int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++)
         {
             var comp = enemies[i].GetComponent<EnemyBehaviour>();
             var st = comp.status;
@@ -262,7 +282,7 @@ public class BattleController : MonoBehaviour
                     EnemyManager.Instance.FadeOutEnemyIns(enemies[i]);
                     EnemyManager.Instance.removeIndexFromAliveEnemyIndexes(i);
                 }
-                
+
             }
         }
     }
@@ -332,6 +352,91 @@ public class BattleController : MonoBehaviour
                 glowEffect.enabled = false;
             }
             cancellationTokenSource?.Cancel();
+        }
+    }
+
+    private async void EndBattle()
+    {
+        await FadeOut(mainCanvas);
+
+        resultController.earnedExp = CalculateEarnedExp();
+        resultController.earnedGold = CalculateEarnedGold();
+        resultController.earnedItems = GetDropItems();
+
+        resultCanvas.SetActive(true);
+    }
+
+    private int CalculateEarnedExp()
+    {
+        int exp = 0;
+        var enemies = EnemyManager.Instance.GetAllEnemiesStatus();
+        
+        foreach(EnemyStatus enemy in enemies)
+        {
+            exp += enemy.exp;
+        }
+
+        return exp;
+    }
+
+    private int CalculateEarnedGold()
+    {
+        int gold = 0;
+        var enemies = EnemyManager.Instance.GetAllEnemiesStatus();
+
+        foreach (EnemyStatus enemy in enemies)
+        {
+            gold += enemy.gold;
+        }
+
+        return gold;
+    }
+
+    private List<Item> GetDropItems()
+    {
+        List<Item> earnedItems = new List<Item>();
+        var enemies = EnemyManager.Instance.GetAllEnemiesStatus();
+
+        foreach (EnemyStatus enemy in enemies)
+        {
+            if (enemy.dropItemOne != null)
+            {
+                int result = random.Next(1);
+                if (enemy.dropRateOne > result)
+                {
+                    earnedItems.Add(enemy.dropItemOne);
+                    continue;
+                }
+            }
+            if (enemy.dropItemTwo != null)
+            {
+                int result = random.Next(1);
+                if (enemy.dropRateTwo > result)
+                {
+                    earnedItems.Add(enemy.dropItemTwo);
+                }
+            }
+        }
+        return earnedItems;
+    }
+
+    public async UniTask FadeOut(GameObject gameObject, float duration = 0.3f)
+    {
+        // ゲームオブジェクトと CanvasGroup の存在を確認
+        if (gameObject != null && gameObject.activeInHierarchy)
+        {
+            CanvasGroup canvasGroup = gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                // 透明度を0にアニメーション
+                await canvasGroup.DOFade(0, duration).SetEase(Ease.InOutQuad).SetUpdate(true).ToUniTask();
+                canvasGroup.interactable = false;
+            }
+            // アニメーション完了後にゲームオブジェクトを破棄
+            if (gameObject != null)
+            {
+                //Destroy(gameObject);
+            }
         }
     }
 

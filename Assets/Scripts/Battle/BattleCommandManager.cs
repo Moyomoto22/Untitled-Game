@@ -110,13 +110,13 @@ public class BattleCommandManager : MonoBehaviour
     /// <summary>
     /// “¦‚°‚éƒ{ƒ^ƒ“‰Ÿ‰º
     /// </summary>
-    public void OnPressRunButton()
+    public async void OnPressRunButton()
     {
         if (SceneController.Instance != null)
         {
             EnemyManager.Instance.Initialize();
 
-            StartCoroutine(SceneController.Instance.SwitchScene("SampleScene"));
+            await SceneController.Instance.SwitchFieldAndBattleScene("AbandonedFortress1F");
             CommonVariableManager.playerCanMove = true;
         }
     }
@@ -206,6 +206,8 @@ public class BattleCommandManager : MonoBehaviour
     {
         if (context.performed)
         {
+            SoundManager.Instance.PlayCancel();
+
             DestroyAllWindowInstances();
             ToggleButtonsInteractable(true);
             SelectButton(lastSelectedButtonIndex);

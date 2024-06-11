@@ -213,13 +213,19 @@ public abstract class EnemyBehaviour : MonoBehaviour
 
         status.resistCharm = enemyStatus.resistCharm;
         // ìÄèù
-
         status.resistFrostBite = enemyStatus.resistFrostBite;
 
         status.positionInScreen = GetPositionInScreen();
         status.spriteObject = gameObject;
 
         status.HPGauge = HPGauge;
+
+        status.exp = enemyStatus.exp;
+        status.gold = enemyStatus.gold;
+        status.dropItemOne = enemyStatus.dropItemOne;
+        status.dropRateOne = enemyStatus.dropRateOne;
+        status.dropItemTwo = enemyStatus.dropItemTwo;
+        status.dropRateTwo = enemyStatus.dropRateTwo;
 
         manipulator = gameObject.GetComponent<SpriteManipulator>();
         spriteGlow = gameObject.GetComponent<SpriteGlowEffect>();
