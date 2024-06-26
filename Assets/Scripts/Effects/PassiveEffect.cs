@@ -57,14 +57,41 @@ public class PassiveEffect : MonoBehaviour
     /// <param name="user">使用者</param>
     /// <param name="objective">対象者</param>
     /// <returns></returns>
-    public void CallEffect(Constants.PassiveEffectType type, CharacterStatus user, CharacterStatus objective)
+    public void CallEffect(Constants.PassiveEffectType type, Character user, Character objective)
     {
         damageStrings = new List<string>();
 
         switch (type)
         {
-            case Constants.PassiveEffectType.GainMAXHP:                    // 最大HP上昇
+            case Constants.PassiveEffectType.GainMAXHP: // 最大HP上昇
                 GainMaxHP(user);
+                break;
+            case Constants.PassiveEffectType.GainMAXMP: // 最大MP上昇
+                GainMaxMP(user);
+                break;
+            case Constants.PassiveEffectType.GainSTR: // STR上昇
+                GainSTR(user);
+                break;
+            case Constants.PassiveEffectType.GainVIT: // VIT上昇
+                GainVIT(user);
+                break;
+            case Constants.PassiveEffectType.GainDEX: // DEX上昇
+                GainDEX(user);
+                break;
+            case Constants.PassiveEffectType.GainAGI: // AGI上昇
+                GainAGI(user);
+                break;
+            case Constants.PassiveEffectType.GainINT: // INT上昇
+                GainINT(user);
+                break;
+            case Constants.PassiveEffectType.GainMND: // MND上昇
+                GainMND(user);
+                break;
+            case Constants.PassiveEffectType.GainCritical: // クリティカル率上昇
+                GainCritical(user);
+                break;
+            case Constants.PassiveEffectType.GainEvation: // 回避率上昇
+                GainEvation(user);
                 break;
             default:
                 break;
@@ -75,9 +102,105 @@ public class PassiveEffect : MonoBehaviour
     /// HP上昇
     /// </summary>
     /// <param name="user"></param>
-    public void GainMaxHP(CharacterStatus user)
+    public void GainMaxHP(Character user)
     {
-        user.maxHp2 += skill.baseValue;
+        user.MaxHp += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// MP上昇
+    /// </summary>
+    /// <param name="user"></param>
+    public void GainMaxMP(Character user)
+    {
+        user.MaxMp += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// STR上昇
+    /// </summary>
+    /// <param name="user"></param>
+    public void GainSTR(Character user)
+    {
+        user.Str += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// VIT上昇
+    /// </summary>
+    /// <param name="user"></param>
+    public void GainVIT(Character user)
+    {
+        user.Vit += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// DEX上昇
+    /// </summary>
+    /// <param name="user"></param>
+    public void GainDEX(Character user)
+    {
+        user.Dex += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// AGI上昇
+    /// </summary>
+    /// <param name="user"></param>
+    public void GainAGI(Character user)
+    {
+        user.Agi += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// DEX上昇
+    /// </summary>
+    /// <param name="user"></param>
+    public void GainINT(Character user)
+    {
+        user.Int += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// MND上昇
+    /// </summary>
+    /// <param name="user"></param>
+    public void GainMND(Character user)
+    {
+        user.Mnd += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// CRT上昇
+    /// </summary>
+    /// <param name="user"></param>
+    public void GainCritical(Character user)
+    {
+        user.CriticalRate += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// AVO上昇
+    /// </summary>
+    /// <param name="user"></param>
+    public void GainEvation(Character user)
+    {
+        user.EvationRate += skill.BaseValue;
+    }
+
+    /// <summary>
+    /// ベルセルク(両手武器装備時攻撃力アップ)
+    /// </summary>
+    /// <param name="user"></param>
+    public void Berserk(Character user)
+    {
+        if (user.RightArm != null)
+        {
+            if (user.RightArm.IsTwoHanded)
+            {
+                user.PAttack = (int)(user.PAttack * 1.1);
+            }
+        }
     }
 
     /// <summary>
@@ -86,15 +209,15 @@ public class PassiveEffect : MonoBehaviour
     /// <param name="user">使用者</param>
     /// <param name="objective">対象</param>
     /// <returns></returns>
-    public async UniTask PhysicalDamage(CharacterStatus user, CharacterStatus objective)
+    public async UniTask PhysicalDamage(Character user, Character objective)
     {
-        var attack = user.pAttack;
-        var defence = objective.pDefence;
+        var attack = user.PAttack;
+        var defence = objective.PDefence;
         var times = 1;
 
-        if (user.rightArm != null)
+        if (user.RightArm != null)
         {
-            times = user.rightArm.times;
+            times = user.RightArm.Times;
         }
 
         for (int i = 1; i < times + 1; i++)
@@ -104,7 +227,7 @@ public class PassiveEffect : MonoBehaviour
             // 基礎ダメージへランダム幅を加算
             var damage = DamageCalculator.AddRandomValueToBaseDamage(baseDamage);
             // クリティカルヒット判定
-            bool criticalHit = DamageCalculator.JudgeCritical(user.pCrit);
+            bool criticalHit = DamageCalculator.JudgeCritical(user.CriticalRate);
 
             if (criticalHit)
             {
@@ -132,7 +255,7 @@ public class PassiveEffect : MonoBehaviour
     /// </summary>
     /// <param name="objective"></param>
     /// <returns></returns>
-    private async UniTask ShowDamageEffects(CharacterStatus objective)
+    private async UniTask ShowDamageEffects(Character objective)
     {
         if (animationManager != null && spriteManipulator != null)
         {
@@ -146,7 +269,7 @@ public class PassiveEffect : MonoBehaviour
     /// <param name="objective"></param>
     /// <param name="color"></param>
     /// <returns></returns>
-    private async UniTask ShowHealEffects(CharacterStatus objective, Color color)
+    private async UniTask ShowHealEffects(Character objective, Color color)
     {
         if (animationManager != null && spriteManipulator != null)
         {

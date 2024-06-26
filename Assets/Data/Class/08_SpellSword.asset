@@ -54,8 +54,15 @@ MonoBehaviour:
   - C
   equippableWeapons: 00000000010000000200000009000000
   description: "\u7269\u7406\u653B\u6483\u529B\u3068\u9B54\u6CD5\u653B\u6483\u529B\u306E\u30D0\u30E9\u30F3\u30B9\u304C\u3088\u3044\u4ED6\u3001\r\n\u88DC\u52A9\u9B54\u6CD5\u306E\u6271\u3044\u306B\u9577\u3051\u308B"
-  exSkill: {fileID: 11400000, guid: 6182216bcd39299438927cca6ae3a83b, type: 2}
+  exSkill: {fileID: 11400000, guid: 3677be1c10bf84c4f873d7cf71f68df4, type: 2}
   LearnSkills:
-  - {fileID: 11400000, guid: db22a439c706c714c87073840e8b2799, type: 2}
-  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}
-  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}
+  - {fileID: 11400000, guid: 3677be1c10bf84c4f873d7cf71f68df4, type: 2}
+  - {fileID: 11400000, guid: f18b4951ca0b0cc4b974e823025c8553, type: 2}
+  - {fileID: 11400000, guid: 86fca080d403a684c86b19cc66051b9c, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

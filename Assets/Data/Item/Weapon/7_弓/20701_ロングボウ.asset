@@ -1,3 +1,43 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:3e3078a5d94f7a64fda73551f109056b4ccb29fffa8f1b7126fa53ac9f4052c4
-size 1081
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96223e0ec52a2ef499d2e766f1d2949b, type: 3}
+  m_Name: "20701_\u30ED\u30F3\u30B0\u30DC\u30A6"
+  m_EditorClassIdentifier: 
+  ID: 20701
+  itemCategory: 2
+  itemName: "\u30ED\u30F3\u30B0\u30DC\u30A6"
+  usable: 0
+  sellable: 1
+  description: "\u7269\u7406\u653B\u6483\u529B +28"
+  value: 0
+  rarity: 0
+  iconImage: {fileID: 21300000, guid: 2e385fc4eef86b041ad983469253a932, type: 3}
+  equippedAllyID: 0
+  pAttack: 28
+  mAttack: 0
+  pDefence: 0
+  mDefence: 0
+  maxHp: 0
+  maxMp: 0
+  str: 0
+  vit: 0
+  dex: 0
+  agi: 0
+  inte: 0
+  mnd: 0
+  equipableClasses:
+  - {fileID: 11400000, guid: 1883cbc5b14817e4eb9b2a7a96d28e67, type: 2}
+  - {fileID: 11400000, guid: b26c6ff5b721ea24fb364e7ec40ed7e4, type: 2}
+  weaponCategory: 7
+  attributes: 02000000
+  dependentStatus: 1
+  isTwoHanded: 1

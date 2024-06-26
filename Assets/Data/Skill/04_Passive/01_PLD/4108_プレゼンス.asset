@@ -1,3 +1,33 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6936c5a106c5a9932d5a88fa2404674f0a98b83f7b4c19649b832cc7daca9689
-size 961
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 320d433e5474b6e43858552a795b3bd4, type: 3}
+  m_Name: "4108_\u30D7\u30EC\u30BC\u30F3\u30B9"
+  m_EditorClassIdentifier: 
+  ID: 4108
+  skillCategory: 4
+  skillName: "\u30D7\u30EC\u30BC\u30F3\u30B9"
+  icon: {fileID: 21300000, guid: 549ae28552493a34b97ed74aaf457b6d, type: 3}
+  usable: 0
+  description: "\u884C\u52D5\u6642\u306E\u7372\u5F97\u30D8\u30A4\u30C8\u91CF\u304C\u30A2\u30C3\u30D7\u3059\u308B"
+  spCost: 4
+  attributes: 
+  learnClass: {fileID: 11400000, guid: 81e81a0b31e5f704da0233c9d15a173a, type: 2}
+  learnLevel: 13
+  effect: 
+  baseValue: 0
+  statusRatio: 0
+  damageRatio: 0
+  times: 0
+  isTargetAll: 0
+  isEquipped: 1
+  isExSkill: 0
+  spCost: 0

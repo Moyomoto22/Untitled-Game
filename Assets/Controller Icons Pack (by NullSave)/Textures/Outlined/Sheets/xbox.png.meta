@@ -93,7 +93,7 @@ TextureImporter:
       213: 21300058
     second: Console
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -114,6 +114,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -152,6 +153,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 1
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -856,6 +858,37 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      A: 21300052
+      B: 21300054
+      Console: 21300058
+      Controller: 21300056
+      DPad: 21300000
+      DPad Down: 21300008
+      DPad Horizontal: 21300010
+      DPad Left: 21300002
+      DPad Right: 21300006
+      DPad Up: 21300004
+      DPad Vertical: 21300012
+      JS Empty: 21300014
+      JS Empty Press: 21300020
+      JS Left: 21300016
+      JS Left Press: 21300022
+      JS Right: 21300018
+      JS Right Press: 21300024
+      LB: 21300028
+      LB Empty: 21300026
+      LT: 21300032
+      LT Empty: 21300030
+      Menu: 21300046
+      RB: 21300036
+      RB Empty: 21300034
+      RT: 21300040
+      RT Empty: 21300038
+      View: 21300042
+      X: 21300048
+      XBOX: 21300044
+      Y: 21300050
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

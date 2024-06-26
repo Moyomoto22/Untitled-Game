@@ -16,7 +16,7 @@ public class ItemEffects : MonoBehaviour
     /// <param name="targetStatus"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static void EffectManager(Constants.EffectName effectName, ItemInventory inventory, AllyStatus targetStatus, int value, string ID)
+    public static void EffectManager(Constants.EffectName effectName, ItemInventory inventory, Ally targetStatus, int value, string ID)
     {
 
         int returnCode = 0;
@@ -48,15 +48,15 @@ public class ItemEffects : MonoBehaviour
     /// <param name="targetStatus"></param>
     /// <param name="healAmount"></param>
     /// <returns></returns>
-    public static int HealHPByConstant(AllyStatus targetStatus, int healAmount)
+    public static int HealHPByConstant(Ally targetStatus, int healAmount)
     {
-        if (targetStatus.hp < targetStatus.maxHp)
+        if (targetStatus.HP < targetStatus.MaxHp)
         {
-            targetStatus.hp = targetStatus.hp + healAmount;
+            targetStatus.HP += healAmount;
 
-            if (targetStatus.hp > targetStatus.maxHp)
+            if (targetStatus.HP > targetStatus.MaxHp)
             {
-                targetStatus.hp = targetStatus.maxHp;
+                targetStatus.HP = targetStatus.MaxHp;
             }
             return 0;
         }
@@ -66,15 +66,15 @@ public class ItemEffects : MonoBehaviour
 
     
 
-    public static int HealMP(AllyStatus targetStatus, int healAmount)
+    public static int HealMP(Ally targetStatus, int healAmount)
     {
-        if (targetStatus.mp < targetStatus.maxMp)
+        if (targetStatus.MP < targetStatus.MaxMp)
         {
-            targetStatus.mp = targetStatus.mp + healAmount;
+            targetStatus.MP += healAmount;
 
-            if (targetStatus.mp > targetStatus.maxMp)
+            if (targetStatus.MP > targetStatus.MaxMp)
             {
-                targetStatus.mp = targetStatus.maxMp;
+                targetStatus.MP = targetStatus.MaxMp;
             }
             return 0;
         }

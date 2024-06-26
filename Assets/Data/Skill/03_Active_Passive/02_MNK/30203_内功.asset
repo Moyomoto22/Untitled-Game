@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4825095a0574895ec880aaf9e8a8, type: 3}
+  m_Name: "30203_\u5185\u529F"
+  m_EditorClassIdentifier: 
+  id: 30203
+  skillCategory: 3
+  skillName: "\u5185\u529F"
+  icon: {fileID: 21300000, guid: 8a44feac9e723a0468fa907a3f1ddb3d, type: 3}
+  usable: 1
+  description: "\u81EA\u8EAB\u306EHP\u3092\u56DE\u5FA9\u3057\u6BD2\u3092\u6CBB\u7642\u3059\u308B\nSTR:HP\u56DE\u5FA9\u91CF\u30DC\u30FC\u30CA\u30B9"
+  spCost: 7
+  mpCost: 0
+  tpCost: 0
+  recastTurn: 3
+  remainingTurn: 0
+  attributes: []
+  learn: MNK Lv3
+  effects: 0300000004000000
+  baseValue: 0
+  status: 0
+  statusRatio: 0
+  damageRatio: 2
+  hateRatio: 1
+  times: 1
+  target: 1
+  isEquipped: 0
+  usableClasses: []
+  canUseInMenu: 0
+  isExSkill: 0
+  getTP: 0
+  giveTP: 0
+  user: {fileID: 0}
+  objective: {fileID: 0}
+  dependentStatus: 1

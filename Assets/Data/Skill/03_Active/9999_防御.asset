@@ -1,3 +1,35 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f3b8d4c01be0ac9929d0c6eba1f6c0bfd7d87182841f7b4f46721a2c1d855d68
-size 769
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d47e4825095a0574895ec880aaf9e8a8, type: 3}
+  m_Name: "9999_\u9632\u5FA1"
+  m_EditorClassIdentifier: 
+  ID: 9999
+  skillCategory: 3
+  skillName: "\u9632\u5FA1"
+  icon: {fileID: 0}
+  usable: 1
+  description: 
+  spCost: 0
+  attributes: 
+  learnClass: {fileID: 0}
+  learnLevel: 0
+  effects: 01000000
+  baseValue: 0
+  statusRatio: 0
+  damageRatio: 0
+  times: 0
+  target: 1
+  isTargetAll: 0
+  isEquipped: 0
+  User: {fileID: 0}
+  Objective: {fileID: 0}
+  recastTurn: 0

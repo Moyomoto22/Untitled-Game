@@ -179,151 +179,172 @@ public class StatusMenuController : MonoBehaviour
         gradation.color = color;
         nameBackGradation.color = color;
 
-        characterImage.sprite = ch.Class.imagesA[currentCharacterIndex];
-        characterLevel.text = ch.level.ToString();
-        characterClassAb.text = ch.Class.classAbbreviation;
+        characterImage.sprite = ch.CharacterClass.imagesA[currentCharacterIndex];
+        characterLevel.text = ch.Level.ToString();
+        characterClassAb.text = ch.CharacterClass.classAbbreviation;
 
         currentExp.text = ch.GetCurrentClassEarnedExp().ToString();
         nextExp.text = ch.GetCurrentClassNextExp().ToString();
-        totalExp.text = ch.totalExperience.ToString();
+        totalExp.text = ch.TotalExperience.ToString();
 
-        CL.text = ch.Class.className;
-        MH.text = ch.maxHp2.ToString();
-        H.text = ch.hp.ToString();
-        MM.text = ch.maxMp2.ToString();
-        M.text = ch.mp.ToString();
-        MT.text = ch.maxTp.ToString();
-        T.text = ch.tp.ToString();
-        PA.text = ch.pAttack.ToString();
-        MA.text = ch.mAttack.ToString();
-        PD.text = ch.pDefence.ToString();
-        MD.text = ch.mDefence.ToString();
-        ST.text = ch.str2.ToString();
-        VI.text = ch.vit2.ToString();
-        DE.text = ch.dex2.ToString();
-        AG.text = ch.agi2.ToString();
-        IT.text = ch.inte2.ToString();
-        MN.text = ch.mnd2.ToString();
-        PC.text = ch.pCrit.ToString() + " %";
-        MC.text = ch.mCrit.ToString() + " %";
-        PAV.text = ch.pAvo.ToString() + " %";
-        MAV.text = ch.mAvo.ToString() + " %";
+        CL.text = ch.CharacterClass.className;
+        MH.text = ch.MaxHp.ToString();
+        H.text = ch.HP.ToString();
+        MM.text = ch.MaxMp.ToString();
+        M.text = ch.MP.ToString();
+        MT.text = "100";
+        T.text = ch.TP.ToString();
+        PA.text = ch.PAttack.ToString();
+        MA.text = ch.MAttack.ToString();
+        PD.text = ch.PDefence.ToString();
+        MD.text = ch.MDefence.ToString();
+        ST.text = ch.Str.ToString();
+        VI.text = ch.Vit.ToString();
+        DE.text = ch.Dex.ToString();
+        AG.text = ch.Agi.ToString();
+        IT.text = ch.Int.ToString();
+        MN.text = ch.Mnd.ToString();
+        PC.text = ch.CriticalRate.ToString() + " %";
+        MC.text = " %";
+        PAV.text = ch.EvationRate.ToString() + " %";
+        MAV.text = " %";
 
         UpdateGauges();
 
         leftArm.color = Color.white;
 
-        rightArm.text = ch.rightArm != null ? ch.rightArm.itemName : "‚È‚µ";
-        leftArm.text = ch.leftArm != null ? ch.leftArm.itemName : "‚È‚µ";
-        head.text = ch.head != null ? ch.head.itemName : "‚È‚µ";
-        body.text = ch.body != null ? ch.body.itemName : "‚È‚µ";
-        accessaryOne.text = ch.accessary1 != null ? ch.accessary1.itemName : "‚È‚µ";
-        accessaryTwo.text = ch.accessary2 != null ? ch.accessary2.itemName : "‚È‚µ";
+        rightArm.text = ch.RightArm != null ? ch.RightArm.ItemName : "‚È‚µ";
+        leftArm.text = ch.LeftArm != null ? ch.LeftArm.ItemName : "‚È‚µ";
+        head.text = ch.Head != null ? ch.Head.ItemName : "‚È‚µ";
+        body.text = ch.Body != null ? ch.Body.ItemName : "‚È‚µ";
+        accessaryOne.text = ch.Accessary1 != null ? ch.Accessary1.ItemName : "‚È‚µ";
+        accessaryTwo.text = ch.Accessary2 != null ? ch.Accessary2.ItemName : "‚È‚µ";
 
-        if (ch.rightArm != null)
+        if (ch.RightArm != null)
         {
             rightArmIcon.enabled = true;
-            rightArmIcon.sprite = ch.rightArm.iconImage;
+            rightArmIcon.sprite = ch.RightArm.IconImage;
         }
         else
         {
             rightArmIcon.enabled = false;
         }
 
-        if (ch.leftArm != null)
+        if (ch.LeftArm != null)
         {
             leftArmIcon.enabled = true;
-            leftArmIcon.sprite = ch.leftArm.iconImage;
+            leftArmIcon.sprite = ch.LeftArm.IconImage;
         }
         else
         {
             leftArmIcon.enabled = false;
-            if (ch.rightArm != null)
+            if (ch.RightArm != null)
             {
-                if (ch.rightArm.isTwoHanded)
+                if (ch.RightArm.IsTwoHanded)
                 {
-                    leftArm.text = ch.rightArm.itemName;
+                    leftArm.text = ch.RightArm.ItemName;
                     leftArm.color = CommonController.GetColor(Constants.darkGray);
                 }
             }
             leftArmIcon.enabled = false;
         }
 
-        if (ch.head != null)
+        if (ch.Head != null)
         {
             headIcon.enabled = true;
-            headIcon.sprite = ch.head.iconImage;
+            headIcon.sprite = ch.Head.IconImage;
         }
         else
         {
             headIcon.enabled = false;
         }
 
-        if (ch.body != null)
+        if (ch.Body != null)
         {
             bodyIcon.enabled = true;
-            bodyIcon.sprite = ch.body.iconImage;
+            bodyIcon.sprite = ch.Body.IconImage;
         }
         else
         {
             bodyIcon.enabled = false;
         }
 
-        if (ch.accessary1 != null)
+        if (ch.Accessary1 != null)
         {
             accessaryOneIcon.enabled = true;
-            accessaryOneIcon.sprite = ch.accessary1.iconImage;
+            accessaryOneIcon.sprite = ch.Accessary1.IconImage;
         }
         else
         {
             accessaryOneIcon.enabled = false;
         }
 
-        if (ch.accessary2 != null)
+        if (ch.Accessary2 != null)
         {
             accessaryTwoIcon.enabled = true;
-            accessaryTwoIcon.sprite = ch.accessary2.iconImage;
+            accessaryTwoIcon.sprite = ch.Accessary2.IconImage;
         }
         else
         {
             accessaryTwoIcon.enabled = false;
         }
 
-        slash.text = ch.resistSlash.ToString() + " %";
-        thrast.text = ch.resistThrast.ToString() + " %";
-        blow.text = ch.resistBlow.ToString() + " %";
-        magic.text = ch.resistMagic.ToString() + " %";
-        fire.text = ch.resistFire.ToString() + " %";
-        ice.text = ch.resistIce.ToString() + " %";
-        thunder.text = ch.resistThunder.ToString() + " %";
-        wind.text = ch.resistWind.ToString() + " %";
-        poison.text = ch.resistPoison.ToString() + " %";
-        paralyze.text = ch.resistParalyze.ToString() + " %";
-        asleep.text = ch.resistAsleep.ToString() + " %";
-        silence.text = ch.resistSilence.ToString() + " %";
-        daze.text = ch.resistDaze.ToString() + " %";
-        charm.text = ch.resistCharm.ToString() + " %";
-        flostbite.text = ch.resistFrostBite.ToString() + " %";
+        slash.text = ch.ResistSlash.ToString() + " %";
+        thrast.text = ch.ResistThrast.ToString() + " %";
+        blow.text = ch.ResistBlow.ToString() + " %";
+        magic.text = ch.ResistMagic.ToString() + " %";
+        fire.text = ch.ResistFire.ToString() + " %";
+        ice.text = ch.ResistIce.ToString() + " %";
+        thunder.text = ch.ResistThunder.ToString() + " %";
+        wind.text = ch.ResistWind.ToString() + " %";
+        poison.text = ch.ResistPoison.ToString() + " %";
+        paralyze.text = ch.ResistParalyze.ToString() + " %";
+        asleep.text = ch.ResistAsleep.ToString() + " %";
+        silence.text = ch.ResistSilence.ToString() + " %";
+        daze.text = ch.ResistDaze.ToString() + " %";
+        charm.text = ch.ResistCharm.ToString() + " %";
+        flostbite.text = ch.ResistFrostBite.ToString() + " %";
 
-        swordLevel.text = ch.swordLevel.ToString();
-        bladeLevel.text = ch.bladeLevel.ToString();
-        daggerLevel.text = ch.daggerLevel.ToString();
-        spearLevel.text = ch.spearLevel.ToString();
-        axLevel.text = ch.axLevel.ToString();
-        hammerLevel.text = ch.hammerLevel.ToString();
-        fistLevel.text = ch.fistLevel.ToString();
-        bowLevel.text = ch.bowLevel.ToString();
-        staffLevel.text = ch.staffLevel.ToString();
-        shieldLevel.text = ch.shieldLevel.ToString();
+        swordLevel.text = ch.SwordLevel.ToString();
+        bladeLevel.text = ch.BladeLevel.ToString();
+        daggerLevel.text = ch.DaggerLevel.ToString();
+        spearLevel.text = ch.SpearLevel.ToString();
+        axLevel.text = ch.AxLevel.ToString();
+        hammerLevel.text = ch.HammerLevel.ToString();
+        fistLevel.text = ch.FistLevel.ToString();
+        bowLevel.text = ch.BowLevel.ToString();
+        staffLevel.text = ch.StaffLevel.ToString();
+        shieldLevel.text = ch.ShieldLevel.ToString();
 
-        war.text = ch.classLevels[0].ToString();
-        pld.text = ch.classLevels[1].ToString();
-        mnk.text = ch.classLevels[2].ToString();
-        thf.text = ch.classLevels[3].ToString();
-        rng.text = ch.classLevels[4].ToString();
-        src.text = ch.classLevels[5].ToString();
-        clc.text = ch.classLevels[6].ToString();
-        sps.text = ch.classLevels[7].ToString();
+        GaugeManager manager = swordGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceSword, ch.EarnedExperienceSword);
+        manager = bladeGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceBlade, ch.EarnedExperienceBlade);
+        manager = daggerGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceDagger, ch.EarnedExperienceDagger);
+        manager = spearGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceSpear, ch.EarnedExperienceSpear);
+        manager = axGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceAx, ch.EarnedExperienceAx);
+        manager = hammerGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceHammer, ch.EarnedExperienceHammer);
+        manager = fistGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceFist, ch.EarnedExperienceFist);
+        manager = bowGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceBow, ch.EarnedExperienceBow);
+        manager = staffGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceStaff, ch.EarnedExperienceStaff);
+        manager = shieldGauge.GetComponent<GaugeManager>();
+        manager.updateGauge(ch.NextExperienceShield, ch.EarnedExperienceShield);
+
+        war.text = ch.ClassLevels[0].ToString();
+        pld.text = ch.ClassLevels[1].ToString();
+        mnk.text = ch.ClassLevels[2].ToString();
+        thf.text = ch.ClassLevels[3].ToString();
+        rng.text = ch.ClassLevels[4].ToString();
+        src.text = ch.ClassLevels[5].ToString();
+        clc.text = ch.ClassLevels[6].ToString();
+        sps.text = ch.ClassLevels[7].ToString();
 
         //GaugeManager gaugeManager = SPGauge.GetComponent<GaugeManager>();
         //gaugeManager.updateGaugeByText();

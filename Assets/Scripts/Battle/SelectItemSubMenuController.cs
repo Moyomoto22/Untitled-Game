@@ -1,4 +1,3 @@
-using SpriteGlow;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,7 +29,7 @@ public class SelectItemSubMenuController : MonoBehaviour
     public GameObject targetSelectMenu;
     private GameObject targetSelectMenuInstance;
 
-    private CharacterStatus turnCharacter;
+    private Character turnCharacter;
     private List<Item> items;
 
     void Awake()
@@ -42,7 +41,7 @@ public class SelectItemSubMenuController : MonoBehaviour
 
         /// 使用可能アイテムを一覧にセット
         turnCharacter = TurnCharacter.Instance.CurrentCharacter;
-        items = ItemInventory2.Instance.items.Where(item => item.itemCategory == Constants.ItemCategory.Consumable).ToList();
+        items = ItemInventory2.Instance.items.Where(item => item.ItemCategory == Constants.ItemCategory.Consumable).ToList();
         SetItems();
     }
 
@@ -66,8 +65,8 @@ public class SelectItemSubMenuController : MonoBehaviour
             var newButton = obj.transform.GetChild(0).gameObject;              // ボタン本体
             var amount = items.Where(i => i.ID == item.ID).ToList().Count;     // アイテム所持数
 
-            comp.icon.sprite = item.iconImage;                                 // アイコン
-            comp.itemName.text = item.itemName;                                // アイテム名称
+            comp.icon.sprite = item.IconImage;                                 // アイコン
+            comp.itemName.text = item.ItemName;                                // アイテム名称
             comp.amount.text = amount.ToString();                              // 所持数
             AddSelectOrDeselectActionToButtons(newButton, item);               // 選択・選択解除時アクション設定
             AddOnClickActionToItemButton(newButton, item);                     // 押下時アクション設定
@@ -112,13 +111,13 @@ public class SelectItemSubMenuController : MonoBehaviour
     private void OnClickActionToItemButton(Item item)
     {
         battleCommandManager.selectedItem = item;
-        // スキルの対象が敵かつ単体の時
-        if (item.target == 3 && !item.isTargetAll)
+        // スキルの対象が敵単体の時
+        if (item.Target == Constants.TargetType.Enemy)
         {
             battleCommandManager.DisplayEnemyTargetSubMenu(2);
         }
-        // 対象が味方かつ単体の時
-        else if (item.target == 2 && !item.isTargetAll)
+        // 対象が味方単体の時
+        else if (item.Target == Constants.TargetType.Ally)
         {
             battleCommandManager.DisplayAllyTargetSubMenu(2);
         }
@@ -156,9 +155,9 @@ public class SelectItemSubMenuController : MonoBehaviour
         if (item != null)
         {
             detailImage.enabled = true;
-            detailImage.sprite = item.iconImage;
-            detailName.text = item.itemName;
-            description.text = item.description;
+            detailImage.sprite = item.IconImage;
+            detailName.text = item.ItemName;
+            description.text = item.Description;
         }
         else
         {

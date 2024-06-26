@@ -7,12 +7,13 @@ using UnityEngine.UI;
 
 [Serializable]
 [CreateAssetMenu(fileName = "PassiveSkill", menuName = "Skills/PassiveSkill")]
+
 public class PassiveSkill : Skill
 {
     // パッシブスキル効果
-    public List<Constants.PassiveEffectType> passiveEffects;
+    [SerializeField] private List<Constants.PassiveEffectType> passiveEffects;
 
-    public override bool CanUse(CharacterStatus user)
+    public override bool CanUse(Character user)
     {
         return false;
     }
@@ -21,7 +22,7 @@ public class PassiveSkill : Skill
     /// スキルの効果を適用する
     /// </summary>
     /// <returns></returns>
-    public void applyPassiveEffect(AllyStatus user)
+    public void ApplyPassiveEffect(Ally user)
     {
         foreach (var effectType in passiveEffects)
         {

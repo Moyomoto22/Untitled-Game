@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da848f75f7644264badce401bce61de8, type: 3}
+  m_Name: "\u30B9\u30E9\u30A4\u30E0"
+  m_EditorClassIdentifier: 
+  characterName: "\u30B9\u30E9\u30A4\u30E0"
+  hp: 25
+  mp: 0
+  tp: 0
+  level: 1
+  baseMaxHp: 25
+  baseMaxMp: 0
+  baseStr: 0
+  baseVit: 0
+  baseDex: 0
+  baseAgi: 0
+  baseInt: 0
+  baseMnd: 0
+  pAttack: 22
+  mAttack: 5
+  pDefence: 10
+  mDefence: 4
+  criticalRate: 0
+  evationRate: 0
+  counterRate: 0
+  blockRate: 0
+  blockReductionRate: 0
+  rightArm: {fileID: 0}
+  leftArm: {fileID: 0}
+  head: {fileID: 0}
+  body: {fileID: 0}
+  accessary1: {fileID: 0}
+  accessary2: {fileID: 0}
+  resistPhysical: 0
+  resistMagic: 0
+  resistSlash: 0
+  resistThrast: 0
+  resistBlow: 0.5
+  resistFire: 0
+  resistIce: 0
+  resistThunder: 0
+  resistWind: 0
+  resistPoison: 0
+  resistParalyze: 0
+  resistAsleep: 0
+  resistSilence: 0
+  resistDaze: 0
+  resistCharm: 0
+  resistFrostBite: 0
+  resistStan: 0
+  reduceMagicMPCost: 0
+  positionInScreen: {x: 0, y: 0}
+  spriteObject: {fileID: 0}
+  HPGauge: {fileID: 0}
+  MPGauge: {fileID: 0}
+  TPGauge: {fileID: 0}
+  SPGauge: {fileID: 0}
+  EXPGauge: {fileID: 0}
+  effectSpriteObjects: []
+  sprite: {fileID: 21300000, guid: ada6f2770bf21564f9f4ffc0af776d8b, type: 3}
+  eyesSprite: {fileID: 21300000, guid: d7e9514ee0e212d44a93d0d5bdd9dd03, type: 3}
+  exp: 12
+  gold: 3
+  dropItemOne: {fileID: 11400000, guid: 5d77e532687a46e42969e8e9733737e5, type: 2}
+  dropRateOne: 0.1
+  dropItemTwo: {fileID: 11400000, guid: e27501ec85811884bb8b9f2e0466de36, type: 2}
+  dropRateTwo: 0.02
+  stealItemOne: {fileID: 11400000, guid: b08937fefb65d5b40b17ddb27bdb5137, type: 2}
+  stealRateOne: 0.3
+  stealItemTwo: {fileID: 11400000, guid: 1660738f56499344a9ab1907529ac9e5, type: 2}
+  stealRateTwo: 0.01

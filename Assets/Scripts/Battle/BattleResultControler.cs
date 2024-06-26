@@ -15,7 +15,7 @@ public class BattleResultControler : MonoBehaviour
     public BattleController battleController;
     public GameObject canvas;
 
-    private List<AllyStatus> allies;
+    private List<Ally> allies;
 
     public TextMeshProUGUI earnedEXP;
     public TextMeshProUGUI gold;
@@ -44,18 +44,30 @@ public class BattleResultControler : MonoBehaviour
 
     private bool isComplete = false;
 
+    private void Start()
+    {
+        isComplete = false;
+    }
+
+    private void Awake()
+    {
+        isComplete = false;
+    }
+
     async void OnEnable()
     {
+        isComplete = false;
         await Initialize();
     }
 
     private void OnDisable()
     {
+        isComplete = false;
         RemoveInputActions();
     }
 
     /// <summary>
-    /// ÉXÉLÉãâÊñ èâä˙âª
+    /// èâä˙âª
     /// </summary>
     public async UniTask Initialize()
     {
@@ -154,20 +166,20 @@ public class BattleResultControler : MonoBehaviour
 
     private async UniTask DisplayLearnedSkill(int index)
     {
-        AllyStatus ch = PartyMembers.Instance.GetAllyByIndex(index);
-        int levelIndex = ch.level - 1;
+        Ally ch = PartyMembers.Instance.GetAllyByIndex(index);
+        int levelIndex = ch.Level - 1;
 
-        if (ch.Class.LearnSkills.Count >= ch.level)
+        if (ch.CharacterClass.LearnSkills.Count >= ch.Level)
         {
-            Skill learnedSkill = ch.Class.LearnSkills[levelIndex];
+            Skill learnedSkill = ch.CharacterClass.LearnSkills[levelIndex];
 
             var image = learnedSkills[index].GetComponentInChildren<Image>();
             var skillName = learnedSkills[index].GetComponentInChildren<TextMeshProUGUI>();
 
             if (learnedSkill != null && image != null && skillName != null)
             {
-                image.sprite = learnedSkill.icon;
-                skillName.text = learnedSkill.skillName;
+                image.sprite = learnedSkill.Icon;
+                skillName.text = learnedSkill.SkillName;
             }
 
             await FadeIn(learnedSkills[index]);
@@ -179,11 +191,11 @@ public class BattleResultControler : MonoBehaviour
 
         for (int i = 0; i < allies.Count; i++)
         {
-            AllyStatus ch = allies[i];
+            Ally ch = allies[i];
 
-            faces[i].sprite = ch.Class.imagesC[i];
-            classes[i].text = ch.Class.classAbbreviation;
-            levels[i].text = ch.level.ToString();
+            faces[i].sprite = ch.CharacterClass.imagesC[i];
+            classes[i].text = ch.CharacterClass.classAbbreviation;
+            levels[i].text = ch.Level.ToString();
 
             ch.EXPGauge = expGauges[i];
 
@@ -209,8 +221,8 @@ public class BattleResultControler : MonoBehaviour
             for (int i = 0; i < earnedItems.Count; i++)
             {
                 droppedItems[i].SetActive(true);
-                droppedItems[i].GetComponentInChildren<Image>().sprite = earnedItems[i].iconImage;
-                droppedItems[i].GetComponentInChildren<TextMeshProUGUI>().text = earnedItems[i].itemName;
+                droppedItems[i].GetComponentInChildren<Image>().sprite = earnedItems[i].IconImage;
+                droppedItems[i].GetComponentInChildren<TextMeshProUGUI>().text = earnedItems[i].ItemName;
             }
         }
     }

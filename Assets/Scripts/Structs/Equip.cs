@@ -6,72 +6,174 @@ using UnityEngine;
 [Serializable]
 public class Equip : Item
 {
-    //　物理攻撃力
-    [SerializeField]
-    public int pAttack = 0;
-    //　魔法攻撃力
-    [SerializeField]
-    public int mAttack = 0;
-    //　物理防御力
-    [SerializeField]
-    public int pDefence = 0;
-    //　魔法防御力
-    [SerializeField]
-    public int mDefence = 0;
-    //　最大HP
-    [SerializeField]
-    public int maxHp = 0;
-    //　最大MP
-    [SerializeField]
-    public int maxMp = 0;
-    //　STR
-    [SerializeField]
-    public int str = 0;
-    //　VIT
-    [SerializeField]
-    public int vit = 0;
-    //　DEX
-    [SerializeField]
-    public int dex = 0;
-    //　AGI
-    [SerializeField]
-    public int agi = 0;
-    //　INT
-    [SerializeField]
-    public int inte = 0;
-    //　MND
-    [SerializeField]
-    public int mnd = 0;
-    // 装備可能クラス
-    [SerializeField]
-    public List<Class> equipableClasses;
+    // 物理攻撃力
+    [SerializeField] private int pAttack = 0;
+    public int PAttack
+    {
+        get { return pAttack; }
+        set { pAttack = value; }
+    }
 
-    public bool CanEquip(AllyStatus user, int equipAreaIndex)
+    // 魔法攻撃力
+    [SerializeField] private int mAttack = 0;
+    public int MAttack
+    {
+        get { return mAttack; }
+        set { mAttack = value; }
+    }
+
+    // 物理防御力
+    [SerializeField] private int pDefence = 0;
+    public int PDefence
+    {
+        get { return pDefence; }
+        set { pDefence = value; }
+    }
+
+    // 魔法防御力
+    [SerializeField] private int mDefence = 0;
+    public int MDefence
+    {
+        get { return mDefence; }
+        set { mDefence = value; }
+    }
+
+    // 最大HP
+    [SerializeField] private int maxHp = 0;
+    public int MaxHp
+    {
+        get { return maxHp; }
+        set { maxHp = value; }
+    }
+
+    // 最大MP
+    [SerializeField] private int maxMp = 0;
+    public int MaxMp
+    {
+        get { return maxMp; }
+        set { maxMp = value; }
+    }
+
+    // STR
+    [SerializeField] private int str = 0;
+    public int Str
+    {
+        get { return str; }
+        set { str = value; }
+    }
+
+    // VIT
+    [SerializeField] private int vit = 0;
+    public int Vit
+    {
+        get { return vit; }
+        set { vit = value; }
+    }
+
+    // DEX
+    [SerializeField] private int dex = 0;
+    public int Dex
+    {
+        get { return dex; }
+        set { dex = value; }
+    }
+
+    // AGI
+    [SerializeField] private int agi = 0;
+    public int Agi
+    {
+        get { return agi; }
+        set { agi = value; }
+    }
+
+    // INT
+    [SerializeField] private int inte = 0;
+    public int Int
+    {
+        get { return inte; }
+        set { inte = value; }
+    }
+
+    // MND
+    [SerializeField] private int mnd = 0;
+    public int Mnd
+    {
+        get { return mnd; }
+        set { mnd = value; }
+    }
+
+    // クリティカル率
+    [SerializeField] private int criticalRate = 0;
+    public int CriticalRate
+    {
+        get { return criticalRate; }
+        set { criticalRate = value; }
+    }
+
+    // 回避率
+    [SerializeField] private int evationRate;
+    public int EvationRate
+    {
+        get { return evationRate; }
+        set { evationRate = value; }
+    }
+
+    // カウンター発生率
+    [SerializeField] private int counterRate;
+    public int CounterRate
+    {
+        get { return counterRate; }
+        set { counterRate = value; }
+    }
+
+    // ブロック発生率
+    [SerializeField] private int blockRate;
+    public int BlockRate
+    {
+        get { return counterRate; }
+        set { counterRate = value; }
+    }
+
+    // ブロック発生時ダメージ軽減率
+    [SerializeField] private int blockReductionRate;
+    public int BlockReductionRate
+    {
+        get { return blockReductionRate; }
+        set { blockReductionRate = value; }
+    }
+
+    // 装備可能クラス
+    [SerializeField] private List<Class> equipableClasses;
+    public List<Class> EquipableClasses
+    {
+        get { return equipableClasses; }
+        set { equipableClasses = value; }
+    }
+
+    public bool CanEquip(Ally user, int equipAreaIndex)
     {
         // 装備可能クラスか
-        if (!equipableClasses.Contains(user.Class))
+        if (!equipableClasses.Contains(user.CharacterClass))
         {
             return false;
         }
 
         // 装備中でないか
-        if (equippedAllyID > 0)
+        if (EquippedAllyID > 0)
         {
             return false;
         }
 
-        if (this is Weapon)
+        if (this is Weapon weapon)
         {
-            Weapon weapon = this as Weapon;
-
             // 盾以外は右手以外には装備不可
-            if (weapon.weaponCategory != Constants.WeaponCategory.Shield && equipAreaIndex != 0)
+            if (weapon.WeaponCategory != Constants.WeaponCategory.Shield && equipAreaIndex != 0)
             {
                 return false;
             }
 
             // 盾
-            if (weapon.weaponCategory == Constants.WeaponCategory.Shield)
+            if (weapon.WeaponCategory == Constants.WeaponCategory.Shield)
             {
                 // 左手以外には装備不可
                 if (equipAreaIndex != 1)
@@ -79,15 +181,12 @@ public class Equip : Item
                     return false;
                 }
                 // 右手が両手持ちの場合は装備不可
-                else if (user.rightArm != null)
+                else if (user.RightArm != null)
                 {
-                    return !user.rightArm.isTwoHanded;
+                    return !user.RightArm.IsTwoHanded;
                 }
             }
-
         }
         return true;
     }
-
-
 }

@@ -1,3 +1,29 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b8be52af7e3831a2ba0cc03172ae3222a669ff352dde995398420f3f1ec20765
-size 977
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 758873cd44feed24c9c915cb09c3036f, type: 3}
+  m_Name: "0006_\u30A8\u30EA\u30AF\u30B7\u30FC\u30EB"
+  m_EditorClassIdentifier: 
+  id: 0006
+  itemCategory: 0
+  itemName: "\u30A8\u30EA\u30AF\u30B7\u30FC\u30EB"
+  usable: 1
+  sellable: 1
+  description: "\u5473\u65B9\u4E00\u4EBA\u306EMP\u3092120\u56DE\u5FA9\u3059\u308B\u3002"
+  value: 2000
+  rarity: 0
+  iconImage: {fileID: 21300000, guid: 1f5ccd660ae718d42b3c7318ade27ecb, type: 3}
+  equippedAllyID: 0
+  equippedPart: 0
+  target: 2
+  isTargetAll: 0
+  effects: 0c000000
+  baseValue: 120

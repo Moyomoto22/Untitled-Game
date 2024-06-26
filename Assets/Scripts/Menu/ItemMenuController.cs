@@ -260,7 +260,7 @@ public class ItemMenuController : MonoBehaviour
         List<Item> filteredItems = new List<Item>();
         if (category != Constants.ItemCategory.All)
         {
-            filteredItems = items.Where(x => x.itemCategory == category).ToList();
+            filteredItems = items.Where(x => x.ItemCategory == category).ToList();
         }
         else
         {
@@ -283,12 +283,12 @@ public class ItemMenuController : MonoBehaviour
             var newButton = obj.transform.GetChild(0).gameObject;              // ボタン本体
             var amount = items.Where(i => i.ID == item.ID).ToList().Count;     // アイテム所持数
 
-            comp.icon.sprite = item.iconImage;                                 // アイコン
-            comp.itemName.text = item.itemName;                                // アイテム名称
+            comp.icon.sprite = item.IconImage;                                 // アイコン
+            comp.itemName.text = item.ItemName;                                // アイテム名称
             comp.amount.text = amount.ToString();                              // 所持数
             AddSelectOrDeselectActionToButtons(newButton, item);               // 選択・選択解除時アクション設定
             // アイテムが使用可能か判定
-            if (item.usable)
+            if (item.Usable)
             {
                 // ボタン押下時のアクションを追加
                 AddOnClickActionToItemButton(newButton, item);
@@ -348,15 +348,10 @@ public class ItemMenuController : MonoBehaviour
     {
         SoundManager.Instance.PlaySubmit();
         // 対象が味方かつ単体の時
-        if (item.target == 2 && !item.isTargetAll)
+        if (item.Target == Constants.TargetType.Ally)
         {
             DisplaySubMenu(item);
         }
-        else if (item.target == 2 && item.isTargetAll)
-        {
-
-        }
-
     }
 
     /// <summary>
@@ -456,9 +451,9 @@ public class ItemMenuController : MonoBehaviour
         if (item != null)
         {
             detailImage.enabled = true;
-            detailImage.sprite = item.iconImage;
-            detailName.text = item.itemName;
-            description.text = item.description;
+            detailImage.sprite = item.IconImage;
+            detailName.text = item.ItemName;
+            description.text = item.Description;
         }
         else
         {

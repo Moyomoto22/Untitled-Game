@@ -53,11 +53,16 @@ MonoBehaviour:
   - C
   - A
   equippableWeapons: 050000000800000009000000
-  description: "\u5947\u8DE1\u3092\u6271\u3044\u3001\u5473\u65B9\u306E\u56DE\u5FA9\u3084\u5F37\u5316\u304C\u5F97\u610F"
-  exSkill: {fileID: 11400000, guid: d5b21ca09a92a7e42b8453c171bbe936, type: 2}
+  description: "\u5473\u65B9\u306E\u56DE\u5FA9\u30FB\u5F37\u5316\u306A\u3069\u3092\u4E3B\u4F53\u3068\u3059\u308B\u300E\u5947\u8DE1\u300F\u3092\u5F97\u610F\u3068\u3057\u3001\u30D2\u30FC\u30E9\u30FC\u3068\u3057\u3066\u30D1\u30FC\u30C6\u30A3\u3092\u652F\u3048\u308B\u3002\r\n\u7269\u7406\u9632\u5FA1\u9762\u306B\u306F\u4E0D\u5B89\u304C\u3042\u308B\u305F\u3081\u3001\u56DE\u5FA9\u306B\u3088\u308B\u30D8\u30A4\u30C8\u306E\u53D6\u308A\u3059\u304E\u306B\u306F\u6CE8\u610F\u3002"
+  exSkill: {fileID: 11400000, guid: 418e10bd5d9a18e40ac303410063d5ff, type: 2}
   LearnSkills:
-  - {fileID: 11400000, guid: db22a439c706c714c87073840e8b2799, type: 2}
-  - {fileID: 11400000, guid: 4e0745ca128f2184ab3f4ed2319ebacb, type: 2}
-  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}
-  - {fileID: 11400000, guid: db22a439c706c714c87073840e8b2799, type: 2}
-  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}
+  - {fileID: 11400000, guid: 418e10bd5d9a18e40ac303410063d5ff, type: 2}
+  - {fileID: 11400000, guid: 3eee6f7f26a40cf4088a1ff61267e254, type: 2}
+  - {fileID: 11400000, guid: 96f5d9973773fa040b7b078ab2450da1, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

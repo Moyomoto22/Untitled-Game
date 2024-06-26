@@ -30,7 +30,7 @@ public class ItemInventory : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Item not found in inventory: " + item.itemName);
+            Debug.LogWarning("Item not found in inventory: " + item.ItemName);
         }
     }
 
@@ -52,7 +52,7 @@ public class ItemInventory : MonoBehaviour
     {
         if (index >= 0 && index < itemInventory.Count)
         {
-            itemInventory[index].equippedAllyID = characterID;
+            itemInventory[index].EquippedAllyID = characterID;
         }
         else
         {

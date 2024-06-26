@@ -1,3 +1,25 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:107ee47fa4513a44b76db26e52df1388c8b4e48c9bb779ee779bca96304ff4a6
-size 716
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 320d433e5474b6e43858552a795b3bd4, type: 3}
+  m_Name: 4403_HPplus10
+  m_EditorClassIdentifier: 
+  ID: 5003
+  skillCategory: 4
+  skillName: "\u6700\u5927HP+10"
+  icon: {fileID: 21300000, guid: 549ae28552493a34b97ed74aaf457b6d, type: 3}
+  usable: 0
+  description: "\u6700\u5927HP\u304C10\u30A2\u30C3\u30D7\u3059\u308B"
+  learnClass: {fileID: 0}
+  learnLevel: 0
+  isEquipped: 1
+  spCost: 0
+  efffect: {fileID: 0}

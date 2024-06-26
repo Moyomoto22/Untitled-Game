@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 
 public class EnemyManager
 {
@@ -58,7 +59,7 @@ public class EnemyManager
     public void AddEnemyIns(GameObject enemyIns)
     {
         InstantiatedEnemies.Add(enemyIns);
-        AliveEnemyIndexes.Add(enemyIns.GetComponent<EnemyBehaviour>().indexInBattle);
+        AliveEnemyIndexes.Add(enemyIns.GetComponent<EnemyComponent>().indexInBattle);
     }
 
     // 敵パーティーメンバーをリストから削除するメソッド
@@ -77,10 +78,18 @@ public class EnemyManager
     /// 敵インスタンスをフェードアウトさせる
     /// </summary>
     /// <param name="enemyIns"></param>
-    public void FadeOutEnemyIns(GameObject enemyIns)
+    public async UniTask FadeOutEnemyIns(GameObject enemyIns)
     {
-        enemyIns.GetComponent<SpriteRenderer>().DOFade(0f, 0.5f).From(1f); // フェードアウト
-        enemyIns.GetComponent<EnemyBehaviour>().isFadedOut = true;
+        var comp = enemyIns.GetComponent<EnemyComponent>();
+        if (comp != null)
+        {
+            await DOTween.Sequence()
+            // スプライトのフェードアウト
+            .Append(comp.mainSprite.DOFade(0f, 0.5f).From(1f))
+            .Join(comp.shadowSprite.DOFade(0f, 0.5f).From(1f));
+               
+        }
+        enemyIns.GetComponent<EnemyComponent>().isFadedOut = true;
     }
 
     public void Initialize()
@@ -89,6 +98,7 @@ public class EnemyManager
         {
             EnemyPartyMembers.Clear();
             InstantiatedEnemies.Clear();
+            AliveEnemyIndexes.Clear();
         } 
     }
 
@@ -105,32 +115,32 @@ public class EnemyManager
         return null;
     }
 
-    public EnemyStatus GetEnemyStatus(EnemyPartyStatus.PartyMember partyMember)
+    public Enemy GetEnemy(EnemyPartyStatus.PartyMember partyMember)
     {
-        var status = partyMember.enemy.GetComponent<EnemyBehaviour>().status;
+        var status = partyMember.enemy.GetComponent<EnemyComponent>().status;
         return status;
     }
 
-    public EnemyStatus GetEnemyStatusByIndex(int index)
+    public Enemy GetEnemyByIndex(int index)
     {
         var enemy = GetEnemyIns(index);
         if (enemy != null)
         {
-            var status = enemy.GetComponent<EnemyBehaviour>().status;
+            var status = enemy.GetComponent<EnemyComponent>().status;
             return status;
         }
         return null;
     }
 
-    public List<EnemyStatus> GetAllEnemiesStatus(bool exceptKnockedOut = false)
+    public List<Enemy> GetAllEnemiesStatus(bool exceptKnockedOut = false)
     {
-        List<EnemyStatus> enemies = new List<EnemyStatus>(); 
+        List<Enemy> enemies = new List<Enemy>(); 
         foreach(var enemy in InstantiatedEnemies)
         {
-            var e = enemy.GetComponent<EnemyBehaviour>().status;
+            var e = enemy.GetComponent<EnemyComponent>().status;
             if(e != null)
             {
-                if (!(exceptKnockedOut && e.knockedOut))
+                if (!(exceptKnockedOut && e.KnockedOut))
                 {
                     enemies.Add(e);
                 }
@@ -141,12 +151,25 @@ public class EnemyManager
 
     public List<GameObject> GetEnemiesInsExceptKnockedOut()
     {
-        var aliveEnemieIns = InstantiatedEnemies.Where(x => !x.GetComponent<EnemyBehaviour>().status.knockedOut).ToList();
+        var aliveEnemieIns = InstantiatedEnemies.Where(x => !x.GetComponent<EnemyComponent>().status.KnockedOut).ToList();
         return aliveEnemieIns;
     }
 
-    private void InithializeStatus()
+    public void ShowHPGauges()
     {
+        foreach(var enemyObject in InstantiatedEnemies)
+        {
+            GaugeManager gaugeManager = enemyObject.GetComponentInChildren<GaugeManager>(true);
+            
+            if (gaugeManager != null)
+            {
+                GameObject gaugeObject = gaugeManager.transform.gameObject;
 
+                if (gaugeObject != null)
+                {
+                    gaugeObject.SetActive(true);
+                }
+            }
+        }
     }
 }

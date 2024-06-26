@@ -140,7 +140,7 @@ public class ClassMenuController : MonoBehaviour
     private int GetCharacterClassIndex()
     {
         var ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
-        var cl = ch.Class;
+        var cl = ch.CharacterClass;
 
         var index = classes.IndexOf(cl);
 
@@ -230,18 +230,18 @@ public class ClassMenuController : MonoBehaviour
         
         gradation.color = color;
         nameBackGradation.color = color;
-        characterClass.text = ch.Class.classAbbreviation;
-        characterLevel.text = ch.level.ToString();
+        characterClass.text = ch.CharacterClass.classAbbreviation;
+        characterLevel.text = ch.Level.ToString();
 
         #region ステータス欄
-        MH.text = ch.maxHp2.ToString();
-        MM.text = ch.maxMp2.ToString();
-        ST.text = ch.str2.ToString();
-        VI.text = ch.vit2.ToString();
-        DE.text = ch.dex2.ToString();
-        AG.text = ch.agi2.ToString();
-        IT.text = ch.inte2.ToString();
-        MN.text = ch.mnd2.ToString();
+        MH.text = ch.MaxHp.ToString();
+        MM.text = ch.MaxMp.ToString();
+        ST.text = ch.Str.ToString();
+        VI.text = ch.Vit.ToString();
+        DE.text = ch.Dex.ToString();
+        AG.text = ch.Agi.ToString();
+        IT.text = ch.Int.ToString();
+        MN.text = ch.Mnd.ToString();
         #endregion
     }
 
@@ -251,33 +251,33 @@ public class ClassMenuController : MonoBehaviour
     /// <param name=""></param>
     private void CompareStatus()
     {
-        AllyStatus ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
-        AllyStatus dummy = PartyMembers.Instance.CopyAllyStatus(ch);
+        Ally ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+        Ally dummy = PartyMembers.Instance.CopyAlly(ch);
         Class cl = ClassManager.Instance.GetClassByIndex(currentClassIndex);
 
         dummy.ChangeClass(cl);
 
-        var pA = dummy.pAttack - ch.pAttack;
-        var mA = dummy.mAttack - ch.mAttack;
-        var pD = dummy.pDefence - ch.pDefence;
-        var mD = dummy.mDefence - ch.mDefence;
-        var mH = dummy.maxHp2 - ch.maxHp2;
-        var mM = dummy.maxMp2 - ch.maxMp2;
-        var sT = dummy.str2 - ch.str2;
-        var vI = dummy.vit2 - ch.vit2;
-        var dE = dummy.dex2 - ch.dex2;
-        var aG = dummy.agi2 - ch.agi2;
-        var iT = dummy.inte2 - ch.inte2;
-        var mN = dummy.mnd2 - ch.mnd2;
+        var pA = dummy.PAttack - ch.PAttack;
+        var mA = dummy.MAttack - ch.MAttack;
+        var pD = dummy.PDefence - ch.PDefence;
+        var mD = dummy.MDefence - ch.MDefence;
+        var mH = dummy.MaxHp - ch.MaxHp;
+        var mM = dummy.MaxMp - ch.MaxMp;
+        var sT = dummy.Str - ch.Str;
+        var vI = dummy.Vit - ch.Vit;
+        var dE = dummy.Dex - ch.Dex;
+        var aG = dummy.Agi - ch.Agi;
+        var iT = dummy.Int - ch.Int;
+        var mN = dummy.Mnd - ch.Mnd;
 
-        SetCompareTextStyle(MH, dummy.maxHp2, mh, mH);
-        SetCompareTextStyle(MM, dummy.maxMp2, mm, mM);
-        SetCompareTextStyle(ST, dummy.str2, st, sT);
-        SetCompareTextStyle(VI, dummy.vit2, vi, vI);
-        SetCompareTextStyle(DE, dummy.dex2, de, dE);
-        SetCompareTextStyle(AG, dummy.agi2, ag, aG);
-        SetCompareTextStyle(IT, dummy.inte2, it, iT);
-        SetCompareTextStyle(MN, dummy.mnd2, mn, mN);
+        SetCompareTextStyle(MH, dummy.MaxHp, mh, mH);
+        SetCompareTextStyle(MM, dummy.MaxMp, mm, mM);
+        SetCompareTextStyle(ST, dummy.Str, st, sT);
+        SetCompareTextStyle(VI, dummy.Vit, vi, vI);
+        SetCompareTextStyle(DE, dummy.Dex, de, dE);
+        SetCompareTextStyle(AG, dummy.Agi, ag, aG);
+        SetCompareTextStyle(IT, dummy.Int, it, iT);
+        SetCompareTextStyle(MN, dummy.Mnd, mn, mN);
     }
 
     /// <summary>
@@ -315,9 +315,9 @@ public class ClassMenuController : MonoBehaviour
         var ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
         var cl = ClassManager.Instance.GetClassByIndex(currentClassIndex);
         
-        var lv = ch.classLevels[currentClassIndex];
-        var next = ch.classNextExps[currentClassIndex];
-        var earned = ch.classEarnedExps[currentClassIndex];
+        var lv = ch.ClassLevels[currentClassIndex];
+        var next = ch.ClassNextExps[currentClassIndex];
+        var earned = ch.ClassEarnedExps[currentClassIndex];
 
         className.text = cl.className;
         classLevel.text = lv.ToString();
@@ -388,15 +388,15 @@ public class ClassMenuController : MonoBehaviour
             shield.color = Color.white;
         }
 
-        exSkillIcon.sprite = cl.exSkill.icon;
-        exSkillName.text = cl.exSkill.skillName;
-        exSkillDescription.text = cl.exSkill.description;
+        exSkillIcon.sprite = cl.exSkill.Icon;
+        exSkillName.text = cl.exSkill.SkillName;
+        exSkillDescription.text = cl.exSkill.Description;
 
         Skill nextSkill = null;
         Skill nextNextSkill = null;
 
-        var nextLv = ch.classLevels[currentCharacterIndex] + 1;
-        var nextNextLv = ch.classLevels[currentCharacterIndex] + 2;
+        var nextLv = ch.ClassLevels[currentCharacterIndex] + 1;
+        var nextNextLv = ch.ClassLevels[currentCharacterIndex] + 2;
         
         if (cl.LearnSkills.Count >= nextLv - 1)
         {
@@ -411,8 +411,8 @@ public class ClassMenuController : MonoBehaviour
         {
             nextLevel.text = nextLv.ToString();
             nextSkillIcon.enabled = true;
-            nextSkillIcon.sprite = nextSkill.icon;
-            nextSkillName.text = nextSkill.skillName;
+            nextSkillIcon.sprite = nextSkill.Icon;
+            nextSkillName.text = nextSkill.SkillName;
         }
         else
         {
@@ -424,8 +424,8 @@ public class ClassMenuController : MonoBehaviour
         {
             nextNextLevel.text = nextNextLv.ToString();
             nextNextSkillIcon.enabled = true;
-            nextNextSkillIcon.sprite = nextNextSkill.icon;
-            nextNextSkillName.text = nextNextSkill.skillName;
+            nextNextSkillIcon.sprite = nextNextSkill.Icon;
+            nextNextSkillName.text = nextNextSkill.SkillName;
         }
         else
         {
@@ -458,7 +458,7 @@ public class ClassMenuController : MonoBehaviour
         int currentCharacterClassIndex = GetCharacterClassIndex();
         if (index != currentCharacterClassIndex)
         {
-            AllyStatus ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+            Ally ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
             ch.ChangeClass(cl);
 
             await Initialize();

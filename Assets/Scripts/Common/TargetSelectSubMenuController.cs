@@ -1,4 +1,3 @@
-using SpriteGlow;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ public class TargetSelectSubMenuController : MonoBehaviour
     public GameObject buttonPrefab;
 
     public int numberOfButtons;
-    public float spacing;
+    private float spacing = 16.0f;
 
     private EventSystem eventSystems;
 
@@ -83,8 +82,8 @@ public class TargetSelectSubMenuController : MonoBehaviour
 
     public void SetHeader(Skill skill, Item item)
     {
-        var icon = skill != null ? skill.icon : item.iconImage;
-        var name = skill != null ? skill.skillName : item.itemName;
+        var icon = skill != null ? skill.Icon : item.IconImage;
+        var name = skill != null ? skill.SkillName : item.ItemName;
         
         image.sprite = icon;
         skillName.text = name;
@@ -122,7 +121,7 @@ public class TargetSelectSubMenuController : MonoBehaviour
                 // 戦闘不能でないエネミーのリストを取得
                 var aliveEnemies = EnemyManager.Instance.GetEnemiesInsExceptKnockedOut();
                 // 戦闘不能でないエネミーのリストのバトル中検索用インデックスを取得
-                var index = aliveEnemies[i].GetComponent<EnemyBehaviour>().indexInBattle;
+                var index = aliveEnemies[i].GetComponent<EnemyComponent>().indexInBattle;
 
                 GameObject button = createdButtons[i].transform.GetChild(0).gameObject;
                 EventTrigger trigger = button.GetComponent<EventTrigger>() ?? button.AddComponent<EventTrigger>();

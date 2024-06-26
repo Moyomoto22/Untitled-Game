@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da848f75f7644264badce401bce61de8, type: 3}
+  m_Name: "\u30A6\u30A7\u30A2\u30D0\u30C3\u30C8"
+  m_EditorClassIdentifier: 
+  characterName: "\u30A6\u30A7\u30A2\u30D0\u30C3\u30C8"
+  hp: 22
+  mp: 0
+  tp: 0
+  level: 1
+  baseMaxHp: 22
+  baseMaxMp: 0
+  baseStr: 0
+  baseVit: 0
+  baseDex: 0
+  baseAgi: 0
+  baseInt: 0
+  baseMnd: 0
+  pAttack: 24
+  mAttack: 14
+  pDefence: 6
+  mDefence: 2
+  criticalRate: 0
+  evationRate: 0
+  counterRate: 0
+  blockRate: 0
+  blockReductionRate: 0
+  rightArm: {fileID: 0}
+  leftArm: {fileID: 0}
+  head: {fileID: 0}
+  body: {fileID: 0}
+  accessary1: {fileID: 0}
+  accessary2: {fileID: 0}
+  resistPhysical: 0
+  resistMagic: 0
+  resistSlash: 0
+  resistThrast: -0.5
+  resistBlow: 0
+  resistFire: 0
+  resistIce: 0
+  resistThunder: 0
+  resistWind: 0
+  resistPoison: 0
+  resistParalyze: 0
+  resistAsleep: 0
+  resistSilence: 0
+  resistDaze: 0
+  resistCharm: 0
+  resistFrostBite: 0
+  resistStan: 0
+  reduceMagicMPCost: 0
+  positionInScreen: {x: 0, y: 0}
+  spriteObject: {fileID: 0}
+  HPGauge: {fileID: 0}
+  MPGauge: {fileID: 0}
+  TPGauge: {fileID: 0}
+  SPGauge: {fileID: 0}
+  EXPGauge: {fileID: 0}
+  effectSpriteObjects: []
+  sprite: {fileID: 21300000, guid: 3cc46971c25696b45a9c64dd784ce1b4, type: 3}
+  eyesSprite: {fileID: 21300000, guid: 36a7f93d69b333848aa389a6897402a0, type: 3}
+  exp: 15
+  gold: 4
+  dropItemOne: {fileID: 11400000, guid: 66c671574a0cb874abb068ceb123197f, type: 2}
+  dropRateOne: 0.1
+  dropItemTwo: {fileID: 11400000, guid: f155d5d00d254fe469ff5e78032f7824, type: 2}
+  dropRateTwo: 0.05
+  stealItemOne: {fileID: 11400000, guid: 93733f7c3b8c3094e9f0336421280c58, type: 2}
+  stealRateOne: 0.3
+  stealItemTwo: {fileID: 11400000, guid: 17987308e54eadd4f875c5164811a494, type: 2}
+  stealRateTwo: 0.01

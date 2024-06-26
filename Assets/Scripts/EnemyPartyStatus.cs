@@ -5,22 +5,18 @@ using UnityEngine;
 
 [Serializable]
 [CreateAssetMenu(fileName = "EnemyPartyStatus", menuName = "CreateEnemyPartyStatus")]
-public class EnemyPartyStatus : ScriptableObject
+public class EnemyPartyStatus : MonoBehaviour
 {
     [System.Serializable]
     public struct PartyMember 
     {
-        [SerializeField]
-        public GameObject enemy;
-        [SerializeField]
-        public Vector3 position;
+        [SerializeField] public GameObject enemy;
+        [SerializeField] public Vector3 position;
     }
 
-    [SerializeField]
-    private string partyName = null;
+    [SerializeField] public string partyName = null;
 
-    [SerializeField]
-    List<PartyMember> partyMembers;
+    [SerializeField] public List<PartyMember> partyMembers;
 
     public string GetPartyName()
     {
@@ -29,6 +25,12 @@ public class EnemyPartyStatus : ScriptableObject
 
     public List<PartyMember> GetPartyMembers()
     {
-        return partyMembers;
+        List<PartyMember> members = new List<PartyMember>();
+       
+        foreach(var partyMember in partyMembers)
+        {
+            members.Add(partyMember);
+        }
+        return members;
     }
 }

@@ -1,4 +1,3 @@
-using SpriteGlow;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,7 +41,7 @@ public class SelectSkillSubMenuController : MonoBehaviour
 
     public GameObject targetSelectMenu;
 
-    private CharacterStatus turnCharacter;
+    private Character turnCharacter;
     private List<Skill> skills;
 
     void Awake()
@@ -55,7 +54,7 @@ public class SelectSkillSubMenuController : MonoBehaviour
         
         // ターンキャラクターの使用可能スキルを一覧にセット
         turnCharacter = TurnCharacter.Instance.CurrentCharacter;
-        skills = turnCharacter.learnedSkills;
+        skills = turnCharacter.LearnedSkills;
         SetSkills();
     }
 
@@ -97,11 +96,11 @@ public class SelectSkillSubMenuController : MonoBehaviour
 
         if (isMagics)
         {
-            ms = skills.Where(x => x.skillCategory == Constants.SkillCategory.Magic).ToList();
+            ms = skills.Where(x => x.SkillCategory == Constants.SkillCategory.Magic).ToList();
         }
         else
         {
-            ms = skills.Where(x => x.skillCategory == Constants.SkillCategory.Miracle).ToList();
+            ms = skills.Where(x => x.SkillCategory == Constants.SkillCategory.Miracle).ToList();
         }
 
         foreach (MagicMiracle m in ms)
@@ -110,10 +109,10 @@ public class SelectSkillSubMenuController : MonoBehaviour
             var comp = obj.GetComponent<SkillComponent>();                  // ボタンに紐づくスキル情報を格納するコンポーネント
             var newButton = obj.transform.GetChild(0).gameObject;           // ボタン本体
 
-            comp.icon.sprite = m.icon;                                      // アイコン
-            comp.skillName.text = m.skillName;                              // スキル名称
+            comp.icon.sprite = m.Icon;                                      // アイコン
+            comp.skillName.text = m.SkillName;                              // スキル名称
             comp.cost.text = "MP";                                          // コストの種別
-            comp.point.text = m.MPCost.ToString();                          // 消費MP
+            comp.point.text = m.MpCost.ToString();                          // 消費MP
             AddSelectOrDeselectActionToButtons(newButton, m);               // ボタンの選択・選択解除時のアクションを設定
 
             // スキルが使用可能か判定
@@ -137,7 +136,7 @@ public class SelectSkillSubMenuController : MonoBehaviour
     /// </summary>
     private void SetArts()
     {
-        var actives = skills.Where(x => x.skillCategory == Constants.SkillCategory.Arts).ToList();
+        var actives = skills.Where(x => x.SkillCategory == Constants.SkillCategory.Arts).ToList();
 
         foreach (Arts art in actives)
         {
@@ -145,10 +144,10 @@ public class SelectSkillSubMenuController : MonoBehaviour
             var comp = obj.GetComponent<SkillComponent>();
             var newButton = obj.transform.GetChild(0).gameObject;
 
-            comp.icon.sprite = art.icon;
-            comp.skillName.text = art.skillName;
+            comp.icon.sprite = art.Icon;
+            comp.skillName.text = art.SkillName;
             comp.cost.text = "TP";
-            comp.point.text = art.TPCost.ToString();
+            comp.point.text = art.TpCost.ToString();
             AddSelectOrDeselectActionToButtons(newButton, art);
             if (turnCharacter.CanUseSkill(art))
             {
@@ -166,7 +165,7 @@ public class SelectSkillSubMenuController : MonoBehaviour
     /// </summary>
     private void SetActives()
     {
-        var actives = skills.Where(x => x.skillCategory == Constants.SkillCategory.Active).ToList();
+        var actives = skills.Where(x => x.SkillCategory == Constants.SkillCategory.Active).ToList();
 
         foreach (ActiveSkill act in actives)
         {
@@ -174,12 +173,22 @@ public class SelectSkillSubMenuController : MonoBehaviour
             var comp = obj.GetComponent<SkillComponent>();
             var newButton = obj.transform.GetChild(0).gameObject;
 
-            comp.icon.sprite = act.icon;
-            comp.skillName.text = act.skillName;
-            comp.cost.text = "リキャスト";
-            comp.point.text = act.recastTurn.ToString();
-            AddOnClickActionToSkillButton(newButton, act);
+            comp.icon.sprite = act.Icon;
+            comp.skillName.text = act.SkillName;
+            comp.cost.text = "";
+            comp.point.text = act.RemainingTurn.ToString();
             AddSelectOrDeselectActionToButtons(newButton, act);
+            // スキルが使用可能か判定
+            if (turnCharacter.CanUseSkill(act))
+            {
+                // ボタン押下時のアクションを追加
+                AddOnClickActionToSkillButton(newButton, act);
+            }
+            else
+            {
+                // ボタンタイトルをグレーアウト
+                comp.skillName.color = CommonController.GetColor(Constants.darkGray);
+            }
         }
     }
 
@@ -215,18 +224,32 @@ public class SelectSkillSubMenuController : MonoBehaviour
     /// ボタン押下時アクションをボタンに設定
     /// </summary>
     /// <param name="skill"></param>
-    private void OnClickActionToSkillButton(Skill skill)
+    private async void OnClickActionToSkillButton(Skill skill)
     {
         battleCommandManager.selectedSkill = skill;
-        // スキルの対象が敵かつ単体の時
-        if (skill.target == 3 && !skill.isTargetAll)
+        // スキルの対象が敵単体の時
+        if (skill.Target == Constants.TargetType.Enemy)
         {  
             battleCommandManager.DisplayEnemyTargetSubMenu(1);
         }
+        // 敵全体の場合
+        else if (skill.Target == Constants.TargetType.AllEnemies)
+        {
+            await battleCommandManager.SkillToAllEnemies();
+        }
         // 対象が味方かつ単体の時
-        else if (skill.target == 2 && !skill.isTargetAll)
+        else if (skill.Target == Constants.TargetType.Ally)
         {
             battleCommandManager.DisplayAllyTargetSubMenu(1);
+        }
+        // 対象が自分の場合
+        else if (skill.Target == Constants.TargetType.Self)
+        {
+            // ターンキャラクターのインデックスを取得
+            //var turnCharacter = TurnCharacter.Instance.CurrentCharacter;
+            var index = TurnCharacter.Instance.CurrentCharacterIndex;
+            // 自分を対象にスキルを使用
+            await battleCommandManager.SkillToSelf(index);
         }
 
     }
@@ -261,26 +284,26 @@ public class SelectSkillSubMenuController : MonoBehaviour
         if (skill != null)
         {
             detailImage.enabled = true;
-            detailImage.sprite = skill.icon;
-            detailName.text = skill.skillName;
-            description.text = skill.description;
+            detailImage.sprite = skill.Icon;
+            detailName.text = skill.SkillName;
+            description.text = skill.Description;
             if (skill is MagicMiracle)
             {
                 var magic = skill as MagicMiracle;
                 detailCost.text = "消費MP";
-                detailPoint.text = magic.MPCost.ToString();
+                detailPoint.text = magic.MpCost.ToString();
             }
             else if (skill is Arts)
             {
                 var arts = skill as Arts;
                 detailCost.text = "消費TP";
-                detailPoint.text = arts.TPCost.ToString();
+                detailPoint.text = arts.TpCost.ToString();
             }
             else if (skill is ActiveSkill)
             {
                 var act = skill as ActiveSkill;
                 detailCost.text = "リキャスト";
-                detailPoint.text = act.recastTurn.ToString();
+                detailPoint.text = act.RecastTurn.ToString();
             }
         }
     }

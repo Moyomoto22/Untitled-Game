@@ -69,13 +69,13 @@ public class OrderManager: MonoBehaviour
         var allies = PartyMembers.Instance.partyMembers;
         for (int i = 0; i < allies.Count; i++)
         {
-            AddCharacter(i, allies[i].agi2);
+            AddCharacter(i, allies[i].Agi);
         }
 
         var enemies = EnemyManager.Instance.GetAllEnemiesStatus();
         for (int i = 4; i < enemies.Count + 4; i++)
         {
-            AddCharacter(i, enemies[i - 4].agi2);
+            AddCharacter(i, enemies[i - 4].Agi);
         }
     }
 
@@ -116,12 +116,10 @@ public class OrderManager: MonoBehaviour
         {
             var sortedCharacters = characters.OrderBy(c => c.EffectiveSpeed).ToList();
             var currentChar = sortedCharacters.First();
-            Debug.Log($"Turn {i}: ID {currentChar.Id} acts");
-
             var status = GetStatus(currentChar.Id);
 
             // 戦闘不能時は行動順に加えず、ループ回数をデクリメントする
-            if (!status.knockedOut)
+            if (!status.KnockedOut)
             {
                 order.Add(currentChar.Id);
             }
@@ -147,7 +145,7 @@ public class OrderManager: MonoBehaviour
     {
         for(int i = 0; i < order.Count; i ++)
         {
-            CharacterStatus currentCharacter = GetStatus(order[i]);
+            Character currentCharacter = GetStatus(order[i]);
 
             if (i == 0)
             {
@@ -156,15 +154,15 @@ public class OrderManager: MonoBehaviour
 
             Sprite sprite = null;
 
-            if (currentCharacter is AllyStatus)
+            if (currentCharacter is Ally)
             {
-                var allyStatus = currentCharacter as AllyStatus;
-                sprite = allyStatus.Class.imagesD[allyStatus.CharacterID - 1];
+                var Ally = currentCharacter as Ally;
+                sprite = Ally.CharacterClass.imagesD[Ally.CharacterID - 1];
             }
-            else if (currentCharacter is EnemyStatus)
+            else if (currentCharacter is Enemy)
             {
-                var enemyStatus = currentCharacter as EnemyStatus;
-                sprite = enemyStatus.eyesSprite;
+                var Enemy = currentCharacter as Enemy;
+                sprite = Enemy.EyesSprite;
             }
 
             objects[i].GetComponentInChildren<Image>().sprite = sprite;
@@ -176,9 +174,9 @@ public class OrderManager: MonoBehaviour
         }
     }
 
-    private CharacterStatus GetStatus(int id)
+    private Character GetStatus(int id)
     {
-        CharacterStatus character = null;
+        Character character = null;
         if (id < 4)
         {
             // プレイヤー
@@ -188,7 +186,7 @@ public class OrderManager: MonoBehaviour
         {
             // エネミー
             var index = id - 4;
-            character = EnemyManager.Instance.GetEnemyStatusByIndex(index);
+            character = EnemyManager.Instance.GetEnemyByIndex(index);
         }
         return character;
     }

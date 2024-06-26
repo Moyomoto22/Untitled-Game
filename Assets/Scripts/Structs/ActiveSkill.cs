@@ -9,12 +9,8 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "ActiveSkill", menuName = "Skills/ActiveSkill")]
 public class ActiveSkill : Skill
 {
-    // リキャストターン
-    [SerializeField]
-    public int recastTurn;
-
-    public override bool CanUse(CharacterStatus user)
+    public override bool CanUse(Character user)
     {
-        return true;
+        return RemainingTurn <= 0;
     }
 }

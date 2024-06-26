@@ -7,7 +7,7 @@ public class ItemInventory2 : MonoBehaviour
 {
     public static ItemInventory2 Instance { get; private set; }
 
-    public List<Item> originalItems = new List<Item>();
+    [SerializeField] private List<Item> originalItems;
     public List<Item> items = new List<Item>();
 
     void Awake()
@@ -29,6 +29,7 @@ public class ItemInventory2 : MonoBehaviour
         foreach (var oi in originalItems)
         {
             var copy = CopyItem(oi);
+            copy.EquippedAllyID = 0;
             items.Add(copy);
         }
     }
@@ -36,6 +37,12 @@ public class ItemInventory2 : MonoBehaviour
     public void AddItem(Item item)
     {
         items.Add(item);
+    }
+
+    public void AddCopyItem(Item item)
+    {
+        Item copy = CopyItem(item);
+        AddItem(copy);
     }
 
     public bool RemoveItem(Item item)
@@ -78,7 +85,23 @@ public class ItemInventory2 : MonoBehaviour
 
         foreach (Item item in loadedData)
         {
+            //AddCopyItem(item);
             AddItem(item);
         }
+    }
+
+    // IDからアイテムを取得し、取得したアイテムのコピーを返す
+    public Item GetItemByID(string id)
+    {
+        foreach (Item originalItem in originalItems)
+        {
+            if (originalItem.ID == id)
+            {
+                Item copy = CopyItem(originalItem);
+                return copy;
+            }
+        }
+        Debug.LogWarning("Item with ID: " + id + " not found.");
+        return null;
     }
 }

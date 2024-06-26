@@ -9,15 +9,16 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "Arts", menuName = "Skills/Arts")]
 public class Arts : Skill
 {
-    // 消費TP
-    [SerializeField]
-    public int TPCost;
     //　武器
     [SerializeField]
-    public Constants.WeaponCategory weapon;
+    private Constants.WeaponCategory requiredWeaponCategory;
 
-    public override bool CanUse(CharacterStatus user)
+    public override bool CanUse(Character user)
     {
-        return user.tp >= TPCost;
+        // 右手に適切な武器を装備しているかつTPが十分
+        bool isEquippedValidWeapon = user.RightArm != null && user.RightArm.WeaponCategory == requiredWeaponCategory;
+        bool hasEnoughTP = user.TP >= TpCost;
+
+        return isEquippedValidWeapon && hasEnoughTP;
     }
 }

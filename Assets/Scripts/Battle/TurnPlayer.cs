@@ -16,18 +16,24 @@ public class TurnCharacter
     }
 
     // 現在のプレイヤー情報
-    public CharacterStatus CurrentCharacter { get; private set; }
+    public Character CurrentCharacter { get; private set; }
 
     public int CurrentCharacterIndex { get; private set; }
 
     // プレイヤーをターンに設定
-    public void SetTurnCharacter(CharacterStatus player, int index)
+    public void SetTurnCharacter(Character player, int index)
     {
         CurrentCharacter = player;
         CurrentCharacterIndex = index;
-        // リフレッシュ
-        CurrentCharacter.RefreshEffectsRemainOneTurn();
+
+        CurrentCharacter.RefreshWhenTurnBegins();
 
         Debug.Log("It's now " + player.name + "(" + index + ")" + "'s turn.");
+    }
+
+    public void EndTurn()
+    {
+        // ターン終了時リフレッシュ
+        CurrentCharacter.RefreshWhenEndTurn();
     }
 }

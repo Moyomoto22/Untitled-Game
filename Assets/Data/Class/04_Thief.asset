@@ -54,8 +54,15 @@ MonoBehaviour:
   - E
   equippableWeapons: 00000000020000000600000009000000
   description: "\u30B9\u30D4\u30FC\u30C9\u3068\u653B\u6483\u529B\u306B\u512A\u308C\u308B"
-  exSkill: {fileID: 11400000, guid: 6182216bcd39299438927cca6ae3a83b, type: 2}
+  exSkill: {fileID: 11400000, guid: f9f4847c62b08c54b9d40b0bf2e31826, type: 2}
   LearnSkills:
-  - {fileID: 11400000, guid: db22a439c706c714c87073840e8b2799, type: 2}
-  - {fileID: 11400000, guid: 4e0745ca128f2184ab3f4ed2319ebacb, type: 2}
-  - {fileID: 11400000, guid: 4e0745ca128f2184ab3f4ed2319ebacb, type: 2}
+  - {fileID: 11400000, guid: f9f4847c62b08c54b9d40b0bf2e31826, type: 2}
+  - {fileID: 11400000, guid: 7bd3ad86f304c554cb05280e16991beb, type: 2}
+  - {fileID: 11400000, guid: 80512796864d84840a755ae2f84c5694, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

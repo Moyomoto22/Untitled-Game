@@ -1,4 +1,3 @@
-using SpriteGlow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +22,7 @@ public class BattleCommandManager : MonoBehaviour
     public GameObject skillSelectMenu;
     public GameObject itemSelectMenu;
     
-    public GameObject buttons;
+    public List<GameObject> buttons;
     public GameObject animatedText;
 
     public Skill selectedSkill;
@@ -101,10 +100,14 @@ public class BattleCommandManager : MonoBehaviour
         selectedSkill = SkillManager.Instance.GetSkillByID(skillID);
         lastSelectedButtonIndex = 3;
 
+        ToggleButtonsInteractable(false);
+
         // ターンキャラクターのインデックスを取得
         var index = TurnCharacter.Instance.CurrentCharacterIndex;
         // 自分を対象にスキルを使用
-        await SkillToAlly(index);
+        await SkillToSelf(index);
+
+        ToggleButtonsInteractable(true);
     }
 
     /// <summary>
@@ -132,12 +135,12 @@ public class BattleCommandManager : MonoBehaviour
         displayedWindows.Add(targetSelectMenu);
 
         // インスタンスのローカルスケールを設定
-        targetSelectMenuInstance.transform.localScale = new Vector3(1.6f, 1.6f, 1.0f);
-        targetSelectMenuInstance.transform.localPosition = new Vector3(-50.0f, 140.0f, 0.0f);
+        targetSelectMenuInstance.transform.localScale = new Vector3(1f, 1f, 1.0f);
+        targetSelectMenuInstance.transform.localPosition = new Vector3(450f, 180.0f, 0.0f);
 
         // 戦闘不能でない敵を取得
         var enemies = EnemyManager.Instance.GetAllEnemiesStatus(true);
-        var enemyNames = enemies.Select(enemies => enemies.characterName).ToList();
+        var enemyNames = enemies.Select(enemies => enemies.CharacterName).ToList();
 
 
         if (EnemyManager.Instance.AliveEnemyIndexes.Count > 0)
@@ -184,7 +187,7 @@ public class BattleCommandManager : MonoBehaviour
 
         // 仲間を取得
         var allies = PartyMembers.Instance.GetAllies();
-        var allyNames = allies.Select(allies => allies.characterName).ToList();
+        var allyNames = allies.Select(allies => allies.CharacterName).ToList();
 
         // 対象選択サブメニューを作成
         var subMenuController = targetSelectMenuInstance.GetComponent<TargetSelectSubMenuController>();
@@ -243,16 +246,14 @@ public class BattleCommandManager : MonoBehaviour
     }
 
     /// <summary>
-    /// コマンドボタンのInteractableを切り替える
+    /// ボタンのInteractableを切り替える
     /// </summary>
     /// <param name="interactable">有効/無効</param>
     public void ToggleButtonsInteractable(bool interactable)
     {
-        for (int i = 0; i < buttons.transform.childCount; i++)
+        for (int i = 0; i < buttons.Count; i++)
         {
-            Transform child = buttons.transform.GetChild(i);
-            Button button = child.GetComponentInChildren<Button>();
-
+            var button = buttons[i].transform.GetChild(0).GetComponent<Button>();
             if (button != null)
             {
                 button.interactable = interactable;
@@ -261,18 +262,18 @@ public class BattleCommandManager : MonoBehaviour
     }
 
     /// <summary>
-    /// コマンドボタンのFillAmountを操作する
+    /// ボタンのFillAmountを操作する
     /// </summary>
     /// <param name="number">対象ボタンのコマンド内でのインデックス</param>
     public void setButtonFillAmount(int number)
     {
-        int numberOfChildren = buttons.transform.childCount;
+        int numberOfChildren = buttons.Count;
 
-        // 対象インデックスに該当するボタンのみFillAmoutを1にし、それ以外は0にする
+        // 対象インデックスに該当するボタンのみFillAmountを1にし、それ以外は0にする
         for (int i = 0; i < numberOfChildren - 1; i++)
         {
             int fillAmount = i == number ? 1 : 0;
-            Transform child = buttons.transform.GetChild(i);
+            Transform child = buttons[i].transform.GetChild(0);
             Image buttonImage = child.GetComponentInChildren<Image>();
             buttonImage.fillAmount = fillAmount;
         }
@@ -286,7 +287,16 @@ public class BattleCommandManager : MonoBehaviour
     {
         if (eventSystems != null)
         {
-            eventSystems.SetSelectedGameObject(buttons.transform.GetChild(number).gameObject);
+            var button = buttons[number];
+
+            // スクリプトから選択状態にする場合、効果音は鳴らさない
+            var controller = button.GetComponent<MainMenuButtonManager>();
+            if (controller != null)
+            {
+                controller.shouldPlaySound = false;
+            }
+
+            eventSystems.SetSelectedGameObject(button.transform.GetChild(0).gameObject);
         }
     }
 
@@ -341,7 +351,7 @@ public class BattleCommandManager : MonoBehaviour
     /// </summary>
     /// <param name="index">使用者のパーティ内インデックス</param>
     /// <returns></returns>
-    private async UniTask SkillToAlly(int index)
+    public async UniTask SkillToAlly(int index)
     {
         Destroy(targetSelectMenuInstance);
         ToggleButtonsInteractable(true);
@@ -368,6 +378,38 @@ public class BattleCommandManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 自分へスキルを使用する
+    /// </summary>
+    /// <param name="index">使用者のパーティ内インデックス</param>
+    /// <returns></returns>
+    public async UniTask SkillToSelf(int index)
+    {
+        Destroy(targetSelectMenuInstance);
+        Destroy(skillSelectMenuInstance);
+        ToggleButtonsInteractable(false);
+
+        TextAnimationManager textAnimationManager = new TextAnimationManager();
+
+        // 対象の仲間のインスタンスを取得
+        var target = PartyMembers.Instance.GetAllyByIndex(index);
+        GameObject faceImage = battleController.faceImages[index];
+
+        if (target != null)
+        {
+            var turnCharacter = TurnCharacter.Instance.CurrentCharacter;
+
+            if (turnCharacter != null && selectedSkill != null)
+            {
+                // スキルを使用
+                await turnCharacter.UseSkill(selectedSkill, target);
+            }
+        }
+        ToggleButtonsInteractable(true);
+        // ターン終了
+        battleController.ChangeNextTurn();
+    }
+
+    /// <summary>
     /// 敵へスキルを使用する
     /// </summary>
     /// <param name="index">使用者のパーティ内インデックス</param>
@@ -381,7 +423,7 @@ public class BattleCommandManager : MonoBehaviour
         var enemy = EnemyManager.Instance.GetEnemyIns(index);
         if (enemy != null)
         {
-            var comp = enemy.GetComponent<EnemyBehaviour>();
+            var comp = enemy.GetComponent<EnemyComponent>();
             var e = comp.status;
             var turnCharacter = TurnCharacter.Instance.CurrentCharacter;
 
@@ -391,6 +433,45 @@ public class BattleCommandManager : MonoBehaviour
                 await turnCharacter.UseSkill(selectedSkill, e);
             }
         }
+        ToggleButtonsInteractable(true);
+        // ターン終了
+        battleController.ChangeNextTurn();
+    }
+
+    /// <summary>
+    /// 敵全体へスキルを使用する
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask SkillToAllEnemies()
+    {
+        Destroy(targetSelectMenuInstance);
+        Destroy(skillSelectMenuInstance);
+        ToggleButtonsInteractable(false);
+
+        // 生存中の敵のインスタンスを取得
+        var aliveEnemies = EnemyManager.Instance.GetEnemiesInsExceptKnockedOut();
+        var skillTasks = new List<UniTask>();
+
+        foreach (var enemy in aliveEnemies)
+        {
+            if (enemy != null)
+            {
+                var comp = enemy.GetComponent<EnemyComponent>();
+                var e = comp.status;
+                var turnCharacter = TurnCharacter.Instance.CurrentCharacter;
+
+                if (e != null && turnCharacter != null && selectedSkill != null)
+                {
+                    Debug.Log($"Using skill on {e.CharacterName}");
+
+                    // スキルを使用するタスクをリストに追加
+                    skillTasks.Add(turnCharacter.UseSkill(selectedSkill, e));
+                }
+            }
+        }
+        // 全てのスキル使用タスクが完了するまで待機
+        await UniTask.WhenAll(skillTasks);
+
         ToggleButtonsInteractable(true);
         // ターン終了
         battleController.ChangeNextTurn();
@@ -445,7 +526,7 @@ public class BattleCommandManager : MonoBehaviour
             var enemy = EnemyManager.Instance.GetEnemyIns(index);
             if (enemy != null)
             {
-                var comp = enemy.GetComponent<EnemyBehaviour>();
+                var comp = enemy.GetComponent<EnemyComponent>();
                 var e = comp.status;
                 var turnCharacter = TurnCharacter.Instance.CurrentCharacter;
 

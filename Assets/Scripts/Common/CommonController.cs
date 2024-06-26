@@ -17,14 +17,11 @@ public class CommonController : MonoBehaviour
     //Fade fadeRev;
 
     [SerializeField]
-    List<AssetReference> AllyStatuses;
+    List<AssetReference> Allyes;
 
     AsyncOperationHandle handle;
 
-    public List<AllyStatus> allyStatuses;
-
-    public ItemDatabase itemDatabase;
-    public SkillDatabase skillDatabase;
+    public List<Ally> Allies;
 
     private Scene oldScene;
     void Start()
@@ -121,9 +118,9 @@ public class CommonController : MonoBehaviour
     /// </summary>
     void LoadAsset()
     {
-        //for (int i = 0; i < AllyStatuses.Count; i++)
+        //for (int i = 0; i < Allyes.Count; i++)
         //{
-        //    handle = AllyStatuses[i].InstantiateAsync();
+        //    handle = Allyes[i].InstantiateAsync();
         //}
     }
 
@@ -199,7 +196,7 @@ public class CommonController : MonoBehaviour
         }
     }
 
-    public static async Task<AllyStatus> GetAllyStatus(int id)
+    public static async Task<Ally> GetAlly(int id)
     {
         string path;
 
@@ -222,179 +219,9 @@ public class CommonController : MonoBehaviour
                 break;
         }
 
-        AllyStatus status = await Addressables.LoadAssetAsync<AllyStatus>(path).Task;
+        Ally status = await Addressables.LoadAssetAsync<Ally>(path).Task;
 
         return status;
-    }
-
-    /// <summary>
-    /// アイテムが装備可能かチェックする
-    /// </summary>
-    /// <param name="status"></param>
-    /// <param name="item"></param>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    public static bool CheckEquippable(AllyStatus status, Item item, int index)
-    {
-        bool isEquippable = false;
-        bool isNitouryu = false;
-
-        Class Class = status.Class;
-        Equip equip = item as Equip;
-
-        if (equip != null && Class != null)
-        {
-
-            switch (index)
-            {
-                // 右手
-                case 0:
-                    Weapon weapon = equip as Weapon;
-                    if (weapon != null)
-                    {
-                        // 右手に盾は装備不可
-                        if (weapon.weaponCategory != Constants.WeaponCategory.Shield)
-                        {
-                            if (weapon.equipableClasses.Exists(x => x.name == Class.name))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                    break;
-                // 左手
-                case 1:
-                    Weapon weapon2 = equip as Weapon;
-                    if (weapon2 != null)
-                    {
-                        // 左手は基本盾のみ
-                        if (weapon2.weaponCategory == Constants.WeaponCategory.Shield || isNitouryu)
-                        {
-                            // 右手装備が両手持ちでない
-                            if (!status.rightArm.isTwoHanded)
-                            {
-                                if (weapon2.equipableClasses.Exists(x => x.name == Class.name))
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    break;
-                // 頭・胴
-                case 2:
-                case 3:
-                    if (equip.equipableClasses.Exists(x => x.name == Class.name))
-                    {
-                        return true;
-                    }
-                    break;
-                // 装飾品１・２
-                case 4:
-                case 5:
-                        return true;
-                default:
-                    return false;
-            }
-        }
-
-        return isEquippable;
-    }
-
-    public static async Task<int> CheckWhoEquiped(Item item)
-    {
-        List<AllyStatus> statuses = new List<AllyStatus>();
-
-        for (int i = 1; i < 5; i++)
-        {
-            statuses.Add(await CommonController.GetAllyStatus(i));
-        }
-
-        foreach(var status in statuses)
-        {
-            if (status.rightArm == item || status.leftArm == item || status.head == item || status.body == item || status.accessary1 == item || status.accessary2 == item)
-            {
-                return status.CharacterID;
-            }
-        }
-        return 0;
-    }
-
-
-    /// <summary>
-    /// 装備やスキルを考慮したステータスを再計算する
-    /// </summary>
-    public static AllyStatus CalcStatus(AllyStatus status)
-    {
-        AllyStatus newStatus = status;
-
-        // 基本ステータス
-        newStatus.maxHp2 = status.maxHp + (status.rightArm?.maxHp ?? 0) + (status.leftArm?.maxHp ?? 0) + (status.head?.maxHp ?? 0) + (status.body?.maxHp ?? 0) + (status.accessary1?.maxHp ?? 0) + (status.accessary2?.maxHp ?? 0);
-        newStatus.maxMp2 = status.maxMp + (status.rightArm?.maxMp ?? 0) + (status.leftArm?.maxMp ?? 0) + (status.head?.maxMp ?? 0) + (status.body?.maxMp ?? 0) + (status.accessary1?.maxMp ?? 0) + (status.accessary2?.maxMp ?? 0);
-        newStatus.str2 = status.str + (status.rightArm?.str ?? 0) + (status.leftArm?.str ?? 0) + (status.head?.str ?? 0) + (status.body?.str ?? 0) + (status.accessary1?.str ?? 0) + (status.accessary2?.str ?? 0);
-        newStatus.vit2 = status.vit + (status.rightArm?.vit ?? 0) + (status.leftArm?.vit ?? 0) + (status.head?.vit ?? 0) + (status.body?.vit ?? 0) + (status.accessary1?.vit ?? 0) + (status.accessary2?.vit ?? 0);
-        newStatus.dex2 = status.dex + (status.rightArm?.dex ?? 0) + (status.leftArm?.dex ?? 0) + (status.head?.dex ?? 0) + (status.body?.dex ?? 0) + (status.accessary1?.dex ?? 0) + (status.accessary2?.dex ?? 0);
-        newStatus.agi2 = status.agi + (status.rightArm?.agi ?? 0) + (status.leftArm?.agi ?? 0) + (status.head?.agi ?? 0) + (status.body?.agi ?? 0) + (status.accessary1?.agi ?? 0) + (status.accessary2?.agi ?? 0);
-        newStatus.inte2 = status.inte + (status.rightArm?.inte ?? 0) + (status.leftArm?.inte ?? 0) + (status.head?.inte ?? 0) + (status.body?.inte ?? 0) + (status.accessary1?.inte ?? 0) + (status.accessary2?.inte ?? 0);
-        newStatus.mnd2 = status.mnd + (status.rightArm?.mnd ?? 0) + (status.leftArm?.mnd ?? 0) + (status.head?.mnd ?? 0) + (status.body?.mnd ?? 0) + (status.accessary1?.mnd ?? 0) + (status.accessary2?.mnd ?? 0);
-
-        // 物理攻撃力依存値 武器によってSTR or DEX or INT or MNDを攻撃力に加算
-        int pAttackCorect = newStatus.str;
-        int pAttackCorectLeft = 0;
-        if (status.rightArm != null)
-        {
-            switch (status.rightArm.dependentStatus)
-            {
-                case 1:
-                    pAttackCorect = newStatus.dex2;
-                    break;
-                case 2:
-                    pAttackCorect = newStatus.inte2;
-                    break;
-                case 3:
-                    pAttackCorect = newStatus.mnd2;
-                    break;
-                default:
-                    pAttackCorect = newStatus.str2;
-                    break;
-            }
-        }
-
-        if (status.leftArm != null)
-        {
-            if (status.leftArm.weaponCategory != Constants.WeaponCategory.Shield)
-            {
-                switch (status.leftArm.dependentStatus)
-                {
-                    case 1:
-                        pAttackCorectLeft = newStatus.dex2;
-                        break;
-                    case 2:
-                        pAttackCorectLeft = newStatus.inte2;
-                        break;
-                    case 3:
-                        pAttackCorectLeft = newStatus.mnd2;
-                        break;
-                    default:
-                        pAttackCorectLeft = newStatus.str2;
-                        break;
-                }
-            }
-        }
-
-        // サブステータス
-        newStatus.pAttackLeft = pAttackCorectLeft + (status.leftArm?.pAttack ?? 0);
-        newStatus.pAttack = pAttackCorect + (status.rightArm?.pAttack ?? 0) + newStatus.pAttackLeft + (status.head?.pAttack ?? 0) + (status.body?.pAttack ?? 0) + (status.accessary1?.pAttack ?? 0) + (status.accessary2?.pAttack ?? 0);
-        newStatus.mAttack = newStatus.inte2 + (status.rightArm?.mAttack ?? 0) + (status.leftArm?.mAttack ?? 0) + (status.head?.mAttack ?? 0) + (status.body?.mAttack ?? 0) + (status.accessary1?.mAttack ?? 0) + (status.accessary2?.mAttack ?? 0);
-        newStatus.pDefence = newStatus.vit2 + (status.rightArm?.pDefence ?? 0) + (status.leftArm?.pDefence ?? 0) + (status.head?.pDefence ?? 0) + (status.body?.pDefence ?? 0) + (status.accessary1?.pDefence ?? 0) + (status.accessary2?.pDefence ?? 0);
-        newStatus.mDefence = newStatus.mnd / 2 + (status.rightArm?.mDefence ?? 0) + (status.leftArm?.mDefence ?? 0) + (status.head?.mDefence ?? 0) + (status.body?.mDefence ?? 0) + (status.accessary1?.mDefence ?? 0) + (status.accessary2?.mDefence ?? 0);
-
-        return newStatus;
-    }
-
-    public static void UseItem(Consumable item)
-    {
-
     }
 
     public static string GetItemCategoryString(Constants.ItemCategory category)
@@ -617,48 +444,6 @@ public class CommonController : MonoBehaviour
         }
     }
 
-    public static async void GetAllItems()
-    {
-
-        ItemDatabase itemDatabase = FindObjectsOfType<CommonController>()[0].itemDatabase;
-        List<Item> items = itemDatabase.items;
-
-
-        // アイテム一覧をAdressableから取得
-        GameObject obj = await Addressables.LoadAssetAsync<GameObject>(Constants.itemInventoryPath).Task;
-        ItemInventory itemInventory = obj.GetComponent<ItemInventory>();
-
-        itemInventory.itemInventory.Clear();
-
-        foreach (Item item in items)
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                itemInventory.AddItem(item);
-
-            }
-        }
-    }
-
-    /// <summary>
-    /// 全てのスキルを習得する
-    /// </summary>
-    /// <param name="ally"></param>
-    public static async void LearnAllSkills(AllyStatus ally)
-    {
-
-        SkillDatabase skillDatabase = FindObjectsOfType<CommonController>()[0].skillDatabase;
-        List<Skill> skills = skillDatabase.skills;
-
-        foreach (Skill skill in skills)
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                ally.LearnSkill(skill);
-            }
-        }
-    }
-
     public static Color GetCharacterColorByIndex(int index)
     {
         string colorCode = Constants.gradationBlue;
@@ -684,4 +469,11 @@ public class CommonController : MonoBehaviour
 
         return GetColor(colorCode);
     }
+
+    public static Sprite GetSpriteForEffect(string effectName)
+    {
+        var sprite = Resources.Load<Sprite>("UI/Icon/StatusEffect/" + effectName);
+        return sprite;
+    }
+
 }

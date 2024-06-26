@@ -39,7 +39,7 @@ public class TextAnimationManager : MonoBehaviour
     /// <param name="target"></param>
     /// <param name="damageStrings"></param>
     /// <returns></returns>
-    public async UniTask ShowDamageTextAnimation(CharacterStatus target, List<string> damageStrings, SpriteManipulator manip)
+    public async UniTask ShowDamageTextAnimation(Character target, List<string> damageStrings, SpriteManipulator manip)
     {
         if (damageStrings.Count > 0)
         {
@@ -75,7 +75,7 @@ public class TextAnimationManager : MonoBehaviour
                 }
                 // アニメーション開始
                 _ = UniTask.WhenAll(
-                    at.GetComponent<TextAnimationManager>().RevealDamageTextAnimation(damageStrings[i]),
+                    at.GetComponent<TextAnimationManager>().DamageTextAnimation(damageStrings[i]), //RevealDamageTextAnimation(damageStrings[i]),
                     manip.Shake(0.2f, 0.1f),
                     manip.Flash(0.2f, Color.red));
 
@@ -93,7 +93,7 @@ public class TextAnimationManager : MonoBehaviour
     /// <param name="damageStrings"></param>
     /// <param name="color"></param>
     /// <returns></returns>
-    public async UniTask ShowHealTextAnimation(CharacterStatus target, List<string> damageStrings, Color color)
+    public async UniTask ShowHealTextAnimation(Character target, List<string> damageStrings, Color color)
     {
         GameObject canvasObject = GameObject.Find("BattleSceneCanvas");  
         if (canvasObject != null)
@@ -261,6 +261,33 @@ public class TextAnimationManager : MonoBehaviour
     {
         // DOTweenのアニメーションをUniTaskとして返す
         return text.DOFade(0, 0.2f).ToUniTask();
+    }
+
+    /// <summary>
+    /// 【DOTweenPro使用】ダメージ - フェードインさせつつ短く跳ねさせる
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask DamageTextAnimation(string damageText)
+    {
+        //textMesh.gameObject.SetActive(true);
+        var tm = gameObject.GetComponent<TextMeshProUGUI>();
+        tm.text = damageText;
+        //await textMesh.DOFade(0, 0);
+
+        DOTweenTMPAnimator tmproAnimator = new DOTweenTMPAnimator(tm);
+
+        for (int i = 0; i < tmproAnimator.textInfo.characterCount; ++i)
+        {
+            Vector3 currCharOffset = tmproAnimator.GetCharOffset(i);
+            tmproAnimator.DOScaleChar(i, 0.4f, 0);
+            DOTween.Sequence()
+                .Append(tmproAnimator.DOOffsetChar(i, currCharOffset + new Vector3(0, 30, 0), 0.1f).SetEase(Ease.OutFlash, 2))
+                .Join(tmproAnimator.DOFadeChar(i, 1, 0.1f))
+                .Join(tmproAnimator.DOScaleChar(i, 1, 0.1f).SetEase(Ease.OutBack))
+                .SetDelay(0.07f * i);
+        }
+        await UniTask.Delay(700);
+        await tm.DOFade(0, 0.2f);
     }
 
     /// <summary>

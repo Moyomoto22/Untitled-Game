@@ -25,7 +25,7 @@ public class ItemMenuSubWindowController : MonoBehaviour
 
     private void Awake()
     {
-        SetAllyStatuses();
+        SetAllyes();
         SelectButton();
     }
 
@@ -36,10 +36,10 @@ public class ItemMenuSubWindowController : MonoBehaviour
         itemMenuController.ToggleButtonsInteractable(true);
     }
 
-    private void SetAllyStatuses()
+    private void SetAllyes()
     {
         eventSystem = FindObjectOfType<EventSystem>();
-        List<AllyStatus> allies = PartyMembers.Instance.GetAllies();
+        List<Ally> allies = PartyMembers.Instance.GetAllies();
 
         for (int i = 0; i < allies.Count; i++)
         {
@@ -51,10 +51,10 @@ public class ItemMenuSubWindowController : MonoBehaviour
             GaugeManager hpGaugeManager = HPGauges[i].GetComponent<GaugeManager>();     // HPゲージ管理クラス
             GaugeManager mpGaugeManager = MPGauges[i].GetComponent<GaugeManager>();     // MPゲージ管理クラス
 
-            hpGaugeManager.maxValueText.text = ally.maxHp2.ToString();            // 最大HPテキスト
-            hpGaugeManager.currentValueText.text = ally.hp.ToString();            // 現在HPテキスト
-            mpGaugeManager.maxValueText.text = ally.maxMp2.ToString();            // 最大MPテキスト
-            mpGaugeManager.currentValueText.text = ally.mp.ToString();            // 現在MPテキスト
+            hpGaugeManager.maxValueText.text = ally.MaxHp.ToString();            // 最大HPテキスト
+            hpGaugeManager.currentValueText.text = ally.HP.ToString();            // 現在HPテキスト
+            mpGaugeManager.maxValueText.text = ally.MaxMp.ToString();            // 最大MPテキスト
+            mpGaugeManager.currentValueText.text = ally.MP.ToString();            // 現在MPテキスト
 
             hpGaugeManager.updateGaugeByText();
             mpGaugeManager.updateGaugeByText();

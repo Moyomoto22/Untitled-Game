@@ -1,3 +1,38 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b7f2c9cce1bbe13af1517e356e36afa883c3326b2b792762d897d9f30b663680
-size 1053
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0e4a5374d1b4f647b280b04aea9265a, type: 3}
+  m_Name: "0001_\u30D5\u30A1\u30A4\u30A2\u30DC\u30FC\u30EB"
+  m_EditorClassIdentifier: 
+  ID: 0001
+  skillCategory: 0
+  skillName: "\u30D5\u30A1\u30A4\u30A2\u30DC\u30FC\u30EB"
+  icon: {fileID: 21300000, guid: 015b6b35c904d034dad83944f1ea5b39, type: 3}
+  usable: 1
+  description: "\u6575\u4E00\u4F53\u306B\u30C0\u30E1\u30FC\u30B8"
+  spCost: 0
+  attributes: 0400000005000000
+  learnClass: {fileID: 0}
+  learnLevel: 0
+  effects: 06000000
+  baseValue: 30
+  statusRatio: 1.5
+  damageRatio: 1
+  times: 1
+  target: 3
+  isTargetAll: 0
+  isEquipped: 0
+  User: {fileID: 11400000, guid: 693148e0ed3a4134d9ca193f69569882, type: 2}
+  Objective: {fileID: 0}
+  isMagic: 1
+  MPCost: 6
+  castTime: 1
+  usableClasses: []

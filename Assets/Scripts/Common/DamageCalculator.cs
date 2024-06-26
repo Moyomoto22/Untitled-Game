@@ -18,6 +18,58 @@ public class DamageCalculator
     }
 
     /// <summary>
+    /// 属性によるダメージ計算
+    /// </summary>
+    /// <param name="baseDamage"></param>
+    /// <param name="attackAttributes"></param>
+    /// <param name="defenseResistances"></param>
+    /// <returns></returns>
+    public static int CalculateDamageWithAttributes(int baseDamage, List<Constants.Attribute> attackAttributes, Character objective)
+    {
+        double attributeModifier = 1.0f;
+
+        foreach (var attribute in attackAttributes)
+        {
+            double mod = 0;
+            
+            switch (attribute)
+            {
+                case Constants.Attribute.Physical:
+                    mod = objective.ResistPhysical;
+                    break;
+                case Constants.Attribute.Slash:
+                    mod = objective.ResistSlash;
+                    break;
+                case Constants.Attribute.Thrust:
+                    mod = objective.ResistThrast;
+                    break;
+                case Constants.Attribute.Blow:
+                    mod = objective.ResistBlow;
+                    break;
+                case Constants.Attribute.Magic:
+                    mod = objective.ResistMagic;
+                    break;
+                case Constants.Attribute.Fire:
+                    mod = objective.ResistFire;
+                    break;
+                case Constants.Attribute.Ice:
+                    mod = objective.ResistIce;
+                    break;
+                case Constants.Attribute.Thunder:
+                    mod = objective.ResistThunder;
+                    break;
+                case Constants.Attribute.Wind:
+                    mod = objective.ResistWind;
+                    break;
+            }
+            attributeModifier -= mod;
+        }
+
+        int finalDamage = (int)(baseDamage * attributeModifier);
+        return finalDamage;
+    }
+
+    /// <summary>
     /// 基礎ダメージに乱数値を加算・減算する
     /// </summary>
     /// <returns></returns>
@@ -47,13 +99,24 @@ public class DamageCalculator
     /// 防御によるダメージ軽減
     /// </summary>
     /// <returns></returns>
-    public static int ReducingByGuard(CharacterStatus objective, int damage)
+    public static int ReducingByGuard(Character objective, int damage)
     {
         var finalDamage = damage;
-        if (objective.isGuarded)
+        if (objective.IsGuarded)
         {
             finalDamage = (int)(damage * Constants.reductionRateByGuard);
         }
         return finalDamage;
+    }
+
+    /// <summary>
+    /// 回避判定
+    /// </summary>
+    /// <returns></returns>
+    public static bool Dodge(int evationRate)
+    {
+        int result = random.Next(100);
+
+        return evationRate > result;
     }
 }

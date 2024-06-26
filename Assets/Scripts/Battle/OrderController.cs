@@ -21,13 +21,13 @@ public class OrderController : MonoBehaviour
 
         for(int i = 0; i < allies.Count; i++)
         {
-            speeds.Add(i, allies[i].agi2);
+            speeds.Add(i, allies[i].Agi);
         }
 
         var enemies = EnemyManager.Instance.GetAllEnemiesStatus();
         for (int i = 4; i < enemies.Count + 4; i++)
         {
-            speeds.Add(i, enemies[i - 4].agi2);
+            speeds.Add(i, enemies[i - 4].Agi);
         }
 
         // Å‘å’l

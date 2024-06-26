@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Constants : MonoBehaviour
 {
+    public static string[] characterNames = { "アレックス", "ニコ", "タバサ", "アリシア" };
+    
     #region Addressable パス 味方ステータス
     public const string alexPath = "Assets/Scripts/Ally/Alex.asset";
     public const string nicoPath = "Assets/Scripts/Ally/Nico.asset";
@@ -53,11 +55,17 @@ public class Constants : MonoBehaviour
     // 必要経験値曲線
     public static int[] requiredExp = new int[maxLevel - 1] { 40, 80, 160, 320, 640, 1020, 1600, 2400, 4000};
 
+    // 必要武器経験値曲線
+    public static int[] requiredWeaponExp = new int[20] {0, 20, 40, 80, 100, 130, 160, 190, 220, 250, 290, 330, 370, 410, 450, 500, 550, 600, 650, 700};
+
     // クリティカル発生時ダメージ倍率
     public const double criticalDamageRatio = 1.5;
 
     // 『攻撃』スキルID
     public const string attackSkillID = "0000";
+
+    // 『行動できない』スキルID
+    public const string stunnedSkillID = "9998";
 
     // 『防御』スキルID
     public const string guardSkillID = "9999";
@@ -116,16 +124,16 @@ public class Constants : MonoBehaviour
     // 武器種別
     public enum WeaponCategory
     {
-        Sword,
-        Blade,
-        Dagger,
-        Spear,
-        Ax,
-        Hammer,
-        Fist,
-        Bow,
-        Staff,
-        Shield
+        Sword = 0,
+        Blade = 1,
+        Dagger = 2,
+        Spear = 3,
+        Ax = 4,
+        Hammer = 5,
+        Fist = 6,
+        Bow = 7,
+        Staff = 8,
+        Shield= 9
     }
 
     // 属性
@@ -135,7 +143,7 @@ public class Constants : MonoBehaviour
         Slash,
         Thrust,
         Blow,
-        Magical,
+        Magic,
         Fire,
         Ice,
         Thunder,
@@ -172,14 +180,49 @@ public class Constants : MonoBehaviour
         AttackWithWeapon,
         Guard,
         HealHP,
+        HealHPByStatus,
+        CurePoison,
+        CureParalyze,
+        CureSleep,
+        CureSilence,
+        CureDaze,
+        CureTemp,
+        CureFrost,
         HealHpByItem,
         HealMpByItem,
         PhysicalDamage,
-        MagicalDamage        
+        MagicalDamage,
+        AddPoison,
+        AddParalyze,
+        AddSleep,
+        AddSilence,
+        AddDaze,
+        AddTemp,
+        AddFrost,
+        AddStan,
+        ManaConservation,
+        UpdateHate,
+        ReduceHate,
+        Rampart,
+        Steal,        
+        SpellBoost,
+        OverHeal,
+        Concentrate,
+        influencer,
+        UpdatePA,
+        UpdateMA,
+        UpdatePD,
+        UpdateMD,
+        UpdateAGI,
+        UpdateCRT,
+        UpdateEVA,
+        UpdateBLC,
+        UpdateCNT
     }
 
     public enum PassiveEffectType
     {
+        // 基礎ステータス
         GainMAXHP,
         GainMAXMP,
         GainSTR,
@@ -188,6 +231,83 @@ public class Constants : MonoBehaviour
         GainAGI,
         GainINT,
         GainMND,
+
+        // サブステータス
+        GainCritical,
+        GainEvation,
+        Counter,
+        Block,
+
+        // Exスキル
+        Berserk1,
+        Berserk2,
+        Berserk3,
+        Chivalry1,
+        Chivalry2,
+        Chivalry3,
+        Renki1,
+        Renki2,
+        Renki3,
+        TreasureHunt1,
+        TreasureHunt2,
+        TreasureHunt3,
+        HawkEye1,
+        HawkEye2,
+        HawkEye3,
+        ForceEater1,
+        ForceEater2,
+        ForceEater3,
+        Devotion1,
+        Devotion2,
+        Devotion3,
+        Enhancer1,
+        Enhancer2,
+        Enhancer3,
+
+        // 武器装備
+        CanEquipSword,
+        CanEquipBlade,
+        CanEquipDagger,
+        CanEquipSpear,
+        CanEquipAx,
+        CanEquipHammer,
+        CanEquipFist,
+        CanEquipBow,
+        CanEquipStaff,
+        CanEquipShield,
+        EinHander,
+        Nitouryu,
+
+        // 魔法・奇跡
+        CanUseMagic1,
+        CanUSeMagic2,
+        CanUseMagic3,
+        CanUseMiracle1,
+        CanUseMiracle2,
+        CanUseMiracle3,
+
+        // 自動回復
+        Regeneration,
+        Refresh,
+        Regain,
+
+        // フィールド
+        Stealth,
+        Sneak,
+        OwlEye,
+        LockSmith,
+
+        // その他
+        ReduceMPCost,
+        GainHate,
+        ReduceHate,
+        Calm,
+        Rage,
+        FireStarter,
+        StealUp,
+        Datto,
+        VultureEye,
+        Farmacy,        
     }
 
     // レアリティ
@@ -199,12 +319,36 @@ public class Constants : MonoBehaviour
         Legendary
     }
 
-    public enum effectTarget
+    public enum TargetType
     {
-        Myself,
-        OneAlly,
-        AllAllies,
-        OneEnemy,
-        AllEnemies
+        None = 0,
+        Self = 1,
+        Ally = 2,
+        AllAllies = 3,
+        Enemy = 4,
+        AllEnemies = 5
+    }
+
+    public enum StatusEffectIndex
+    {
+        Poison = 0,
+        Paralyze = 1,
+        Sleep = 2,
+        Silence = 3,
+        Daze = 4,
+        Temp = 5,
+        Frost = 6,
+        Stun = 7,
+        PAttackUp = 8,
+        PAttackDown = 9,
+        MAttackUp = 10,
+        MAttackDown = 11,
+        PDefenceUp = 12,
+        PDefenceDown = 13,
+        MDefenceUp = 14,
+        MDefenceDown = 15,
+        AGIUp = 16,
+        AGIDown = 17,
+        Misc = 18
     }
 }

@@ -7,60 +7,150 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [Serializable]
-//[CreateAssetMenu(fileName = "Class", menuName = "CreateClass")]
 public class Item : ScriptableObject
 {
     // ID
-    [SerializeField]
-    public string ID;
+    [SerializeField] private string id;
+    public string ID
+    {
+        get { return id; }
+        set { id = value; }
+    }
+
     // 種別
-    [SerializeField]
-    public Constants.ItemCategory itemCategory;
-    //　アイテム名
-    [SerializeField]
-    public string itemName;
-    //　使用可否
-    [SerializeField]
-    public bool usable;
-    //　売却可否
-    [SerializeField]
-    public bool sellable;
-    //　説明
-    [SerializeField, Multiline(6)]
-    public string description;
-    //　価格
-    [SerializeField]
-    public int value;
-    //　レアリティ
-    [SerializeField]
-    public Constants.Rarity rarity;
-    //　アイコン
-    [SerializeField]
-    public Sprite iconImage;
+    [SerializeField] private Constants.ItemCategory itemCategory;
+    public Constants.ItemCategory ItemCategory
+    {
+        get { return itemCategory; }
+        set { itemCategory = value; }
+    }
+
+    // アイテム名
+    [SerializeField] private string itemName;
+    public string ItemName
+    {
+        get { return itemName; }
+        set { itemName = value; }
+    }
+
+    // 使用可否
+    [SerializeField] private bool usable;
+    public bool Usable
+    {
+        get { return usable; }
+        set { usable = value; }
+    }
+
+    // 売却可否
+    [SerializeField] private bool sellable;
+    public bool Sellable
+    {
+        get { return sellable; }
+        set { sellable = value; }
+    }
+
+    // 説明
+    [SerializeField, Multiline(6)] private string description;
+    public string Description
+    {
+        get { return description; }
+        set { description = value; }
+    }
+
+    // 価格
+    [SerializeField] private int value;
+    public int Value
+    {
+        get { return value; }
+        set { this.value = value; }
+    }
+
+    // レアリティ
+    [SerializeField] private Constants.Rarity rarity;
+    public Constants.Rarity Rarity
+    {
+        get { return rarity; }
+        set { rarity = value; }
+    }
+
+    // アイコン
+    [SerializeField] private Sprite iconImage;
+    public Sprite IconImage
+    {
+        get { return iconImage; }
+        set { iconImage = value; }
+    }
+
     // 装備中メンバーID
-    [SerializeField]
-    public int equippedAllyID;
+    [SerializeField] private int equippedAllyID;
+    public int EquippedAllyID
+    {
+        get { return equippedAllyID; }
+        set { equippedAllyID = value; }
+    }
+
     // 装備中部位インデックス 0:右手 1:左手 2:頭 3:胴 4:装飾品1 5:装飾品2
-    public int equippedPart;
+    [SerializeField] private int equippedPart;
+    public int EquippedPart
+    {
+        get { return equippedPart; }
+        set { equippedPart = value; }
+    }
+
     // 対象 0:なし 1:自分 2:味方 3:敵  
-    public int target;
+    [SerializeField] private Constants.TargetType target;
+    public Constants.TargetType Target
+    {
+        get { return target; }
+        set { target = value; }
+    }
+
     // 対象が全体か
-    public bool isTargetAll;
+    [SerializeField] private bool isTargetAll;
+    public bool IsTargetAll
+    {
+        get { return isTargetAll; }
+        set { isTargetAll = value; }
+    }
+
     // 効果
-    public List<Constants.ActiveEffectType> effects;
+    [SerializeField] private List<Constants.ActiveEffectType> effects;
+    public List<Constants.ActiveEffectType> Effects
+    {
+        get { return effects; }
+        set { effects = value; }
+    }
+
     // 効果量
-    public int baseValue;
+    [SerializeField] private int baseValue;
+    public int BaseValue
+    {
+        get { return baseValue; }
+        set { baseValue = value; }
+    }
+
     // 使用者
-    public CharacterStatus User;
+    private Character user;
+    public Character User
+    {
+        get { return user; }
+        set { user = value; }
+    }
+
     // 対象
-    public CharacterStatus Objective;
+    private Character objective;
+    public Character Objective
+    {
+        get { return objective; }
+        set { objective = value; }
+    }
 
     public void SetEquippedAllyID(int characterID)
     {
         equippedAllyID = characterID;
     }
 
-    public async UniTask<bool> applyEffect()
+    public async UniTask<bool> ApplyEffect()
     {
         bool result = true;
         foreach (var effectType in effects)

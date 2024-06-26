@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using SpriteGlow;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,6 +11,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
+using HighlightPlus;
 
 /// <summary>
 /// 戦闘画面コントローラー
@@ -40,8 +40,7 @@ public class BattleController : MonoBehaviour
     public List<GameObject> MPGauges;
     public List<GameObject> TPGauges;
     public List<GameObject> hates;
-
-    public List<GameObject> timelineFaces;
+    public List<GameObject> effectSpriteObjectsParents;
 
     private Dictionary<int, int> speeds = new Dictionary<int, int>();
     public GameObject MainCamera;
@@ -51,6 +50,8 @@ public class BattleController : MonoBehaviour
     private CancellationTokenSource cancellationTokenSource;
 
     private static readonly System.Random random = new System.Random();
+
+    public EnemyPartyStatus dummyEnemyParty;
 
     async void Start()
     {
@@ -65,11 +66,10 @@ public class BattleController : MonoBehaviour
     private async Task Initialize()
     {
         CommonVariableManager.turns = 0;
-
         // 味方のステータス
-        await GetAllyStatuses();
+        await GetAllyes();
 
-        // GetAllyStatusesの処理が完了した後にSetEnemiesを実行
+        // GetAllyesの処理が完了した後にSetEnemiesを実行
         SetEnemies();
 
         OrderManager.Instance.Initialize();
@@ -82,38 +82,58 @@ public class BattleController : MonoBehaviour
     /// 味方キャラクターのステータスを取得する
     /// </summary>
     /// <returns></returns>
-    private async Task GetAllyStatuses()
+    private async Task GetAllyes()
     {
-        //PartyMembers.Instance.Initialize();
-        List<AllyStatus> allies = PartyMembers.Instance.GetAllies();
+        //await PartyMembers.Instance.Initialize();
+        List<Ally> allies = PartyMembers.Instance.GetAllies();
 
         for (int i = 0; i < 4; i++)
         {
-            AllyStatus allyStatus = allies[i]; //await CommonController.GetAllyStatus(i + 1);
-            allyStatus.spriteObject = faceImages[i];                                    // 画面下部 バストアップ画像
-            allyStatus.HPGauge = HPGauges[i];                                           // HPゲージ
-            allyStatus.MPGauge = MPGauges[i];                                           // MPゲージ
-            allyStatus.TPGauge = TPGauges[i];                                           // TPゲージ
+            Ally Ally = allies[i]; //await CommonController.GetAlly(i + 1);
+            Ally.spriteObject = faceImages[i];                                    // 画面下部 バストアップ画像
+            Ally.HPGauge = HPGauges[i];                                           // HPゲージ
+            Ally.MPGauge = MPGauges[i];                                           // MPゲージ
+            Ally.TPGauge = TPGauges[i];                                           // TPゲージ
 
             GaugeManager hpGaugeManager = HPGauges[i].GetComponent<GaugeManager>();     // HPゲージ管理クラス
             GaugeManager mpGaugeManager = MPGauges[i].GetComponent<GaugeManager>();     // MPゲージ管理クラス
             GaugeManager tpGaugeManager = TPGauges[i].GetComponent<GaugeManager>();     // TPゲージ管理クラス
 
-            hpGaugeManager.maxValueText.text = allyStatus.maxHp2.ToString();            // 最大HPテキスト
-            hpGaugeManager.currentValueText.text = allyStatus.hp.ToString();            // 現在HPテキスト
-            mpGaugeManager.maxValueText.text = allyStatus.maxMp2.ToString();            // 最大MPテキスト
-            mpGaugeManager.currentValueText.text = allyStatus.mp.ToString();            // 現在MPテキスト
-            tpGaugeManager.currentValueText.text = allyStatus.tp.ToString();            // 現在TPテキスト
+            hpGaugeManager.maxValueText.text = Ally.MaxHp.ToString();            // 最大HPテキスト
+            hpGaugeManager.currentValueText.text = Ally.HP.ToString();            // 現在HPテキスト
+            mpGaugeManager.maxValueText.text = Ally.MaxMp.ToString();            // 最大MPテキスト
+            mpGaugeManager.currentValueText.text = Ally.MP.ToString();            // 現在MPテキスト
+            tpGaugeManager.currentValueText.text = Ally.TP.ToString();            // 現在TPテキスト
 
             hpGaugeManager.updateGaugeByText();
             mpGaugeManager.updateGaugeByText();
             tpGaugeManager.updateGaugeByText();
 
-            speeds.Add(i, allyStatus.agi2);
-            faceImages[i].GetComponent<Image>().sprite = allyStatus.Class.imagesC[i];
+            speeds.Add(i, Ally.Agi);
+            faceImages[i].GetComponent<SpriteRenderer>().sprite = Ally.CharacterClass.imagesC[i];
+            Ally.positionInScreen = GetPositionInScreen(Ally.spriteObject.transform.parent.gameObject);
 
+            
+            if (effectSpriteObjectsParents[i] != null)
+            {
+                int childCount = effectSpriteObjectsParents[i].transform.childCount;
+                Ally.effectSpriteObjects = new List<GameObject>(childCount);
+                for (int j = 0; j < childCount; j++)
+                {
+                    var child = effectSpriteObjectsParents[i].transform.GetChild(j);
+                    if (child != null)
+                    {
+                        Ally.effectSpriteObjects.Add(child.gameObject);
+                    }
+                }
+
+                //foreach (Transform child in effectSpriteObjectsParents[i].transform)
+                //{
+                //    Ally.effectSpriteObjects.Add(child.gameObject);
+                //}
+            }
             // パーティメンバーのシングルトンに追加
-            //PartyMembers.Instance.AddCharacterToParty(allyStatus);   
+            //PartyMembers.Instance.AddCharacterToParty(Ally);   
         }
     }
 
@@ -122,28 +142,36 @@ public class BattleController : MonoBehaviour
     /// </summary>
     private void SetEnemies()
     {
-        //EnemyManager.Instance.Initialize(); PlayerControllerにて敵との接触時すでに初期化しているのでここでは初期化しない
+        //EnemyManager.Instance.Initialize(); //PlayerControllerにて敵との接触時すでに初期化しているのでここでは初期化しない
+        //SetTestEnemies();
 
         Vector3 position;
         GameObject ins;
-        List<EnemyPartyStatus.PartyMember> enemyPartyMembers = new List<EnemyPartyStatus.PartyMember>();
         var party = EnemyManager.Instance.EnemyPartyMembers;
 
         // リストの中の敵プレハブをインスタンス化
         for (int i = 0; i < party.Count; i++)
         {
             var enemy = party[i].enemy;
+            var component = enemy.GetComponent<EnemyComponent>();
+            component.indexInBattle = i;
+
             position = party[i].position;
-            ins = Instantiate<GameObject>(enemy, position, Quaternion.Euler(0, -22, 0));
-            ins.GetComponent<EnemyBehaviour>().indexInBattle = i;
+            ins = Instantiate<GameObject>(enemy, position, Quaternion.Euler(0, -0, 0));
             EnemyManager.Instance.AddEnemyIns(ins);
 
-            // 初期表示時、スプライトがバグるのでSpriteGlowを無効化しておく
-            var glowEffect = ins.GetComponent<SpriteGlowEffect>();
-            if (glowEffect != null)
+            // スキル「オウルアイ」装備中のキャラクターがいる場合、敵のHPゲージを表示
+            if (PartyMembers.Instance.IsOwlEyeActivate())
             {
-                glowEffect.enabled = false;
+                EnemyManager.Instance.ShowHPGauges();
             }
+
+            // 初期表示時、スプライトがバグるのでSpriteGlowを無効化しておく
+            //var glowEffect = ins.GetComponent<SpriteGlowEffect>();
+            //if (glowEffect != null)
+            //{
+            //    glowEffect.enabled = false;
+            //}
         }
     }
 
@@ -154,10 +182,31 @@ public class BattleController : MonoBehaviour
     {
         // コマンドウインドウのヘッダーの状態を設定
         SetCommnadHeaderState();
-        // コマンドウインドウの操作を有効化
-        battleCommandManager.ToggleButtonsInteractable(true);
-        // コマンド - 攻撃ボタンを選択
-        battleCommandManager.SelectButton(0);
+
+        // キャラクター画像スプライトをハイライト
+        var turnCharacterIndex = TurnCharacter.Instance.CurrentCharacterIndex;
+        for (int i = 0; i < 4; i++)
+        {
+            var manipulator = faceImages[i].GetComponent<SpriteManipulator>();          
+            if (manipulator != null)
+            {
+                manipulator.StopGlowingEffect();
+                if (i == turnCharacterIndex)
+                {
+                    manipulator.StartGlowingEffect(0.001f, 3.0f, 2.0f);
+                }  
+            }
+        }
+
+        var turnCharacter = TurnCharacter.Instance.CurrentCharacter;
+        // 行動可能な場合
+        if (turnCharacter.CanAct())
+        {
+            // コマンドウインドウの操作を有効化
+            battleCommandManager.ToggleButtonsInteractable(true);
+            // コマンド - 攻撃ボタンを選択
+            battleCommandManager.SelectButton(0);
+        }
     }
 
     /// <summary>
@@ -167,16 +216,40 @@ public class BattleController : MonoBehaviour
     /// <returns></returns>
     public async UniTask StartEnemiesTurn(int index)
     {
+        var targetIndex = HateManager.Instance.GetTargetIndex();
+        var target = PartyMembers.Instance.GetAllyByIndex(targetIndex);
+
         // コマンドウインドウの操作を無効化
         battleCommandManager.ToggleButtonsInteractable(false);
 
         var enemy = EnemyManager.Instance.InstantiatedEnemies[index];
-        var behaviour = enemy.GetComponent<EnemyBehaviour>();
+        var component = enemy.GetComponent<EnemyComponent>();
 
-        var target = HateManager.Instance.GetTargetWithRandom();
-
-        await behaviour.PerformAction(target);
-
+        if (component != null)
+        {
+            var behaviour = component.behaviour;
+            if (behaviour != null)
+            {
+                var turnCharacter = TurnCharacter.Instance.CurrentCharacter;
+                // 行動可能な場合
+                if (turnCharacter.CanAct())
+                {
+                    await behaviour.PerformAction(target);
+                }
+                else
+                {
+                    await behaviour.Stunned();
+                }
+            }
+            else
+            {
+                Debug.LogError(enemy.name + "has no EnemyBehaviour!");
+            }
+        }
+        else
+        {
+            Debug.LogError(enemy.name + "has no EnemyComponent!");
+        }
         await ChangeNextTurn();
     }
 
@@ -185,6 +258,8 @@ public class BattleController : MonoBehaviour
     /// </summary>
     public async UniTask ChangeNextTurn()
     {
+        TurnCharacter.Instance.EndTurn();
+        
         // キャラクターが生存しているかチェック
         CheckCharactersAreAlive();
 
@@ -236,15 +311,17 @@ public class BattleController : MonoBehaviour
 
         if (turnCharacter != null && tmPro != null && image != null)
         {
-            if (turnCharacter is AllyStatus)
+            if (turnCharacter is Ally)
             {
-                var c = turnCharacter as AllyStatus;
-                tmPro.text = c.characterName;　// キャラクター名称
-                image.color = c.color;      　 // 名前背景の色
+                var c = turnCharacter as Ally;
+                var index = PartyMembers.Instance.GetIndex(c);
+
+                tmPro.text = c.CharacterName;　// キャラクター名称
+                image.color = CommonController.GetCharacterColorByIndex(index);      　 // 名前背景の色
             }
             else
             {
-                tmPro.text = turnCharacter.characterName;
+                tmPro.text = turnCharacter.CharacterName;
                 image.color = CommonController.GetColor(Constants.gray);
             }
         }
@@ -259,10 +336,10 @@ public class BattleController : MonoBehaviour
         var allies = PartyMembers.Instance.GetAllies();
         foreach (var ally in allies)
         {
-            if (ally.hp <= 0 || ally.knockedOut)
+            if (ally.HP <= 0 || ally.KnockedOut)
             {
                 // 念のため戦闘不能状態にしておく
-                ally.knockedOut = true;
+                ally.KnockedOut = true;
             }
         }
         // 敵
@@ -270,16 +347,16 @@ public class BattleController : MonoBehaviour
         var count = enemies.Count;
         for (int i = 0; i < count; i++)
         {
-            var comp = enemies[i].GetComponent<EnemyBehaviour>();
+            var comp = enemies[i].GetComponent<EnemyComponent>();
             var st = comp.status;
-            if (st.hp <= 0 || st.knockedOut)
+            if (st.HP <= 0 || st.KnockedOut)
             {
                 // 念のため戦闘不能状態にしておく
-                st.knockedOut = true;
+                st.KnockedOut = true;
                 if (!comp.isFadedOut)
                 {
                     // フェードアウト
-                    EnemyManager.Instance.FadeOutEnemyIns(enemies[i]);
+                    _ = EnemyManager.Instance.FadeOutEnemyIns(enemies[i]);
                     EnemyManager.Instance.removeIndexFromAliveEnemyIndexes(i);
                 }
 
@@ -297,17 +374,15 @@ public class BattleController : MonoBehaviour
         cancellationTokenSource?.Cancel();  // 前のタスクをキャンセル
         cancellationTokenSource = new CancellationTokenSource();
 
+        var color = nameBackground.GetComponent<Image>().color;
+
         GameObject obj = EnemyManager.Instance.GetEnemyIns(index);
         if (obj != null)
         {
-            SpriteGlowEffect glowEffect = obj.GetComponent<SpriteGlowEffect>();
-            if (glowEffect != null)
+            HighlightEffect effect = obj.GetComponentInChildren<HighlightEffect>();
+            if (effect != null)
             {
-                glowEffect.enabled = true;
-                if (glowEffect != null)
-                {
-                    await AnimateGlowBrightness(glowEffect, 1, 2, 0.8f, cancellationTokenSource.Token);
-                }
+                await AnimateGlowBrightness(effect, 0.001f, 0.5f, 0.8f, color, cancellationTokenSource.Token);
             }
         }
     }
@@ -321,19 +396,20 @@ public class BattleController : MonoBehaviour
     /// <param name="totalDuration">点滅間隔</param>
     /// <param name="cancellationToken">キャンセルトークン</param>
     /// <returns></returns>
-    private async UniTask AnimateGlowBrightness(SpriteGlowEffect glowEffect, float minBrightness, float maxBrightness, float totalDuration, CancellationToken cancellationToken)
+    private async UniTask AnimateGlowBrightness(HighlightEffect effect, float minBrightness, float maxBrightness, float totalDuration, Color color, CancellationToken cancellationToken)
     {
         float startTime = Time.time;
+        effect.outlineColor = color;
         while (!cancellationToken.IsCancellationRequested)
         {
             float elapsed = Time.time - startTime;
             float cycleTime = elapsed % totalDuration; // totalDurationごとにリセット
             float value = Mathf.PingPong(cycleTime / totalDuration * 2 * (maxBrightness - minBrightness), maxBrightness - minBrightness) + minBrightness;
-            glowEffect.GlowBrightness = value;
+            effect.outline = value;
 
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken); // 次のフレームまで待機
         }
-        glowEffect.enabled = false;
+        effect.outline = 0.001f;
     }
 
     /// <summary>
@@ -346,10 +422,10 @@ public class BattleController : MonoBehaviour
         GameObject obj = EnemyManager.Instance.GetEnemyIns(index);
         if (obj != null)
         {
-            var glowEffect = obj.GetComponent<SpriteGlowEffect>();
-            if (glowEffect != null)
+            HighlightEffect effect = obj.GetComponentInChildren<HighlightEffect>();
+            if (effect != null)
             {
-                glowEffect.enabled = false;
+                effect.outline = 0.001f;
             }
             cancellationTokenSource?.Cancel();
         }
@@ -371,9 +447,9 @@ public class BattleController : MonoBehaviour
         int exp = 0;
         var enemies = EnemyManager.Instance.GetAllEnemiesStatus();
         
-        foreach(EnemyStatus enemy in enemies)
+        foreach(Enemy enemy in enemies)
         {
-            exp += enemy.exp;
+            exp += enemy.Exp;
         }
 
         return exp;
@@ -384,9 +460,9 @@ public class BattleController : MonoBehaviour
         int gold = 0;
         var enemies = EnemyManager.Instance.GetAllEnemiesStatus();
 
-        foreach (EnemyStatus enemy in enemies)
+        foreach (Enemy enemy in enemies)
         {
-            gold += enemy.gold;
+            gold += enemy.Gold;
         }
 
         return gold;
@@ -397,23 +473,23 @@ public class BattleController : MonoBehaviour
         List<Item> earnedItems = new List<Item>();
         var enemies = EnemyManager.Instance.GetAllEnemiesStatus();
 
-        foreach (EnemyStatus enemy in enemies)
+        foreach (Enemy enemy in enemies)
         {
-            if (enemy.dropItemOne != null)
+            if (enemy.DropItemOne != null)
             {
                 int result = random.Next(1);
-                if (enemy.dropRateOne > result)
+                if (enemy.DropRateOne > result)
                 {
-                    earnedItems.Add(enemy.dropItemOne);
+                    earnedItems.Add(enemy.DropItemOne);
                     continue;
                 }
             }
-            if (enemy.dropItemTwo != null)
+            if (enemy.DropItemTwo != null)
             {
                 int result = random.Next(1);
-                if (enemy.dropRateTwo > result)
+                if (enemy.DropRateTwo > result)
                 {
-                    earnedItems.Add(enemy.dropItemTwo);
+                    earnedItems.Add(enemy.DropItemTwo);
                 }
             }
         }
@@ -448,5 +524,36 @@ public class BattleController : MonoBehaviour
     IEnumerator UnloadOldScene(string sceneName)
     {
         yield return SceneManager.UnloadSceneAsync(sceneName);
+    }
+
+    private Vector2 GetPositionInScreen(GameObject obj)
+    {
+        if (Camera.main != null)
+        {
+            Canvas canvas = FindObjectOfType<Canvas>(); // Canvasを見つける
+            //Canvas canvas = mainCanvas.GetComponentInParent<Canvas>(); // Canvasを見つける
+            if (canvas.renderMode != RenderMode.WorldSpace) // World Space以外のCanvasを想定
+            {
+
+                // カメラを通してワールド座標からスクリーン座標へ変換
+                Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(Camera.main, obj.transform.position);
+
+                // スクリーン座標をCanvas内のアンカー座標に変換
+                Vector2 canvasPosition;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.GetComponent<RectTransform>(), screenPosition, canvas.worldCamera, out canvasPosition);
+
+                // RectTransformの位置を設定
+                return new Vector2(canvasPosition.x, canvasPosition.y);// - spriteHeight);// / 2);
+            }
+        }
+        return new Vector3(0.0f, 0.0f, 1);
+    }
+
+    private void SetTestEnemies()
+    {
+        // 敵管理シングルトンに敵のリストを格納
+        var party = dummyEnemyParty.GetPartyMembers();
+        EnemyManager.Instance.Initialize();
+        EnemyManager.Instance.SetEnemies(party);
     }
 }

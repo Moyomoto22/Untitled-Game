@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 320d433e5474b6e43858552a795b3bd4, type: 3}
+  m_Name: "30401_\u30DB\u30FC\u30AF\u30A2\u30A4"
+  m_EditorClassIdentifier: 
+  id: 30401
+  skillCategory: 4
+  skillName: "\u30DB\u30FC\u30AF\u30A2\u30A4"
+  icon: {fileID: 0}
+  usable: 0
+  description: "\u5F13\u88C5\u5099\u6642\u3001\u7269\u7406\u653B\u6483\u529B\u3068\u7269\u7406CRT\u304C\u4E0A\u6607\u3059\u308B"
+  spCost: 0
+  mpCost: 0
+  tpCost: 0
+  recastTurn: 0
+  attributes: []
+  learn: '-'
+  effects: 
+  baseValue: 0
+  status: 0
+  statusRatio: 0
+  damageRatio: 0
+  hateRatio: 1
+  times: 0
+  target: 0
+  isEquipped: 0
+  usableClasses: []
+  canUseInMenu: 0
+  isExSkill: 1
+  getTP: 0
+  giveTP: 0
+  user: {fileID: 0}
+  objective: {fileID: 0}
+  passiveEffects: 

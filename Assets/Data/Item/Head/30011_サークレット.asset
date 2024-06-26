@@ -1,3 +1,56 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:21f936456ec8ea0219af119f74282fa6f2663955e905c275c85558d8e112e3b3
-size 1507
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e3f1eaae9c65994883806150da5547e, type: 3}
+  m_Name: "30011_\u30B5\u30FC\u30AF\u30EC\u30C3\u30C8"
+  m_EditorClassIdentifier: 
+  id: 30011
+  itemCategory: 3
+  itemName: "\u30B5\u30FC\u30AF\u30EC\u30C3\u30C8"
+  usable: 0
+  sellable: 1
+  description: "\u7269\u7406\u9632\u5FA1\u529B +26\u3000\u9B54\u6CD5\u9632\u5FA1\u529B
+    +51\n\u6700\u5927MP +10\u3000MND\u3000+5"
+  value: 0
+  rarity: 1
+  iconImage: {fileID: 21300000, guid: 4cd1da0d1ffdc414989b9a5ce1b4a35b, type: 3}
+  equippedAllyID: 0
+  equippedPart: 0
+  target: 0
+  isTargetAll: 0
+  effects: 
+  baseValue: 0
+  pAttack: 0
+  mAttack: 0
+  pDefence: 26
+  mDefence: 51
+  maxHp: 0
+  maxMp: 10
+  str: 0
+  vit: 0
+  dex: 0
+  agi: 0
+  inte: 0
+  mnd: 5
+  criticalRate: 0
+  evationRate: 0
+  counterRate: 0
+  blockRate: 0
+  blockReductionRate: 0
+  equipableClasses:
+  - {fileID: 11400000, guid: b7fd8b002a6450f4bbb493c2f19ab7c6, type: 2}
+  - {fileID: 11400000, guid: f62d1d88ebc46624491c00846047cd3d, type: 2}
+  - {fileID: 11400000, guid: 81e81a0b31e5f704da0233c9d15a173a, type: 2}
+  - {fileID: 11400000, guid: b26c6ff5b721ea24fb364e7ec40ed7e4, type: 2}
+  - {fileID: 11400000, guid: eb898587e05f2ea4dac0220a1c43292d, type: 2}
+  - {fileID: 11400000, guid: 9a41a31870aff2b4e94c8c0661267cde, type: 2}
+  - {fileID: 11400000, guid: 6eb681946a7a9514798b56ad668c47d4, type: 2}
+  - {fileID: 11400000, guid: 1883cbc5b14817e4eb9b2a7a96d28e67, type: 2}

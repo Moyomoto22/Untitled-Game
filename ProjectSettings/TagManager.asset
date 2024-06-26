@@ -12,6 +12,7 @@ TagManager:
   - ScrollViewContent
   - CMFreeLook
   - VirtualCamera
+  - MainCanvas
   layers:
   - Default
   - TransparentFX

@@ -17,16 +17,16 @@ public class SkillComponent : MonoBehaviour
     {
         if (skill != null)
         {
-            if(skill.icon != null)
+            if(skill.Icon != null)
             {
                 icon.enabled = true;
-                icon.sprite = skill.icon;
+                icon.sprite = skill.Icon;
             }
             else
             {
                 icon.enabled = false;
             }
-            skillName.text = skill.skillName;
+            skillName.text = skill.SkillName;
             SetCost();
         }
     }
@@ -35,7 +35,7 @@ public class SkillComponent : MonoBehaviour
     {
         if (costCategory != null)
         {
-            switch (skill.skillCategory)
+            switch (skill.SkillCategory)
             {
                 case Constants.SkillCategory.Magic:
                 case Constants.SkillCategory.Miracle:
@@ -46,7 +46,7 @@ public class SkillComponent : MonoBehaviour
                     break;
                 case Constants.SkillCategory.Active:
                 case Constants.SkillCategory.Passive:
-                    if (skill.isExSkill)
+                    if (skill.IsExSkill)
                     {
                         costCategory.text = "";
                     }
@@ -59,26 +59,26 @@ public class SkillComponent : MonoBehaviour
         }
         if (cost != null)
         {
-            switch (skill.skillCategory)
+            switch (skill.SkillCategory)
             {
                 case Constants.SkillCategory.Magic:
                 case Constants.SkillCategory.Miracle:
                     var m = skill as MagicMiracle;
-                    cost.text = m.MPCost.ToString();
+                    cost.text = m.MpCost.ToString();
                     break;
                 case Constants.SkillCategory.Arts:
                     var a = skill as Arts;
-                    cost.text = a.TPCost.ToString();
+                    cost.text = a.TpCost.ToString();
                     break;
                 case Constants.SkillCategory.Active:
                 case Constants.SkillCategory.Passive:
-                    if (skill.isExSkill)
+                    if (skill.IsExSkill)
                     {
                         cost.text = "-";
                     }
                     else
                     {
-                        cost.text = skill.spCost.ToString();
+                        cost.text = skill.SpCost.ToString();
                     }
                     break;
             }

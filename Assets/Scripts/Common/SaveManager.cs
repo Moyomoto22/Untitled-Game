@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using CI.QuickSave;
 using Cysharp.Threading.Tasks;
@@ -83,7 +84,7 @@ public class SaveManager : MonoBehaviour
             location = lName,
 
             // プレイヤーのステータスを保存
-            partyMembers = ConvertAllyStatusToSaveData(),
+            partyMembers = ConvertAllyToSaveData(),
 
             // アイテムインベントリ
             items = ConvertItemInventoryToSaveData(),
@@ -96,6 +97,9 @@ public class SaveManager : MonoBehaviour
 
         // QuickSaveを使用してデータを保存
         QuickSaveWriter.Create("PlayerData" + slot).Write("PlayerData", playerData).Commit();
+
+        string message = "スロット" + slot + "にセーブしました。";
+        ToastMessageManager.Instance.ShowToastMessage(message);
 
         Debug.Log("Game Saved in Slot" + slot + ". Data Stored To:" + Application.persistentDataPath);
     }
@@ -130,7 +134,7 @@ public class SaveManager : MonoBehaviour
             await SceneController.Instance.TransitionToNextSceneNoFade(playerData.currentScene, position);
 
             // プレイヤーのステータスを復元
-            List<AllyStatus> restoredParty = RestorePlayerStatuses(playerData.partyMembers);
+            List<Ally> restoredParty = RestorePlayerStatuses(playerData.partyMembers);
             PartyMembers.Instance.GetAlliesFromSavedData(restoredParty);
 
             List<Item> restoredItems = RestoreItemInventory(playerData.items);
@@ -168,131 +172,140 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    private List<PlayerStatusForSave> ConvertAllyStatusToSaveData()
+    private List<PlayerStatusForSave> ConvertAllyToSaveData()
     {
         var partyMembers = PartyMembers.Instance.partyMembers;
         List<PlayerStatusForSave> data = new List<PlayerStatusForSave>();
 
-        foreach (var m in partyMembers)
+        foreach (var member in partyMembers)
         {
-            PlayerStatusForSave d = new PlayerStatusForSave();
-            d.characterID = m.CharacterID;
-            d.characterName = m.characterName;
-            d.maxHp = m.maxHp;
-            d.hp = m.hp;
-            d.maxMp = m.maxMp;
-            d.mp = m.mp;
-            d.maxTp = m.maxTp;
-            d.tp = m.tp;
-            d.str = m.str;
-            d.vit = m.vit;
-            d.dex = m.dex;
-            d.agi = m.agi;
-            d.inte = m.inte;
-            d.mnd = m.mnd;
-
-            d.rightArm = m.rightArm != null ? m.rightArm.ID : null;
-            d.leftArm = m.leftArm != null ? m.leftArm.ID : null;
-            d.head = m.head != null ? m.head.ID : null;
-            d.body = m.body != null ? m.body.ID : null;
-            d.accessary1 = m.accessary1 != null ? m.accessary1.ID : null;
-            d.accessary2 = m.accessary2 != null ? m.accessary2.ID : null;
-
-            d.learnedSkills = new List<string>();
-            foreach (var skill in m.learnedSkills)
+            var saveData = new PlayerStatusForSave
             {
-                d.learnedSkills.Add(skill.ID);
-            }
+                characterID = member.CharacterID,
+                characterName = member.CharacterName,
+                maxHp = member.MaxHp,
+                hp = member.HP,
+                maxMp = member.MaxMp,
+                mp = member.MP,
 
-            d.classID = m.Class.ID;
+                tp = member.TP,
+                str = member.Str,
+                vit = member.Vit,
+                dex = member.Dex,
+                agi = member.Agi,
+                inte = member.Int,
+                mnd = member.Mnd,
+                rightArm = member.RightArm?.ID,
+                leftArm = member.LeftArm?.ID,
+                head = member.Head?.ID,
+                body = member.Body?.ID,
+                accessary1 = member.Accessary1?.ID,
+                accessary2 = member.Accessary2?.ID,
+                learnedSkills = member.LearnedSkills.Select(skill => skill.ID).ToList(),
+                classID = member.CharacterClass.ID,
+                classLevels = new List<int>(member.ClassLevels),
+                classEarnedExps = new List<int>(member.ClassEarnedExps),
+                classNextExps = new List<int>(member.ClassNextExps),
+                totalExperience = member.TotalExperience,
+                totalLevel = member.TotalLevel,
 
-            d.classLevels = m.classLevels;
-            d.classEarnedExps = m.classEarnedExps;
-            d.classNextExps = m.classNextExps;
+                totalExperienceSword = member.TotalExperienceSword,
+                totalExperienceBlade = member.TotalExperienceBlade,
+                totalExperienceDagger = member.TotalExperienceDagger,
+                totalExperienceSpear = member.TotalExperienceSpear,
+                totalExperienceAx = member.TotalExperienceAx,
+                totalExperienceHammer = member.TotalExperienceHammer,
+                totalExperienceFist = member.TotalExperienceFist,
+                totalExperienceBow = member.TotalExperienceBow,
+                totalExperienceStaff = member.TotalExperienceStaff,
+                totalExperienceShield = member.TotalExperienceShield,
 
-            d.totalExperience = m.totalExperience;
-            d.totalLevel = m.totalLevel;
+                sp = member.SP,
+                maxSp = member.MaxSp,
+                equipedSkills = member.EquipedSkills.Select(skill => skill.ID).ToList()
+            };
 
-            d.sp = m.sp;
-            d.maxSp = m.maxSp;
-
-            d.equipedSkills = new List<string>();
-            foreach (var skill in m.equipedSkills)
-            {
-                d.equipedSkills.Add(skill.ID);
-            }
-
-            data.Add(d);
+            data.Add(saveData);
         }
         return data;
     }
 
-    private List<AllyStatus> RestorePlayerStatuses(List<PlayerStatusForSave> savedData)
+    private List<Ally> RestorePlayerStatuses(List<PlayerStatusForSave> savedData)
     {
-        List<AllyStatus> partyStatuses = new List<AllyStatus>();
+        List<Ally> partyStatuses = new List<Ally>();
 
-        foreach(var m in savedData)
+        foreach (var saveData in savedData)
         {
-            AllyStatus d = new AllyStatus();
-            d.CharacterID = m.characterID;
-            d.characterName = m.characterName;
-            d.level = m.level;
-            d.maxHp = m.maxHp;
-            d.hp = m.hp;
-            d.maxMp = m.maxMp;
-            d.mp = m.mp;
-            d.maxTp = m.maxTp;
-            d.tp = m.tp;
-            d.str = m.str;
-            d.vit = m.vit;
-            d.dex = m.dex;
-            d.agi = m.agi;
-            d.inte = m.inte;
-            d.mnd = m.mnd;
-
-            // 装備はRestoreItemInventoryで復元する
-
-            d.classLevels = new List<int>(m.classLevels);
-            d.classEarnedExps = new List<int>(m.classEarnedExps);
-            d.classNextExps = new List<int>(m.classNextExps);
-
-            d.totalExperience = m.totalExperience;
-            d.totalLevel = m.totalLevel;
-
-            d.learnedSkills = new List<Skill>();
-            d.equipedSkills = new List<Skill>();
-
-            // クラス
-            Class cl = ClassManager.Instance.GetClassByID(m.classID);
-            if (cl != null)
+            var ally = new Ally
             {
-                d.ChangeClass(cl);
+                CharacterID = saveData.characterID,
+                CharacterName = saveData.characterName,
+                Level = saveData.level,
+                MaxHp = saveData.maxHp,
+                HP = saveData.hp,
+                MaxMp = saveData.maxMp,
+                MP = saveData.mp,
+                TP = saveData.tp,
+                Str = saveData.str,
+                Vit = saveData.vit,
+                Dex = saveData.dex,
+                Agi = saveData.agi,
+                Int = saveData.inte,
+                Mnd = saveData.mnd,
+                ClassLevels = new List<int>(saveData.classLevels),
+                ClassEarnedExps = new List<int>(saveData.classEarnedExps),
+                ClassNextExps = new List<int>(saveData.classNextExps),
+                TotalExperience = saveData.totalExperience,
+                TotalLevel = saveData.totalLevel,
+
+                LearnedSkills = new List<Skill>(),
+                EquipedSkills = new List<Skill>(),
+
+                // 習得スキル復元後に武器経験値復元
+                // (武器経験値セッターメソッドでアーツをLeanedSkillにAddするため)
+                TotalExperienceSword = saveData.totalExperienceSword,
+                TotalExperienceBlade = saveData.totalExperienceBlade,
+                TotalExperienceDagger = saveData.totalExperienceDagger,
+                TotalExperienceSpear = saveData.totalExperienceSpear,
+                TotalExperienceAx = saveData.totalExperienceAx,
+                TotalExperienceHammer = saveData.totalExperienceHammer,
+                TotalExperienceFist = saveData.totalExperienceFist,
+                TotalExperienceBow = saveData.totalExperienceBow,
+                TotalExperienceStaff = saveData.totalExperienceStaff,
+                TotalExperienceShield = saveData.totalExperienceShield,
+
+                //SP = saveData.sp,
+                MaxSp = saveData.maxSp           
+            };
+
+            // クラスを設定
+            var allyClass = ClassManager.Instance.GetClassByID(saveData.classID);
+            if (allyClass != null)
+            {
+                ally.ChangeClass(allyClass);
             }
 
-            // 習得スキル
-            foreach (var skillID in m.learnedSkills)
+            // 習得スキルと装備スキルを設定
+            foreach (var skillID in saveData.learnedSkills)
             {
-                Skill skill = SkillManager.Instance.GetSkillByID(skillID);
+                var skill = SkillManager.Instance.GetSkillByID(skillID);
                 if (skill != null)
                 {
-                    d.LearnSkill(skill);
+                    ally.LearnSkill(skill);
 
-                    // スキルIDが装備中スキルに含まれる場合、スキル装備
-                    if (m.equipedSkills.Contains(skillID))
+                    var equipedSkillIDs = ally.EquipedSkills.Select(s => s.ID).ToList();
+                    if (saveData.equipedSkills.Contains(skillID) && !equipedSkillIDs.Contains(skillID))
                     {
-                        d.EquipSkill(skill);
+                        ally.EquipSkill(skill);
                     }
+                }
+            }
 
-                } 
-            }            
-
-            d.sp = m.sp;
-            d.maxSp = m.maxSp;
-
-            partyStatuses.Add(d);
+            partyStatuses.Add(ally);
         }
         return partyStatuses;
     }
+
 
     private List<ItemForSave> ConvertItemInventoryToSaveData()
     {
@@ -301,37 +314,39 @@ public class SaveManager : MonoBehaviour
 
         foreach(var i in itemInventory)
         {
-            var item = new ItemForSave(i.ID, i.equippedAllyID, i.equippedPart);
+            var item = new ItemForSave(i.ID, i.EquippedAllyID, i.EquippedPart);
             items.Add(item);
         }
 
         return items;
     }
 
+    /// <summary>
+    /// セーブデータからアイテムインベントリを復元する
+    /// </summary>
+    /// <param name="savedItems"></param>
+    /// <returns></returns>
     private List<Item> RestoreItemInventory(List<ItemForSave> savedItems)
     {
         List<Item> items = new List<Item>();
 
         foreach (var i in savedItems)
         {
-            Item item = ItemManager.Instance.GetItemByID(i.ID);
-            if (item != null)
+            Item copiedItem = ItemInventory2.Instance.GetItemByID(i.ID);
+            if (copiedItem != null)
             {
-                item.equippedAllyID = i.equipedCharacterId;
-                item.equippedPart = i.equipPartIndex;
+                //copiedItem.EquippedAllyID = i.equipedCharacterId;
+                //copiedItem.EquippedPart = i.equipPartIndex;
 
                 // 装備中キャラクターIDが1以上の場合、対象のキャラクターに装備
-                if (item.equippedAllyID > 0 && item is Equip) {
-
-                    Equip equip = item as Equip;
-                    AllyStatus ally = PartyMembers.Instance.partyMembers[item.equippedAllyID - 1];
-                    ally.Equip(equip, item.equippedPart);
-
+                if (i.equipedCharacterId > 0 && copiedItem is Equip)
+                {
+                    Equip equip = copiedItem as Equip;
+                    Ally ally = PartyMembers.Instance.partyMembers[i.equipedCharacterId - 1];
+                    ally.Equip(equip, copiedItem.EquippedPart);
                 }
-
-                items.Add(item);
+                items.Add(copiedItem);
             }
-
         }
 
         return items;

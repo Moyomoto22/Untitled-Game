@@ -141,7 +141,7 @@ public class MainMenuController : MonoBehaviour
         await manipulator.FadeIn(0.5f);
 
         // ステータス設定
-        SetAllyStatuses();
+        SetAllyes();
 
         // ボタンとキャラクター枠のアニメーション
         await UniTask.WhenAll(
@@ -200,18 +200,18 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
-    private void SetAllyStatuses()
+    private void SetAllyes()
     {
         eventSystem = FindObjectOfType<EventSystem>();
-        List<AllyStatus> allies = PartyMembers.Instance.GetAllies();
+        List<Ally> allies = PartyMembers.Instance.GetAllies();
 
         for (int i = 0; i < allies.Count; i++)
         {
             var ally = allies[i];
 
-            characterImages[i].sprite = ally.Class.imagesB[i];                    // キャラクター画像
-            classNames[i].text = ally.Class.classAbbreviation;
-            levels[i].text = ally.level.ToString();
+            characterImages[i].sprite = ally.CharacterClass.imagesB[i];                    // キャラクター画像
+            classNames[i].text = ally.CharacterClass.classAbbreviation;
+            levels[i].text = ally.Level.ToString();
             ally.HPGauge = HPGauges[i];                                           // HPゲージ
             ally.MPGauge = MPGauges[i];                                           // MPゲージ
             ally.TPGauge = TPGauges[i];                                           // TPゲージ
@@ -221,11 +221,11 @@ public class MainMenuController : MonoBehaviour
             GaugeManager tpGaugeManager = TPGauges[i].GetComponent<GaugeManager>();     // TPゲージ管理クラス
             GaugeManager expGaugeManager = EXPGauges[i].GetComponent<GaugeManager>();     // EXPゲージ管理クラス
 
-            hpGaugeManager.maxValueText.text = ally.maxHp2.ToString();            // 最大HPテキスト
-            hpGaugeManager.currentValueText.text = ally.hp.ToString();            // 現在HPテキスト
-            mpGaugeManager.maxValueText.text = ally.maxMp2.ToString();            // 最大MPテキスト
-            mpGaugeManager.currentValueText.text = ally.mp.ToString();            // 現在MPテキスト
-            tpGaugeManager.currentValueText.text = ally.tp.ToString();            // 現在TPテキスト
+            hpGaugeManager.maxValueText.text = ally.MaxHp.ToString();            // 最大HPテキスト
+            hpGaugeManager.currentValueText.text = ally.HP.ToString();            // 現在HPテキスト
+            mpGaugeManager.maxValueText.text = ally.MaxMp.ToString();            // 最大MPテキスト
+            mpGaugeManager.currentValueText.text = ally.MP.ToString();            // 現在MPテキスト
+            tpGaugeManager.currentValueText.text = ally.TP.ToString();            // 現在TPテキスト
             expGaugeManager.maxValueText.text = ally.GetCurrentClassNextExp().ToString();            // 最大EXPテキスト
             expGaugeManager.currentValueText.text = ally.GetCurrentClassEarnedExp().ToString();            // 現在EXPテキスト
 
@@ -608,7 +608,7 @@ public class MainMenuController : MonoBehaviour
         header.text = "メインメニュー";
         //EnableInputActionMap("Main", fromMenuName);
         // ステータス設定
-        SetAllyStatuses();
+        SetAllyes();
         SetInputActions();
         await FadeInChildren(main);
         SelectButton(lastSelectButtonIndex);

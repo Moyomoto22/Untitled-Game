@@ -7,22 +7,60 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Weapon", menuName = "CreateWeapon")]
 public class Weapon : Equip
 {
+    public enum DependStatus
+    {
+        STR = 1,
+        DEX = 2,
+        INT = 3,
+        MND = 4
+    }
+
     // í•Ê
-    [SerializeField]
-    public Constants.WeaponCategory weaponCategory;
+    [SerializeField] private Constants.WeaponCategory weaponCategory;
+    public Constants.WeaponCategory WeaponCategory
+    {
+        get { return weaponCategory; }
+        set { weaponCategory = value; }
+    }
+
     // ‘®«
-    public List<Attibute> attributes;
+    [SerializeField] private List<AttributeType> attributes;
+    public List<AttributeType> Attributes
+    {
+        get { return attributes; }
+        set { attributes = value; }
+    }
+
     // ˆË‘¶ƒXƒe[ƒ^ƒX 
     // 0: STR 1: DEX 2: INT 3:MND
-    [SerializeField]
-    public int dependentStatus = 0;
-    // —¼è‚¿
-    [SerializeField]
-    public bool isTwoHanded = false;
-    // UŒ‚‰ñ”
-    [SerializeField]
-    public int times = 1;
-    // UŒ‚”­“®Œø‰Ê
-    public List<Constants.ActiveEffectType> attackEffects;
+    [SerializeField] private DependStatus dependentStatus = DependStatus.STR;
+    public DependStatus DependentStatus
+    {
+        get { return dependentStatus; }
+        set { dependentStatus = value; }
+    }
 
+    // —¼è‚¿
+    [SerializeField] private bool isTwoHanded = false;
+    public bool IsTwoHanded
+    {
+        get { return isTwoHanded; }
+        set { isTwoHanded = value; }
+    }
+
+    // UŒ‚‰ñ”
+    [SerializeField] private int times = 1;
+    public int Times
+    {
+        get { return times; }
+        set { times = value; }
+    }
+
+    // UŒ‚”­“®Œø‰Ê
+    [SerializeField] private List<Constants.ActiveEffectType> attackEffects;
+    public List<Constants.ActiveEffectType> AttackEffects
+    {
+        get { return attackEffects; }
+        set { attackEffects = value; }
+    }
 }

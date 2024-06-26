@@ -53,11 +53,16 @@ MonoBehaviour:
   - D
   - D
   equippableWeapons: 020000000400000007000000
-  description: "\u653B\u6483\u30FB\u88DC\u52A9\u30FB\u56DE\u5FA9\u3092\u30D0\u30E9\u30F3\u30B9\u3088\u304F\u6271\u3048\u308B"
+  description: "DEX\u304C\u9AD8\u304F\u7269\u7406\u653B\u6483\u304C\u5F97\u610F\u306A\u307B\u304B\u3001HP\u3092\u56DE\u5FA9\u3059\u308B\u30B9\u30AD\u30EB\u3082\u7FD2\u5F97\u3059\u308B\u30AA\u30FC\u30EB\u30E9\u30A6\u30F3\u30C0\u30FC\u3002\r\n\u3055\u3089\u306B\u63A2\u7D22\u306E\u88DC\u52A9\u3092\u3059\u308B\u30B9\u30AD\u30EB\u3082\u899A\u3048\u308B\u306A\u3069\u3001\u30D1\u30FC\u30C6\u30A3\u306B\u4E00\u4EBA\u306F\u6B32\u3057\u3044\u5B58\u5728\u3002\r\n"
   exSkill: {fileID: 11400000, guid: 6182216bcd39299438927cca6ae3a83b, type: 2}
   LearnSkills:
+  - {fileID: 11400000, guid: 6182216bcd39299438927cca6ae3a83b, type: 2}
   - {fileID: 11400000, guid: db22a439c706c714c87073840e8b2799, type: 2}
-  - {fileID: 11400000, guid: 4e0745ca128f2184ab3f4ed2319ebacb, type: 2}
-  - {fileID: 11400000, guid: 5636ad75900f7f9479ff97e04c6c80e5, type: 2}
+  - {fileID: 11400000, guid: ee9d97e007806904f95ac07ef7fd24bc, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

@@ -238,86 +238,86 @@ public class EquipMenuController : MonoBehaviour
         var ch = PartyMembers.Instance.GetAllyByIndex(i);
         var color = CommonController.GetCharacterColorByIndex(i);
 
-        characterImage.sprite = ch.Class.imagesA[i];
+        characterImage.sprite = ch.CharacterClass.imagesA[i];
         gradation.color = color;
         nameBackGradation.color = color;
-        characterClass.text = ch.Class.classAbbreviation;
-        characterLevel.text = ch.level.ToString();
+        characterClass.text = ch.CharacterClass.classAbbreviation;
+        characterLevel.text = ch.Level.ToString();
 
 
         #region 装備欄
         leftArm.GetComponentInChildren<TextMeshProUGUI>().color = Color.white;
 
-        rightArm.GetComponentInChildren<TextMeshProUGUI>().text = ch.rightArm != null ? ch.rightArm.itemName : "なし";
-        leftArm.GetComponentInChildren<TextMeshProUGUI>().text = ch.leftArm != null ? ch.leftArm.itemName : "なし";
-        head.GetComponentInChildren<TextMeshProUGUI>().text = ch.head != null ? ch.head.itemName : "なし";
-        body.GetComponentInChildren<TextMeshProUGUI>().text = ch.body != null ? ch.body.itemName : "なし";
-        accessaryOne.GetComponentInChildren<TextMeshProUGUI>().text = ch.accessary1 != null ? ch.accessary1.itemName : "なし";
-        accessaryTwo.GetComponentInChildren<TextMeshProUGUI>().text = ch.accessary2 != null ? ch.accessary2.itemName : "なし";
+        rightArm.GetComponentInChildren<TextMeshProUGUI>().text = ch.RightArm != null ? ch.RightArm.ItemName : "なし";
+        leftArm.GetComponentInChildren<TextMeshProUGUI>().text = ch.LeftArm != null ? ch.LeftArm.ItemName : "なし";
+        head.GetComponentInChildren<TextMeshProUGUI>().text = ch.Head != null ? ch.Head.ItemName : "なし";
+        body.GetComponentInChildren<TextMeshProUGUI>().text = ch.Body != null ? ch.Body.ItemName : "なし";
+        accessaryOne.GetComponentInChildren<TextMeshProUGUI>().text = ch.Accessary1 != null ? ch.Accessary1.ItemName : "なし";
+        accessaryTwo.GetComponentInChildren<TextMeshProUGUI>().text = ch.Accessary2 != null ? ch.Accessary2.ItemName : "なし";
 
-        if (ch.rightArm != null)
+        if (ch.RightArm != null)
         {
             rightArm.transform.GetChild(1).GetComponent<Image>().enabled = true;
-            rightArm.transform.GetChild(1).GetComponent<Image>().sprite = ch.rightArm.iconImage;
+            rightArm.transform.GetChild(1).GetComponent<Image>().sprite = ch.RightArm.IconImage;
         }
         else
         {
             rightArm.transform.GetChild(1).GetComponent<Image>().enabled = false;
         }
 
-        if (ch.leftArm != null)
+        if (ch.LeftArm != null)
         {
             leftArm.transform.GetChild(1).GetComponent<Image>().enabled = true;
-            leftArm.transform.GetChild(1).GetComponent<Image>().sprite = ch.leftArm.iconImage;
+            leftArm.transform.GetChild(1).GetComponent<Image>().sprite = ch.LeftArm.IconImage;
         }
         else
         {
             leftArm.transform.GetChild(1).GetComponent<Image>().enabled = false;
-            if (ch.rightArm != null)
+            if (ch.RightArm != null)
             {
-                if (ch.rightArm.isTwoHanded)
+                if (ch.RightArm.IsTwoHanded)
                 {
-                    leftArm.GetComponentInChildren<TextMeshProUGUI>().text = ch.rightArm.itemName;
+                    leftArm.GetComponentInChildren<TextMeshProUGUI>().text = ch.RightArm.ItemName;
                     leftArm.GetComponentInChildren<TextMeshProUGUI>().color = CommonController.GetColor(Constants.darkGray);
                 }
             }
             leftArm.transform.GetChild(1).GetComponent<Image>().enabled = false;
         }
 
-        if (ch.head != null)
+        if (ch.Head != null)
         {
             head.transform.GetChild(1).GetComponent<Image>().enabled = true;
-            head.transform.GetChild(1).GetComponent<Image>().sprite = ch.head.iconImage;
+            head.transform.GetChild(1).GetComponent<Image>().sprite = ch.Head.IconImage;
         }
         else
         {
             head.transform.GetChild(1).GetComponent<Image>().enabled = false;
         }
 
-        if (ch.body != null)
+        if (ch.Body != null)
         {
             body.transform.GetChild(1).GetComponent<Image>().enabled = true;
-            body.transform.GetChild(1).GetComponent<Image>().sprite = ch.body.iconImage;
+            body.transform.GetChild(1).GetComponent<Image>().sprite = ch.Body.IconImage;
         }
         else
         {
             body.transform.GetChild(1).GetComponent<Image>().enabled = false;
         }
 
-        if (ch.accessary1 != null)
+        if (ch.Accessary1 != null)
         {
             accessaryOne.transform.GetChild(1).GetComponent<Image>().enabled = true;
-            accessaryOne.transform.GetChild(1).GetComponent<Image>().sprite = ch.accessary1.iconImage;
+            accessaryOne.transform.GetChild(1).GetComponent<Image>().sprite = ch.Accessary1.IconImage;
         }
         else
         {
             accessaryOne.transform.GetChild(1).GetComponent<Image>().enabled = false;
         }
 
-        if (ch.accessary2 != null)
+        if (ch.Accessary2 != null)
         {
             accessaryTwo.transform.GetChild(1).GetComponent<Image>().enabled = true;
-            accessaryTwo.transform.GetChild(1).GetComponent<Image>().sprite = ch.accessary2.iconImage;
+            accessaryTwo.transform.GetChild(1).GetComponent<Image>().sprite = ch.Accessary2.IconImage;
         }
         else
         {
@@ -327,29 +327,29 @@ public class EquipMenuController : MonoBehaviour
 
         #region ステータス欄
         PA.color = Color.white;
-        PA.text = ch.pAttack.ToString();
+        PA.text = ch.PAttack.ToString();
         MA.color = Color.white;
-        MA.text = ch.mAttack.ToString();
+        MA.text = ch.MAttack.ToString();
         PD.color = Color.white;
-        PD.text = ch.pDefence.ToString();
+        PD.text = ch.PDefence.ToString();
         MD.color = Color.white;
-        MD.text = ch.mDefence.ToString();
+        MD.text = ch.MDefence.ToString();
         MH.color = Color.white;
-        MH.text = ch.maxHp2.ToString();
+        MH.text = ch.MaxHp.ToString();
         MM.color = Color.white;
-        MM.text = ch.maxMp2.ToString();
+        MM.text = ch.MaxMp.ToString();
         ST.color = Color.white;
-        ST.text = ch.str2.ToString();
+        ST.text = ch.Str.ToString();
         VI.color = Color.white;
-        VI.text = ch.vit2.ToString();
+        VI.text = ch.Vit.ToString();
         DE.color = Color.white;
-        DE.text = ch.dex2.ToString();
+        DE.text = ch.Dex.ToString();
         AG.color = Color.white;
-        AG.text = ch.agi2.ToString();
+        AG.text = ch.Agi.ToString();
         IT.color = Color.white;
-        IT.text = ch.inte2.ToString();
+        IT.text = ch.Int.ToString();
         MN.color = Color.white;
-        MN.text = ch.mnd2.ToString();
+        MN.text = ch.Mnd.ToString();
         #endregion
     }
 
@@ -503,7 +503,7 @@ public class EquipMenuController : MonoBehaviour
         List<Weapon> filteredWeapons = new List<Weapon>();
 
         weapons = equips.OfType<Weapon>().ToList();
-        filteredWeapons = weapons.Where(x => x.weaponCategory == weaponCategory).ToList();
+        filteredWeapons = weapons.Where(x => x.WeaponCategory == weaponCategory).ToList();
 
         return filteredWeapons.OrderBy(x => x.ID).ToList();
     }
@@ -526,7 +526,7 @@ public class EquipMenuController : MonoBehaviour
                 break;
         }
 
-        var filteredEquips = equips.Where(x => x.itemCategory == category).ToList();
+        var filteredEquips = equips.Where(x => x.ItemCategory == category).ToList();
 
         return filteredEquips.OrderBy(x => x.ID).ToList();
     }
@@ -614,7 +614,7 @@ public class EquipMenuController : MonoBehaviour
     /// </summary>
     /// <param name="obj"></param>
     /// <param name="item"></param>
-    private void AddOnClickActionToItemButton(GameObject obj, Equip item, AllyStatus ch)
+    private void AddOnClickActionToItemButton(GameObject obj, Equip item, Ally ch)
     {
         var button = obj.GetComponent<Button>();
         if (button != null)
@@ -627,7 +627,7 @@ public class EquipMenuController : MonoBehaviour
     /// ボタン押下時アクションをボタンに設定
     /// </summary>
     /// <param name="item"></param>
-    private async void OnClickActionToEquipButton(Equip item, AllyStatus ch)
+    private async void OnClickActionToEquipButton(Equip item, Ally ch)
     {
         SoundManager.Instance.PlaySubmit();
 
@@ -741,44 +741,44 @@ public class EquipMenuController : MonoBehaviour
         if (weapon != null)
         {
             detailIcon.enabled = true;
-            detailIcon.sprite = weapon.iconImage;
-            detailName.text = weapon.itemName;
-            detailCategory.text = CommonController.GetItemCategoryString(weapon.itemCategory);
-            detailDescription.text = weapon.description;
+            detailIcon.sprite = weapon.IconImage;
+            detailName.text = weapon.ItemName;
+            detailCategory.text = CommonController.GetItemCategoryString(weapon.ItemCategory);
+            detailDescription.text = weapon.Description;
 
             #region 属性・クラス
-            if (weapon.attributes.Count >= 1)
+            if (weapon.Attributes.Count >= 1)
             {
                 detailAttributeOne.enabled = true;
-                detailAttributeOne.sprite = weapon.attributes[0].icon;
+                detailAttributeOne.sprite = weapon.Attributes[0].icon;
             }
-            if (weapon.attributes.Count >= 2)
+            if (weapon.Attributes.Count >= 2)
             {
                 detailAttributeTwo.enabled = true;
-                detailAttributeTwo.sprite = weapon.attributes[1].icon;
+                detailAttributeTwo.sprite = weapon.Attributes[1].icon;
             }
-            if (weapon.attributes.Count >= 3)
+            if (weapon.Attributes.Count >= 3)
             {
                 detailAttributeThree.enabled = true;
-                detailAttributeThree.sprite = weapon.attributes[2].icon;
+                detailAttributeThree.sprite = weapon.Attributes[2].icon;
             }
-            if (weapon.attributes.Count >= 4)
+            if (weapon.Attributes.Count >= 4)
             {
                 detailAttributeFour.enabled = true;
-                detailAttributeFour.sprite = weapon.attributes[3].icon;
+                detailAttributeFour.sprite = weapon.Attributes[3].icon;
             }
-            if (weapon.attributes.Count >= 5)
+            if (weapon.Attributes.Count >= 5)
             {
                 detailAttributeFive.enabled = true;
-                detailAttributeFive.sprite = weapon.attributes[4].icon;
+                detailAttributeFive.sprite = weapon.Attributes[4].icon;
             }
-            if (weapon.attributes.Count >= 6)
+            if (weapon.Attributes.Count >= 6)
             {
                 detailAttributeSix.enabled = true;
-                detailAttributeSix.sprite = weapon.attributes[5].icon;
+                detailAttributeSix.sprite = weapon.Attributes[5].icon;
             }
 
-            foreach (var C in weapon.equipableClasses)
+            foreach (var C in weapon.EquipableClasses)
             {
                 if (C.ID == "01")
                 {
@@ -830,12 +830,12 @@ public class EquipMenuController : MonoBehaviour
         if (item != null)
         {
             detailIcon.enabled = true;
-            detailIcon.sprite = item.iconImage;
-            detailName.text = item.itemName;
-            detailCategory.text = CommonController.GetItemCategoryString(item.itemCategory);
-            detailDescription.text = item.description;
+            detailIcon.sprite = item.IconImage;
+            detailName.text = item.ItemName;
+            detailCategory.text = CommonController.GetItemCategoryString(item.ItemCategory);
+            detailDescription.text = item.Description;
 
-            foreach (var C in item.equipableClasses)
+            foreach (var C in item.EquipableClasses)
             {
                 if (C.ID == "01")
                 {
@@ -1067,37 +1067,37 @@ public class EquipMenuController : MonoBehaviour
     {
         SetCharacterInfo();
 
-        AllyStatus ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
-        AllyStatus dummy = PartyMembers.Instance.CopyAllyStatus(ch);
+        Ally ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+        Ally dummy = PartyMembers.Instance.CopyAlly(ch);
 
         dummy.Unequip(currentPartIndex, true);
         dummy.Equip(e, currentPartIndex, true);
 
-        var pA = dummy.pAttack - ch.pAttack;
-        var mA = dummy.mAttack - ch.mAttack;
-        var pD = dummy.pDefence - ch.pDefence;
-        var mD = dummy.mDefence - ch.mDefence;
-        var mH = dummy.maxHp2 - ch.maxHp2;
-        var mM = dummy.maxMp2 - ch.maxMp2;
-        var sT = dummy.str2 - ch.str2;
-        var vI = dummy.vit2 - ch.vit2;
-        var dE = dummy.dex2 - ch.dex2;
-        var aG = dummy.agi2 - ch.agi2;
-        var iT = dummy.inte2 - ch.inte2;
-        var mN = dummy.mnd2 - ch.mnd2;
+        var pA = dummy.PAttack - ch.PAttack;
+        var mA = dummy.MAttack - ch.MAttack;
+        var pD = dummy.PDefence - ch.PDefence;
+        var mD = dummy.MDefence - ch.MDefence;
+        var mH = dummy.MaxHp - ch.MaxHp;
+        var mM = dummy.MaxMp - ch.MaxMp;
+        var sT = dummy.Str - ch.Str;
+        var vI = dummy.Vit - ch.Vit;
+        var dE = dummy.Dex - ch.Dex;
+        var aG = dummy.Agi - ch.Agi;
+        var iT = dummy.Int - ch.Int;
+        var mN = dummy.Mnd - ch.Mnd;
 
-        SetCompareTextStyle(PA, dummy.pAttack, pa, pA);
-        SetCompareTextStyle(MA, dummy.mAttack, ma, mA);
-        SetCompareTextStyle(PD, dummy.pDefence, pd, pD);
-        SetCompareTextStyle(MD, dummy.mDefence, md, mD);
-        SetCompareTextStyle(MH, dummy.maxHp2, mh, mH);
-        SetCompareTextStyle(MM, dummy.maxMp2, mm, mM);
-        SetCompareTextStyle(ST, dummy.str2, st, sT);
-        SetCompareTextStyle(VI, dummy.vit2, vi, vI);
-        SetCompareTextStyle(DE, dummy.dex2, de, dE);
-        SetCompareTextStyle(AG, dummy.agi2, ag, aG);
-        SetCompareTextStyle(IT, dummy.inte2, it, iT);
-        SetCompareTextStyle(MN, dummy.mnd2, mn, mN);
+        SetCompareTextStyle(PA, dummy.PAttack, pa, pA);
+        SetCompareTextStyle(MA, dummy.MAttack, ma, mA);
+        SetCompareTextStyle(PD, dummy.PDefence, pd, pD);
+        SetCompareTextStyle(MD, dummy.MDefence, md, mD);
+        SetCompareTextStyle(MH, dummy.MaxHp, mh, mH);
+        SetCompareTextStyle(MM, dummy.MaxMp, mm, mM);
+        SetCompareTextStyle(ST, dummy.Str, st, sT);
+        SetCompareTextStyle(VI, dummy.Vit, vi, vI);
+        SetCompareTextStyle(DE, dummy.Dex, de, dE);
+        SetCompareTextStyle(AG, dummy.Agi, ag, aG);
+        SetCompareTextStyle(IT, dummy.Int, it, iT);
+        SetCompareTextStyle(MN, dummy.Mnd, mn, mN);
     }
 
     /// <summary>

@@ -25,8 +25,8 @@ public class ItemComponent : MonoBehaviour
     {
         if (item != null)
         {
-            icon.sprite = item.iconImage;
-            itemName.text = item.itemName;
+            icon.sprite = item.IconImage;
+            itemName.text = item.ItemName;
             SetAmount();
             UpdateEquipMark();
         }
@@ -46,10 +46,10 @@ public class ItemComponent : MonoBehaviour
     private void UpdateEquipMark()
     {
         // ‘•”õ’†‚Å‚ ‚ê‚ÎequipMark‚ð•\Ž¦‚µA“Á’è‚ÌF‚ðÝ’è
-        if (item.equippedAllyID > 0)
+        if (item.EquippedAllyID > 0)
         {
             equipMark.gameObject.SetActive(true);
-            equipMark.color = CommonController.GetCharacterColorByIndex(item.equippedAllyID - 1);
+            equipMark.color = CommonController.GetCharacterColorByIndex(item.EquippedAllyID - 1);
         }
         else
         {

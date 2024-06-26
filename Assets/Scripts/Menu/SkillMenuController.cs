@@ -146,12 +146,12 @@ public class SkillMenuController : MonoBehaviour
         gradation.color = color;
         nameBackGradation.color = color;
 
-        characterImage.sprite = ch.Class.imagesA[currentCharacterIndex];
-        characterLevel.text = ch.level.ToString();
-        characterClass.text = ch.Class.classAbbreviation;
+        characterImage.sprite = ch.CharacterClass.imagesA[currentCharacterIndex];
+        characterLevel.text = ch.Level.ToString();
+        characterClass.text = ch.CharacterClass.classAbbreviation;
 
-        currentSP.text = ch.sp.ToString();
-        maxSP.text = ch.maxSp.ToString();
+        currentSP.text = ch.SP.ToString();
+        maxSP.text = ch.MaxSp.ToString();
 
         ch.SPGauge = SPGauge;
         GaugeManager gaugeManager = SPGauge.GetComponent<GaugeManager>();
@@ -161,33 +161,36 @@ public class SkillMenuController : MonoBehaviour
     /// <summary>
     /// スキル一覧初期化
     /// </summary>
+    /// <summary>
+    /// スキル一覧初期化
+    /// </summary>
     public async UniTask SetSkillList(bool isSelectTarget = true)
     {
         DestroyButtons();
 
-        AllyStatus ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
-        List<Skill> skills = ch.learnedSkills;
+        Ally ch = PartyMembers.Instance.GetAllyByIndex(currentCharacterIndex);
+        List<Skill> skills = ch.LearnedSkills;
         List<Skill> filteredSkills = new List<Skill>();
 
         switch (currentSkillCategoryIndex)
         {
             case 0:
-                filteredSkills = ch.equipedSkills;
+                filteredSkills = ch.EquipedSkills;
                 break;
             case 1:
-                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Magic).ToList();
+                filteredSkills = skills.Where(x => x.SkillCategory == Constants.SkillCategory.Magic).ToList();
                 break;
             case 2:
-                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Miracle).ToList();
+                filteredSkills = skills.Where(x => x.SkillCategory == Constants.SkillCategory.Miracle).ToList();
                 break;
             case 3:
-                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Arts).ToList();
+                filteredSkills = skills.Where(x => x.SkillCategory == Constants.SkillCategory.Arts).ToList();
                 break;
             case 4:
-                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Active).ToList();
+                filteredSkills = skills.Where(x => x.SkillCategory == Constants.SkillCategory.Active).ToList();
                 break;
             case 5:
-                filteredSkills = skills.Where(x => x.skillCategory == Constants.SkillCategory.Passive).ToList();
+                filteredSkills = skills.Where(x => x.SkillCategory == Constants.SkillCategory.Passive).ToList();
                 break;
         }
 
@@ -206,14 +209,15 @@ public class SkillMenuController : MonoBehaviour
 
             var newButton = obj.transform.GetChild(0).gameObject;              // ボタン本体
             AddSelectActionToButtons(newButton, s);               // 選択・選択解除時アクション設定
+            var equipedSkillIDs = ch.EquipedSkills.Select(skill => skill.ID).ToList();
             // 装備可能・使用可能か判定
-            if (s.CanEquip(ch) || (s.canUseInMenu && s.CanUse(ch)))
+            if (s.CanEquip(ch) || (s.CanUseInMenu && s.CanUse(ch)))
             {
                 // ボタン押下時のアクションを追加
                 AddOnClickActionToSkillButton(newButton, s, ch);
             }
             // 装備中
-            else if (ch.equipedSkills.Contains(s))
+            else if (equipedSkillIDs.Contains(s.ID))
             {
                 comp.skillName.color = CommonController.GetColor(colors[currentCharacterIndex]);
             }
@@ -287,16 +291,16 @@ public class SkillMenuController : MonoBehaviour
         lastSelectButtonIndex = button.transform.parent.transform.GetSiblingIndex();
 
         detailIcon.enabled = true;
-        detailIcon.sprite = skill.icon;
-        detailName.text = skill.skillName;
-        detailSPCost.text = skill.spCost.ToString();
-        detailCategory.text = CommonController.GetSkillCategoryString(skill.skillCategory);
-        detailDescription.text = skill.description;
+        detailIcon.sprite = skill.Icon;
+        detailName.text = skill.SkillName;
+        detailSPCost.text = skill.SpCost.ToString();
+        detailCategory.text = CommonController.GetSkillCategoryString(skill.SkillCategory);
+        detailDescription.text = skill.Description;
 
         if (skill is MagicMiracle)
         {
             var m = skill as MagicMiracle;
-            detailMPCost.text = m.MPCost.ToString();
+            detailMPCost.text = m.MpCost.ToString();
         }
         else
         {
@@ -306,7 +310,7 @@ public class SkillMenuController : MonoBehaviour
         if (skill is Arts)
         {
             var a = skill as Arts;
-            detailTPCost.text = a.TPCost.ToString();
+            detailTPCost.text = a.TpCost.ToString();
         }
         else
         {
@@ -316,48 +320,48 @@ public class SkillMenuController : MonoBehaviour
         if (skill is ActiveSkill)
         {
             var a = skill as ActiveSkill;
-            detailTPCost.text = a.recastTurn.ToString();
+            detailRecast.text = a.RecastTurn.ToString();
         }
         else
         {
             detailRecast.text = "-";
         }
 
-        detailLearn.text = skill.learn;
+        detailLearn.text = skill.Learn;
 
         #region 属性・クラス
-        if (skill.attributes.Count >= 1)
+        if (skill.Attributes.Count >= 1)
         {
             detailAttributeOne.enabled = true;
-            detailAttributeOne.sprite = skill.attributes[0].icon;
+            detailAttributeOne.sprite = skill.Attributes[0].icon;
         }
-        if (skill.attributes.Count >= 2)
+        if (skill.Attributes.Count >= 2)
         {
             detailAttributeTwo.enabled = true;
-            detailAttributeTwo.sprite = skill.attributes[1].icon;
+            detailAttributeTwo.sprite = skill.Attributes[1].icon;
         }
-        if (skill.attributes.Count >= 3)
+        if (skill.Attributes.Count >= 3)
         {
             detailAttributeThree.enabled = true;
-            detailAttributeThree.sprite = skill.attributes[2].icon;
+            detailAttributeThree.sprite = skill.Attributes[2].icon;
         }
-        if (skill.attributes.Count >= 4)
+        if (skill.Attributes.Count >= 4)
         {
             detailAttributeFour.enabled = true;
-            detailAttributeFour.sprite = skill.attributes[3].icon;
+            detailAttributeFour.sprite = skill.Attributes[3].icon;
         }
-        if (skill.attributes.Count >= 5)
+        if (skill.Attributes.Count >= 5)
         {
             detailAttributeFive.enabled = true;
-            detailAttributeFive.sprite = skill.attributes[4].icon;
+            detailAttributeFive.sprite = skill.Attributes[4].icon;
         }
-        if (skill.attributes.Count >= 6)
+        if (skill.Attributes.Count >= 6)
         {
             detailAttributeSix.enabled = true;
-            detailAttributeSix.sprite = skill.attributes[5].icon;
+            detailAttributeSix.sprite = skill.Attributes[5].icon;
         }
 
-        foreach (var C in skill.usableClasses)
+        foreach (var C in skill.UsableClasses)
         {
             if (C.ID == "01")
             {
@@ -401,7 +405,7 @@ public class SkillMenuController : MonoBehaviour
     /// </summary>
     /// <param name="obj"></param>
     /// <param name="item"></param>
-    private void AddOnClickActionToSkillButton(GameObject obj, Skill skill, AllyStatus ch)
+    private void AddOnClickActionToSkillButton(GameObject obj, Skill skill, Ally ch)
     {
         var button = obj.GetComponent<Button>();
         if (button != null)
@@ -414,10 +418,10 @@ public class SkillMenuController : MonoBehaviour
     /// ボタン押下時アクションをボタンに設定
     /// </summary>
     /// <param name="skill"></param>
-    private async UniTask OnClickActionToSkillButton(Skill skill, AllyStatus ch)
+    private async UniTask OnClickActionToSkillButton(Skill skill, Ally ch)
     {
         SoundManager.Instance.PlaySubmit();
-        switch (skill.skillCategory)
+        switch (skill.SkillCategory)
         {
             case Constants.SkillCategory.Miracle:
                 DisplaySubMenu(skill);
